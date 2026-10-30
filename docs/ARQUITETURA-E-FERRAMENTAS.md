@@ -23,6 +23,7 @@ O Vite faz o bundling e o Tailwind é integrado pelo plugin oficial. O ESLint cu
 ## Stack
 
 - React 19 + TypeScript + Vite (com React Compiler via Babel).
+- [API GraphQL do AniList](https://docs.anilist.co/) como fonte de dados (busca, formatos, gêneros, nota e capa dos animes).
 - Tailwind CSS 4 para estilos utilitários.
 - ESLint 10 + `typescript-eslint` + `eslint-plugin-sonarjs` para code smells.
 - Biome para formatação, organização de imports e lint complementar.
@@ -44,7 +45,7 @@ Escolhido pelas novas funcionalidades, que atendem diretamente aos casos de uso:
 | Transições assíncronas (`useTransition`)      | Manter a interface responsiva ao aplicar filtros de formato e busca por texto (UC04, UC05).                   |
 | `useDeferredValue` com valor inicial          | Adiar a atualização da listagem enquanto o usuário digita na busca (UC05).                                    |
 | `useOptimistic` / Actions                     | Refletir imediatamente a seleção de filtros antes da resposta dos dados (UC04).                               |
-| `ref` como prop                               | Expor o elemento sentinela do scroll infinito sem `forwardRef` (UC06).                                        |
+| `ref` como prop                               | Devolver o foco ao primeiro item novo após o "Ver mais", sem `forwardRef` (UC06, RNF01).                      |
 | Metadados no componente (`<title>`, `<meta>`) | Atualizar título e descrição ao abrir o detalhe de um anime, favorecendo SEO e acessibilidade (UC03, RNF01).  |
 
 ### React Compiler
@@ -52,7 +53,7 @@ Escolhido pelas novas funcionalidades, que atendem diretamente aos casos de uso:
 Escolhido para otimizar a renderização sem memoização manual:
 
 - Memoiza automaticamente componentes, valores derivados e callbacks em tempo de build, dispensando `useMemo`, `useCallback` e `React.memo` escritos à mão.
-- Reduz re-renderizações da listagem ao filtrar, buscar e carregar novas páginas no scroll infinito (UC02, UC04 a UC06, RNF02).
+- Reduz re-renderizações da listagem ao filtrar, buscar e carregar novas páginas pelo "Ver mais" (UC02, UC04 a UC06, RNF02).
 - Mantém o código mais simples e legível, alinhado às regras de code smells.
 - Configurado no `vite.config.ts` via `@rolldown/plugin-babel` com `reactCompilerPreset()`; o `eslint-plugin-react-hooks` 7 aplica as regras que o compilador exige (pureza de componentes e regras de hooks).
 - Memoização manual só deve ser usada quando uma medição mostrar ganho que o compilador não obteve.

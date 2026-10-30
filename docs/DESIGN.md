@@ -17,17 +17,25 @@ Referência visual extraída do [Figma do desafio Winnin](https://www.figma.com/
 
 ### Cores
 
-| Token                    | Valor     | Uso observado                                    |
-| ------------------------ | --------- | ------------------------------------------------ |
-| `Primary/Primary`        | `#6324C6` | Header, footer, filtro ativo, botão "Buscar".    |
-| `Primary/Primary-Light1` | `#774DC5` | Tags de gênero nos cards.                        |
-| `White`                  | `#FFFFFF` | Fundo da página, textos sobre cores escuras.     |
-| `Gray/Light1`            | `#C4CAD4` | Bordas.                                          |
-| `Gray/Light2`            | `#E2E5E9` | Fundos e divisores suaves.                       |
-| `Gray/Gray`              | `#A7B0BE` | Placeholder e textos secundários.                |
-| `Feedback/Success`       | `#01ADA6` | Nota alta (ex.: 80% a 87%).                      |
-| `Feedback/Warning`       | `#FFB800` | Nota intermediária (ex.: 70% a 79%), "Ver mais". |
-| `Feedback/Danger`        | `#E92151` | Nota baixa (ex.: 48%).                           |
+| Token                    | Valor     | Uso observado                                 |
+| ------------------------ | --------- | --------------------------------------------- |
+| `Primary/Primary`        | `#6324C6` | Header, footer, filtro ativo, botão "Buscar". |
+| `Primary/Primary-Light1` | `#774DC5` | Tags de gênero nos cards.                     |
+| `White`                  | `#FFFFFF` | Fundo da página, textos sobre cores escuras.  |
+| `Gray/Light1`            | `#C4CAD4` | Bordas.                                       |
+| `Gray/Light2`            | `#E2E5E9` | Fundos e divisores suaves.                    |
+| `Gray/Gray`              | `#A7B0BE` | Placeholder e textos secundários.             |
+| `Feedback/Success`       | `#01ADA6` | Nota acima de 80%.                            |
+| `Feedback/Warning`       | `#FFB800` | Nota de 50% a 80%, botão "Ver mais".          |
+| `Feedback/Danger`        | `#E92151` | Nota abaixo de 50%.                           |
+
+### Cor da nota
+
+| Nota (`averageScore`) | Token              |
+| --------------------- | ------------------ |
+| `< 50`                | `Feedback/Danger`  |
+| `50` a `80`           | `Feedback/Warning` |
+| `> 80`                | `Feedback/Success` |
 
 ### Tipografia
 
@@ -40,7 +48,6 @@ Família **Mulish**.
 
 ## Observações
 
-- Os formatos dos filtros correspondem ao enum `MediaFormat` da [API GraphQL do AniList](https://docs.anilist.co/) (`TV`, `TV_SHORT`, `MOVIE`, `SPECIAL`, `OVA`, `ONA`, `MUSIC`), candidata a fonte de dados.
+- A fonte de dados é a [API GraphQL do AniList](https://docs.anilist.co/): os filtros correspondem ao enum `MediaFormat` (`TV`, `TV_SHORT`, `MOVIE`, `SPECIAL`, `OVA`, `ONA`, `MUSIC`) e a nota ao campo `averageScore` (0 a 100).
 - O design mostra só o desktop; o layout responsivo (RF08) deve ser derivado da grade de cards.
-- O design usa um botão "Ver mais", enquanto o UC06 prevê scroll infinito; o comportamento final deve ser confirmado.
-- As faixas de cor da nota foram inferidas dos exemplos do design e precisam de limites definidos.
+- A paginação é feita pelo botão "Ver mais" (padrão definido), sem scroll infinito.

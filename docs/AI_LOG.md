@@ -65,6 +65,9 @@ O comando `pnpm validate` concentra a validação local:
 
 ## Decisões
 
+- **Paginação por "Ver mais":** definida como padrão na revisão, seguindo o design; RF06, UC06, README e arquitetura deixaram de citar scroll infinito.
+- **Faixas da nota:** definidas na revisão: abaixo de 50 vermelho (`Feedback/Danger`), de 50 a 80 amarelo (`Feedback/Warning`), acima de 80 verde (`Feedback/Success`). Especificadas em BDD no UC02.
+- **AniList como fonte de dados:** confirmada na revisão; formatos via `MediaFormat` e nota via `averageScore`.
 - **React 19:** adotado pelas novas funcionalidades (`use` + `Suspense`, transições assíncronas, `useDeferredValue`, `useOptimistic`, `ref` como prop e metadados no componente), mapeadas aos casos de uso em `ARQUITETURA-E-FERRAMENTAS.md`.
 - **React Compiler:** adotado para otimizar a renderização com memoização automática, evitando `useMemo`/`useCallback`/`React.memo` manuais e reduzindo re-renderizações da listagem.
 - **Tailwind 4 via plugin oficial:** reduz configuração manual e mantém o CSS alinhado ao pipeline Vite.
@@ -88,18 +91,24 @@ O comando `pnpm validate` concentra a validação local:
 - O layout inicial é uma interpretação estrutural do Figma, não uma cópia final de conteúdo ou identidade. Textos, imagens e contatos devem ser substituídos pelo material oficial.
 - A configuração foi mantida modular para que a próxima etapa possa extrair componentes e conectar dados reais sem alterar os gates de qualidade.
 - A descrição do README foi reescrita a partir do frame do Figma (header, filtros, busca, grade de cards, "Ver mais" e footer).
-- As faixas de cor da nota e a relação dos formatos com a API do AniList foram inferidas do design e registradas como observações em `docs/DESIGN.md`.
-- Os conteúdos de RF, RNF e casos de uso ajustados manualmente (ver "Meus ajustes") foram preservados sem alteração.
+- As faixas de cor da nota e a relação dos formatos com a API do AniList, antes inferidas do design, foram confirmadas na revisão e documentadas em `docs/DESIGN.md`.
+- Os conteúdos de RF, RNF e casos de uso ajustados manualmente (ver "Meus ajustes") foram preservados; só RF06 e UC06 mudaram de scroll infinito para "Ver mais", por solicitação na revisão, e o UC02 ganhou o cenário de cor da nota.
+- No Figma, o card com 80% aparece verde, mas pela regra definida 80 é amarelo; a regra definida prevalece.
 
 ## Pendências
 
-- O design usa o botão "Ver mais", enquanto o UC06 prevê scroll infinito: confirmar o comportamento final.
-- Definir os limites das faixas de cor da nota (sucesso, alerta e perigo).
-- Confirmar a fonte de dados (candidata: API GraphQL do AniList).
 - SEO do Lighthouse em 91: avaliar os itens apontados no relatório.
 - Publicar a `main` e a branch no `origin` para abrir o PR.
 
 ## Registro de alterações
+
+### Paginação por "Ver mais", faixas da nota e AniList
+
+- **Escopo:** documentação (README, requisitos, casos de uso, design, arquitetura, changelog e AI log), sem alteração de código.
+- **Abordagem:** SDD e BDD; a regra de cor da nota virou cenário Gherkin no UC02 e o UC06 passou a descrever o clique em "Ver mais", ambos com o teste TDD correspondente mapeado.
+- **Verificação:** `pnpm format:check` e busca por "scroll infinito" nos documentos de especificação.
+- **Commit:** `docs: adopt load more pagination and define score colors`.
+- **PR sugerido:** alinha a especificação ao design: paginação pelo botão "Ver mais", faixas de cor da nota e AniList como fonte de dados.
 
 ### Referência do Figma, versionamento de pacote único e branch própria
 

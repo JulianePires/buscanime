@@ -7,7 +7,7 @@
 - **RF03 — Filtro por formato:** o usuário pode filtrar a listagem por um ou mais formatos.
 - **RF04 — Busca por texto:** o usuário pode buscar animes por texto.
 - **RF05 — Detalhes:** o usuário pode selecionar um anime listado e visualizar seus detalhes.
-- **RF06 — Paginação por scroll:** o sistema deve carregar mais itens conforme o usuário avança no scroll infinito.
+- **RF06 — Paginação por "Ver mais":** o sistema deve carregar a próxima página de itens quando o usuário acionar o botão "Ver mais", ao final da listagem.
 - **RF07 — Tamanho da paginação:** o usuário pode alterar a quantidade de itens carregados por página.
 - **RF08 — Responsividade:** o conteúdo e os controles devem funcionar em dispositivos móveis e desktop.
 
