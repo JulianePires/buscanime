@@ -2,6 +2,8 @@
 
 Referência visual extraída do [Figma do desafio Winnin](https://www.figma.com/design/uHjhK532Aq0D6L4teYX6bz/INSTITUCIONAL----DesafioWinnin--Copy-?node-id=0-1&t=nSRYqbMWXssxQlbl-1), frame `Desktop - 2` (1366 × 1457).
 
+Este documento é o resumo para pessoas. O detalhamento por seção (medidas, estados, mapeamento para o AniList), os tokens estruturados, os renders de referência e os assets exportados ficam na [base de contexto de design](design-context/README.md), consultada pela IA conforme o [ADR-001](adr/ADR-001-base-de-contexto-de-design-rag.md).
+
 ## Estrutura da página
 
 | Área     | Conteúdo                                                                                                      | Caso de uso |
@@ -43,13 +45,31 @@ Os limites 50 e 80 pertencem à faixa amarela. O exemplo de 80% em verde no Figm
 
 Família **Mulish**.
 
-| Token         | Peso           | Tamanho | Uso observado        |
-| ------------- | -------------- | ------- | -------------------- |
-| `H3/Bold`     | 700 (Bold)     | 24 px   | Logotipo e destaques |
-| `H4/Semibold` | 600 (SemiBold) | 20 px   | Títulos dos cards    |
+| Token / uso   | Peso           | Tamanho | Uso observado                        |
+| ------------- | -------------- | ------- | ------------------------------------ |
+| Logo          | 400 (Regular)  | 40 px   | Logotipo do header (24 px no footer) |
+| `H3/Bold`     | 700 (Bold)     | 24 px   | Títulos dos cards                    |
+| `H4/Semibold` | 600 (SemiBold) | 20 px   | Texto do botão "Ver mais"            |
+| Botões        | 600 (SemiBold) | 14 px   | Filtros de formato e botão "Buscar"  |
+| Corpo         | 400 (Regular)  | 14 px   | Campo de busca                       |
+| Chips         | 400 (Regular)  | 12 px   | Gêneros (a nota usa 24 px)           |
+| Legenda       | 400 (Regular)  | 10 px   | "TODOS OS DIREITOS RESERVADOS"       |
+
+Correção (30/10/2026): a leitura anterior atribuía `H3/Bold` ao logotipo e `H4/Semibold` aos títulos dos cards. A exportação do Figma mostrou que o logotipo é Mulish Regular 40 px, os títulos usam `H3/Bold` e `H4/Semibold` aparece no "Ver mais".
+
+## Assets
+
+| Asset                   | Origem no Figma                                       | Uso              |
+| ----------------------- | ----------------------------------------------------- | ---------------- |
+| `public/brand/logo.svg` | Texto `BUSCANIME` (`3406:248`), exportado em contorno | Header e footer  |
+| `public/icons/add.svg`  | `Icon/add` (`3396:80`)                                | Botão "Ver mais" |
+
+As capas dos cards não são assets do projeto: vêm do AniList (`coverImage.extraLarge`).
 
 ## Observações
 
 - A fonte de dados é a [API GraphQL do AniList](https://docs.anilist.co/): os filtros correspondem ao enum `MediaFormat` (`TV`, `TV_SHORT`, `MOVIE`, `SPECIAL`, `OVA`, `ONA`, `MUSIC`) e a nota ao campo `averageScore` (0 a 100).
 - O design mostra só o desktop; o layout responsivo (RF08) deve ser derivado da grade de cards.
 - A paginação é feita pelo botão "Ver mais" (padrão definido), sem scroll infinito.
+- Contraste abaixo do WCAG AA no design: texto branco sobre o "Ver mais" amarelo (≈ 1,7:1) e texto `Gray/Light2` sobre a nota verde (≈ 2,2:1). Ajuste proposto em [PLANO-IMPLEMENTACAO.md](PLANO-IMPLEMENTACAO.md#decisões-em-aberto).
+- Não existem no design: modal de detalhe (UC03), seletor de itens por página (RF07), estados de carregamento, vazio e erro (RNF06) e layout mobile (RF08).

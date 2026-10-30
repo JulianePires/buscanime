@@ -49,6 +49,32 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 
 - Cenário BDD de cor da nota no UC02 e AniList na stack.
 
+### `feat: add design assets exported from figma`
+
+#### Added
+
+- `public/brand/logo.svg` (logo BUSCANIME em contorno) e `public/icons/add.svg` (ícone do "Ver mais"), exportados dos nós do Figma.
+
+### `docs: add design context base and rag adr`
+
+#### Added
+
+- `docs/design-context/`: manifesto por caso de uso, tokens em JSON, specs por seção, renders de referência, fixtures dos cards e código de referência do Figma.
+- `docs/adr/ADR-001-base-de-contexto-de-design-rag.md`: decisão de usar a base local como fonte de retrieval da IA.
+- `docs/adr/ADR-002-dependencias-de-dados-ui-e-formularios.md`: TanStack Query para dados remotos; componentes e busca sem shadcn/ui e sem React Hook Form. Plano e prompts UC02, UC04, UC05 e UC06 atualizados.
+
+#### Changed
+
+- `DESIGN.md`: tipografia corrigida (logo Mulish Regular 40 px), seção de assets, divergências de contraste e lacunas do design.
+- README e arquitetura: seção da base de contexto e nova estrutura de pastas.
+
+### `docs: add implementation plan and use case prompts`
+
+#### Added
+
+- `docs/PLANO-IMPLEMENTACAO.md`: arquitetura alvo, padrões de projeto, sequência, plano por UC, Definition of Done e decisões em aberto.
+- `docs/prompts/`: padrão de prompt e prompts de UC01 a UC06.
+
 ### `docs: confirm score color thresholds`
 
 #### Changed

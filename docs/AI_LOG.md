@@ -14,7 +14,7 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 - **Playwright:** validação da experiência no navegador.
 - **Commitlint + Husky + lint-staged:** padronização de mensagens e checagem dos arquivos antes do commit.
 - **Lighthouse:** auditoria de performance, acessibilidade, boas práticas e SEO (executado com o Chromium do Playwright).
-- **Figma MCP:** leitura da estrutura do frame e dos tokens (cores e tipografia) a partir da cópia acessível do arquivo do desafio.
+- **Figma MCP:** leitura da estrutura do frame e dos tokens (cores e tipografia) a partir da cópia acessível do arquivo do desafio; exportação dos assets (`exportAsync` em SVG com texto em contorno), dos renders por seção (`get_screenshot`) e do código de referência (`get_design_context`) para a base de contexto local.
 
 ## Organização do trabalho
 
@@ -31,6 +31,8 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 11. Aplicar TDD em UC01: escrever os testes (vermelho), ajustar a página (verde) e validar e2e e Lighthouse.
 12. Ler o Figma (estrutura e tokens) e documentar a referência visual em `docs/DESIGN.md`.
 13. Adaptar o script de versão para pacote único em TDD e versionar o trabalho em uma branch própria.
+14. Exportar os assets do Figma para `public/` e montar a base de contexto de design (`docs/design-context/`) para retrieval.
+15. Registrar a decisão de RAG no ADR-001 e escrever o plano de implementação com um prompt documentado por caso de uso.
 
 ## Verificação do trabalho
 
@@ -85,6 +87,11 @@ O comando `pnpm validate` concentra a validação local:
 - **Versionamento de pacote único:** o script de bump lê só o `package.json` da raiz; a propagação entre pacotes do workspace foi removida. As funções puras (`commitLevel`, `bump`, `targetVersion`, `isVersionOnlyDiff`) são exportadas e testadas, e a CLI só executa quando chamada diretamente.
 - **Branch própria sobre uma `main` inicial:** como o repositório não tinha commits, a `main` foi criada com um commit vazio para servir de base ao PR e ao cálculo de versão; o trabalho fica em `feat/estrutura-base`.
 - **Design em documento próprio:** tokens e estrutura do Figma ficam em `docs/DESIGN.md`, com o README resumindo e apontando para ele.
+- **Base de contexto de design (RAG):** o Figma foi convertido em uma base local versionada (`docs/design-context/`) com índice por UC, specs por seção, tokens, renders, fixtures e o código bruto como último recurso. A IA consulta essa base antes de cada implementação e só volta ao Figma se faltar informação. Retrieval determinístico por arquivo, sem embeddings, pelo volume pequeno. Detalhes no [ADR-001](adr/ADR-001-base-de-contexto-de-design-rag.md).
+- **TanStack Query, sem shadcn e sem React Hook Form:** critério "a dependência entra quando apaga mais código do que traz". O Query substitui cache de promises (exigido pelo `use`), acúmulo de páginas, abort e retry; o AniList usa `POST`, então o cache HTTP do navegador não ajuda. Filtros seguem num reducer puro. Componentes ficam sobre elementos nativos (`<dialog>`, `<select>`) e a busca usa input não controlado com `FormData` no `onSubmit` (o `<form action>` do React 19 resetaria o campo). Detalhes no [ADR-002](adr/ADR-002-dependencias-de-dados-ui-e-formularios.md).
+- **Assets em SVG exportados do nó:** logo e ícone saíram do próprio Figma (`exportAsync`, texto em contorno), sem redesenho; o logo em SVG dispensa a fonte para manter a fidelidade.
+- **Capas fora do repositório:** as imagens dos cards são arte de terceiros e vêm do AniList em tempo de execução; aparecem apenas nos renders de referência.
+- **Prompts por caso de uso:** cada UC tem um prompt em `docs/prompts/` com retrieval obrigatório, restrições, cenários BDD, plano TDD, valores de design, arquivos, verificação e formato de saída.
 
 ## Ajustes da IA
 
@@ -94,13 +101,25 @@ O comando `pnpm validate` concentra a validação local:
 - As faixas de cor da nota e a relação dos formatos com a API do AniList, antes inferidas do design, foram confirmadas na revisão e documentadas em `docs/DESIGN.md`.
 - Os conteúdos de RF, RNF e casos de uso ajustados manualmente (ver "Meus ajustes") foram preservados; só RF06 e UC06 mudaram de scroll infinito para "Ver mais", por solicitação na revisão, e o UC02 ganhou o cenário de cor da nota.
 - No Figma, o card com 80% aparece verde, mas pela regra definida 80 é amarelo; a regra foi reconfirmada na revisão (abaixo de 50 vermelho, entre 50 e 80 amarelo, acima de 80 verde) e prevalece sobre o exemplo do design.
+- A exportação corrigiu a tipografia documentada: o logotipo é Mulish Regular 40 px (não `H3/Bold`), `H3/Bold` é o título do card e `H4/Semibold` é o "Ver mais".
+- O download direto das URLs de asset do Figma foi bloqueado pela rede da sessão; os SVGs foram obtidos pela API de plugin (`exportAsync`) e os PNGs pelo `get_screenshot`, com o mesmo resultado do original. A assinatura C2PA adicionada aos SVGs pela ferramenta foi removida para não pesar no bundle.
+- Contraste abaixo do AA identificado no design ("Ver mais" e chip da nota) e levado para as decisões em aberto do plano, sem alteração unilateral.
 
 ## Pendências
 
 - SEO do Lighthouse em 91: avaliar os itens apontados no relatório.
+- Confirmar as decisões em aberto do plano: contraste do "Ver mais" e do chip da nota e o seletor de itens por página (RF07).
 - Publicar a `main` e a branch no `origin` para abrir o PR.
 
 ## Registro de alterações
+
+### Assets do Figma, base de contexto (RAG) e plano de implementação
+
+- **Escopo:** `public/brand/logo.svg`, `public/icons/add.svg`, `docs/design-context/` (manifesto, tokens, 7 specs, 7 renders, fixtures e código de referência), `docs/adr/ADR-001`, `docs/PLANO-IMPLEMENTACAO.md`, `docs/prompts/` (README e UC01 a UC06), atualização de README, DESIGN, arquitetura, changelog e AI log. Sem alteração de código da aplicação.
+- **Abordagem:** SDD; o design virou artefato versionado e cada UC ganhou um prompt que exige retrieval antes da implementação e descreve os testes BDD/TDD.
+- **Verificação:** SVGs renderizados no Chromium e comparados com os renders do Figma; JSONs validados; links internos conferidos; `pnpm format:check`.
+- **Commits sugeridos:** `feat: add design assets exported from figma` (public), `docs: add design context base and rag adr`, `docs: add implementation plan and use case prompts`.
+- **PR sugerido:** exporta os assets do Figma, cria a base de contexto de design para retrieval (ADR-001) e define o plano de implementação com prompts por caso de uso.
 
 ### Paginação por "Ver mais", faixas da nota e AniList
 
