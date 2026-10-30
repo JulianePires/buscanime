@@ -1,0 +1,17 @@
+{
+  "$source": "Conteúdo dos 12 cards do frame Desktop - 2 (nó Cards 3396:578). Usar como dados de teste; capas reais vêm do AniList.",
+  "cards": [
+    { "node": "3396:323", "title": "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto", "genres": ["Action", "Comedy", "Horror"], "averageScore": 80, "figmaColor": "success", "expectedColor": "warning" },
+    { "node": "3396:362", "title": "Mushoku Tensei II: Isekai Ittara Honki Dasu", "genres": ["Adventure", "Drama", "Ecchi"], "averageScore": 83, "figmaColor": "success", "expectedColor": "success" },
+    { "node": "3396:381", "title": "One Piece", "genres": ["Action", "Comedy", "Adventure"], "averageScore": 87, "figmaColor": "success", "expectedColor": "success" },
+    { "node": "3396:400", "title": "Masamune-jun no Revenge R", "genres": ["Romance", "Comedy"], "averageScore": 70, "figmaColor": "warning", "expectedColor": "warning" },
+    { "node": "3396:426", "title": "Bleach: Sennen Kessen-hen - Ketsubetsu-tan", "genres": ["Action", "Adventure"], "averageScore": 87, "figmaColor": "success", "expectedColor": "success" },
+    { "node": "3396:427", "title": "Lv1 Maou to One Room Yuusha", "genres": ["Action", "Comedy", "Adventure"], "averageScore": 48, "figmaColor": "danger", "expectedColor": "danger" },
+    { "node": "3396:428", "title": "Jujutsu Kaisen 2nd Season", "genres": ["Action", "Drama"], "averageScore": 86, "figmaColor": "success", "expectedColor": "success" },
+    { "node": "3396:429", "title": "Horimiya: piece", "genres": ["Comedy", "Romance"], "averageScore": 81, "figmaColor": "success", "expectedColor": "success" },
+    { "node": "3396:502", "title": "Watashi no Shiawase na Kekkon", "genres": ["Drama", "Romance"], "averageScore": 81, "figmaColor": "success", "expectedColor": "success" },
+    { "node": "3396:503", "title": "Tate no Yuusha no Nariagari", "genres": ["Action", "Adventure", "Fantasy"], "averageScore": 83, "figmaColor": "success", "expectedColor": "success" },
+    { "node": "3396:504", "title": "Goblin Slayer II", "genres": ["Action", "Adventure", "Fantasy"], "averageScore": 78, "figmaColor": "warning", "expectedColor": "warning" },
+    { "node": "3396:505", "title": "Shingeki no Kyojin: The Final Season - Kanketsu-hen", "genres": ["Action", "Drama", "Fantasy"], "averageScore": 79, "figmaColor": "warning", "expectedColor": "warning", "note": "No Figma o título aparece truncado com reticências em 3 linhas" }
+  ]
+}

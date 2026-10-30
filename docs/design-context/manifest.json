@@ -1,0 +1,72 @@
+{
+  "$schema-note": "Índice de retrieval da base de contexto de design (ADR-001). Consultar por useCase ou id antes de abrir arquivos.",
+  "figma": {
+    "fileKey": "uHjhK532Aq0D6L4teYX6bz",
+    "frame": { "id": "3396:64", "name": "Desktop - 2", "width": 1366, "height": 1457 },
+    "extractedAt": "2026-10-30",
+    "tool": "Figma MCP (get_metadata, get_design_context, get_screenshot, use_figma read-only exportAsync)"
+  },
+  "global": {
+    "tokens": "docs/design-context/tokens.json",
+    "layout": "docs/design-context/specs/layout.md",
+    "reference": "docs/design-context/references/desktop-frame.png",
+    "source": "docs/design-context/source/desktop-frame.figma.tsx.txt"
+  },
+  "sections": [
+    {
+      "id": "header",
+      "figmaNode": "3398:598",
+      "useCases": ["UC01"],
+      "spec": "docs/design-context/specs/header.md",
+      "reference": "docs/design-context/references/header.png",
+      "assets": ["public/brand/logo.svg"]
+    },
+    {
+      "id": "filtros",
+      "figmaNode": "3396:65",
+      "useCases": ["UC04"],
+      "spec": "docs/design-context/specs/filtros.md",
+      "reference": "docs/design-context/references/filtros.png",
+      "assets": []
+    },
+    {
+      "id": "busca",
+      "figmaNode": "3406:322",
+      "useCases": ["UC05"],
+      "spec": "docs/design-context/specs/busca.md",
+      "reference": "docs/design-context/references/busca.png",
+      "assets": []
+    },
+    {
+      "id": "card",
+      "figmaNode": "3396:323",
+      "useCases": ["UC02", "UC03"],
+      "spec": "docs/design-context/specs/card.md",
+      "reference": "docs/design-context/references/card.png",
+      "fixtures": "docs/design-context/fixtures/figma-cards.json",
+      "assets": []
+    },
+    {
+      "id": "ver-mais",
+      "figmaNode": "3396:75",
+      "useCases": ["UC06"],
+      "spec": "docs/design-context/specs/ver-mais.md",
+      "reference": "docs/design-context/references/ver-mais.png",
+      "assets": ["public/icons/add.svg"]
+    },
+    {
+      "id": "footer",
+      "figmaNode": "3398:729",
+      "useCases": ["UC01"],
+      "spec": "docs/design-context/specs/footer.md",
+      "reference": "docs/design-context/references/footer.png",
+      "assets": ["public/brand/logo.svg"]
+    }
+  ],
+  "notInDesign": [
+    { "id": "detalhe", "useCases": ["UC03"], "note": "Modal de detalhe não existe no Figma; derivar dos tokens e do card." },
+    { "id": "tamanho-pagina", "useCases": ["UC06"], "note": "Seletor de itens por página (RF07) não existe no Figma." },
+    { "id": "estados", "useCases": ["UC02"], "note": "Carregando, vazio e erro (RNF06) não existem no Figma." },
+    { "id": "mobile", "useCases": ["UC01", "UC02"], "note": "Figma só tem desktop (RF08)." }
+  ]
+}

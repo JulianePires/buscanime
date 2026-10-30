@@ -12,11 +12,19 @@ src/
 ├── index.css            # Tokens globais e importação do Tailwind
 ├── main.tsx             # Bootstrap da aplicação
 └── test/                # Setup compartilhado do Vitest
+public/
+├── brand/logo.svg       # Logo exportado do Figma
+└── icons/add.svg        # Ícone do "Ver mais" exportado do Figma
 e2e/                     # Fluxos de usuário com Playwright
 scripts/                 # Automações de commit, versão e auditoria
 reports/                 # Relatórios gerados (Lighthouse), fora do versionamento
 docs/                    # Requisitos, casos de uso, arquitetura e registros do trabalho
+├── adr/                 # Registros de decisões de arquitetura
+├── design-context/      # Base de contexto de design para retrieval (ADR-001)
+└── prompts/             # Prompts de implementação por caso de uso
 ```
+
+A arquitetura alvo dos casos de uso (domínio, adapter do AniList, feature e apresentação) está em [PLANO-IMPLEMENTACAO.md](PLANO-IMPLEMENTACAO.md#arquitetura-alvo).
 
 O Vite faz o bundling e o Tailwind é integrado pelo plugin oficial. O ESLint cuida de problemas semânticos e code smells, o Biome padroniza a escrita e o comando `pnpm validate` funciona como gate local.
 
@@ -39,14 +47,14 @@ O Vite faz o bundling e o Tailwind é integrado pelo plugin oficial. O ESLint cu
 
 Escolhido pelas novas funcionalidades, que atendem diretamente aos casos de uso:
 
-| Funcionalidade                                | Uso previsto no Buscanime                                                                                     |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `use` + `Suspense`                            | Ler a resposta da busca de animes de forma declarativa, com estados de carregamento explícitos (UC02, RNF06). |
-| Transições assíncronas (`useTransition`)      | Manter a interface responsiva ao aplicar filtros de formato e busca por texto (UC04, UC05).                   |
-| `useDeferredValue` com valor inicial          | Adiar a atualização da listagem enquanto o usuário digita na busca (UC05).                                    |
-| `useOptimistic` / Actions                     | Refletir imediatamente a seleção de filtros antes da resposta dos dados (UC04).                               |
-| `ref` como prop                               | Devolver o foco ao primeiro item novo após o "Ver mais", sem `forwardRef` (UC06, RNF01).                      |
-| Metadados no componente (`<title>`, `<meta>`) | Atualizar título e descrição ao abrir o detalhe de um anime, favorecendo SEO e acessibilidade (UC03, RNF01).  |
+| Funcionalidade                                | Uso previsto no Buscanime                                                                                                                                                             |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Suspense` (via `useSuspenseInfiniteQuery`)   | Ler a busca de forma declarativa; o TanStack Query fornece as promises estáveis que o Suspense exige (UC02, RNF06, [ADR-002](adr/ADR-002-dependencias-de-dados-ui-e-formularios.md)). |
+| Transições assíncronas (`useTransition`)      | Manter a interface responsiva ao aplicar filtros de formato e busca por texto (UC04, UC05).                                                                                           |
+| `useDeferredValue` com valor inicial          | Adiar a atualização da listagem enquanto o usuário digita na busca (UC05).                                                                                                            |
+| `useOptimistic` / Actions                     | Refletir imediatamente a seleção de filtros antes da resposta dos dados (UC04).                                                                                                       |
+| `ref` como prop                               | Devolver o foco ao primeiro item novo após o "Ver mais", sem `forwardRef` (UC06, RNF01).                                                                                              |
+| Metadados no componente (`<title>`, `<meta>`) | Atualizar título e descrição ao abrir o detalhe de um anime, favorecendo SEO e acessibilidade (UC03, RNF01).                                                                          |
 
 ### React Compiler
 
@@ -57,6 +65,10 @@ Escolhido para otimizar a renderização sem memoização manual:
 - Mantém o código mais simples e legível, alinhado às regras de code smells.
 - Configurado no `vite.config.ts` via `@rolldown/plugin-babel` com `reactCompilerPreset()`; o `eslint-plugin-react-hooks` 7 aplica as regras que o compilador exige (pureza de componentes e regras de hooks).
 - Memoização manual só deve ser usada quando uma medição mostrar ganho que o compilador não obteve.
+
+### Base de contexto de design (RAG)
+
+O desenvolvimento assistido por IA recupera o design de `docs/design-context/` em vez de consultar o Figma a cada ciclo: o `manifest.json` liga cada caso de uso às specs, referências e assets da seção. Motivação, alternativas e consequências no [ADR-001](adr/ADR-001-base-de-contexto-de-design-rag.md).
 
 ## Code smells verificados (ESLint)
 

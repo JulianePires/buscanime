@@ -23,6 +23,12 @@ Estrutura da página, tokens de cor (primária `#6324C6`; nota vermelha abaixo d
 
 Detalhes em [docs/DESIGN.md](docs/DESIGN.md).
 
+### Base de contexto de design (RAG)
+
+Os assets do Figma (logo e ícone em SVG) foram exportados para `public/`, e o design foi convertido em uma base local versionada (`docs/design-context/`): specs por seção, tokens, renders de referência, fixtures e um índice por caso de uso. A IA consulta essa base antes de implementar cada UC, em vez de reconsultar o Figma, ganhando fidelidade, economia de tokens e reprodutibilidade.
+
+Decisão em [ADR-001](docs/adr/ADR-001-base-de-contexto-de-design-rag.md); base em [docs/design-context/](docs/design-context/README.md).
+
 ## Requisitos funcionais (RF)
 
 Navegação, listagem, filtro por formato, busca por texto, detalhes, paginação pelo botão "Ver mais", tamanho da paginação e responsividade (RF01 a RF08).
@@ -41,6 +47,12 @@ Atores, critérios BDD (Gherkin) e mapeamento TDD de UC01 a UC06.
 
 Detalhes em [docs/USE_CASES.md](docs/USE_CASES.md).
 
+## Plano de implementação
+
+Sequência UC01 → UC02 → (UC03, UC04 → UC05, UC06), arquitetura em camadas (domínio, adapter do AniList, feature, apresentação), padrões de projeto, características de qualidade (ISO/IEC 25010) e Definition of Done. Cada UC tem um prompt documentado para o Claude Code.
+
+Detalhes em [docs/PLANO-IMPLEMENTACAO.md](docs/PLANO-IMPLEMENTACAO.md) e [docs/prompts/](docs/prompts/README.md).
+
 ## Arquitetura e ferramentas
 
 React 19 + TypeScript + Vite, Tailwind CSS 4, ESLint + SonarJS (code smells), Biome, Vitest + Testing Library, Playwright, Commitlint + Husky + lint-staged e Lighthouse.
@@ -55,6 +67,7 @@ Detalhes em [docs/ARQUITETURA-E-FERRAMENTAS.md](docs/ARQUITETURA-E-FERRAMENTAS.m
 
 - [docs/CHANGELOG.md](docs/CHANGELOG.md): mudanças registradas por commit.
 - [docs/AI_LOG.md](docs/AI_LOG.md): ferramentas, organização, verificação, correções, decisões e ajustes da IA.
+- [docs/adr/](docs/adr/): registros de decisões de arquitetura (ADR).
 
 ## Desenvolvimento
 

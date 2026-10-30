@@ -1,0 +1,666 @@
+// SNAPSHOT GERADO PELO FIGMA MCP (get_design_context, nó 3398:724 do frame "Desktop - 2").
+// Arquivo de REFERÊNCIA para retrieval (ADR-001). NÃO é código de produção e não é compilado:
+// posicionamento absoluto, larguras fixas e classes arbitrárias devem ser traduzidos para
+// layout fluido com os tokens de src/index.css. URLs temporárias do Figma foram substituídas.
+// Extraído em 2026-10-30. Para regenerar, veja docs/design-context/README.md.
+const imgFrame993 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame994 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame995 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame996 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame997 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame998 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame999 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame1000 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame1001 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame1002 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame1003 = "<capa do AniList: coverImage.extraLarge>";
+const imgFrame1004 = "<capa do AniList: coverImage.extraLarge>";
+const imgIconAdd = "/icons/add.svg";
+
+function Card({ className }: { className?: string }) {
+  return (
+    <div className={className || "content-stretch flex flex-col h-[270px] items-start relative w-[317px]"} data-node-id="3396:323" data-name="Card">
+      <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="3396:273">
+        <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+          <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame993} />
+          <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+        </div>
+        <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="3396:307">
+          <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="3396:274" data-name="description">
+            <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="3396:275">
+              <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="3396:276">
+                <p className="leading-[normal] mb-0">Zom 100: Zombie ni Naru Made</p>
+                <p className="leading-[normal]">ni Shitai 100 no Koto</p>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="3396:297">
+            <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="3396:290">
+              <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="3396:282" data-name="Chips">
+                <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:282;39092:11596">
+                  <p className="leading-[normal]">Action</p>
+                </div>
+              </div>
+            </div>
+            <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="3396:291">
+              <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="3396:292" data-name="Chips">
+                <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:292;39092:11596">
+                  <p className="leading-[normal]">Comedy</p>
+                </div>
+              </div>
+            </div>
+            <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="3396:294">
+              <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="3396:295" data-name="Chips">
+                <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:295;39092:11596">
+                  <p className="leading-[normal]">Horror</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="3396:303">
+          <div className="absolute bg-[#01ada6] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="3396:304" data-name="Chips">
+            <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:304;39092:11596">
+              <p className="leading-[normal]">80%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Group22() {
+  return (
+    <div className="contents relative size-full" data-node-id="3398:724">
+      <div className="absolute content-stretch flex flex-col gap-[24px] h-[1210px] items-center left-0 top-0" data-node-id="3396:579">
+        <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0" data-node-id="3398:598" data-name="Header">
+          <div className="bg-[#6324c6] col-1 h-[68px] ml-0 mt-0 relative row-1 w-[1366px]" data-node-id="3396:91" />
+          <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:Regular'] font-normal justify-center ml-[565px] mt-[20px] relative row-1 text-[0px] text-center text-white whitespace-nowrap" data-node-id="3406:248">
+            <p className="text-[40px]">
+              <span className="leading-[normal]">BUSC</span>
+              <span className="leading-[normal] text-[#ffb800]">ANIME</span>
+            </p>
+          </div>
+        </div>
+        <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0" data-node-id="3396:65" data-name="Filtros">
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-0 mt-0 place-items-start relative row-1" data-node-id="3396:66">
+            <div className="bg-[#6324c6] col-1 h-[32px] ml-0 mt-0 relative rounded-[4px] row-1 w-[119px]" data-node-id="3396:67" />
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[22px] mt-[11px] relative row-1 text-[14px] text-white whitespace-nowrap" data-node-id="3396:68">
+              <p className="leading-[0px]">All Formats</p>
+            </div>
+          </div>
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[262.05px] mt-0 place-items-start relative row-1" data-node-id="3406:300">
+            <div className="bg-white border border-[#6324c6] border-solid col-1 h-[32px] ml-0 mt-0 relative rounded-[4px] row-1 w-[76px]" data-node-id="3406:301" />
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[19px] mt-[11px] relative row-1 text-[#6324c6] text-[14px] whitespace-nowrap" data-node-id="3406:302">
+              <p className="leading-[0px]">Movie</p>
+            </div>
+          </div>
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[357.05px] mt-0 place-items-start relative row-1" data-node-id="3406:306">
+            <div className="bg-white border border-[#6324c6] border-solid col-1 h-[32px] ml-0 mt-0 relative rounded-[4px] row-1 w-[105px]" data-node-id="3406:307" />
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[23px] mt-[11px] relative row-1 text-[#6324c6] text-[14px] whitespace-nowrap" data-node-id="3406:308">
+              <p className="leading-[0px]">TV Short</p>
+            </div>
+          </div>
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[138.05px] mt-0 place-items-start relative row-1" data-node-id="3407:341">
+            <div className="bg-white border border-[#6324c6] border-solid col-1 h-[32px] ml-0 mt-0 relative rounded-[4px] row-1 w-[105px]" data-node-id="3407:342" />
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[23px] mt-[11px] relative row-1 text-[#6324c6] text-[14px] whitespace-nowrap" data-node-id="3407:343">
+              <p className="leading-[0px]">TV Show</p>
+            </div>
+          </div>
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[481.05px] mt-0 place-items-start relative row-1" data-node-id="3406:309">
+            <div className="bg-white border border-[#6324c6] border-solid col-1 h-[32px] ml-0 mt-0 relative rounded-[4px] row-1 w-[88px]" data-node-id="3406:310" />
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[20px] mt-[11px] relative row-1 text-[#6324c6] text-[14px] whitespace-nowrap" data-node-id="3406:311">
+              <p className="leading-[0px]">Special</p>
+            </div>
+          </div>
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[588.05px] mt-0 place-items-start relative row-1" data-node-id="3406:312">
+            <div className="bg-white border border-[#6324c6] border-solid col-1 h-[32px] ml-0 mt-0 relative rounded-[4px] row-1 w-[65px]" data-node-id="3406:313" />
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[17px] mt-[11px] relative row-1 text-[#6324c6] text-[14px] whitespace-nowrap" data-node-id="3406:314">
+              <p className="leading-[0px]">OVA</p>
+            </div>
+          </div>
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[672.05px] mt-0 place-items-start relative row-1" data-node-id="3406:315">
+            <div className="bg-white border border-[#6324c6] border-solid col-1 h-[32px] ml-0 mt-0 relative rounded-[4px] row-1 w-[67px]" data-node-id="3406:316" />
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[17px] mt-[11px] relative row-1 text-[#6324c6] text-[14px] whitespace-nowrap" data-node-id="3406:317">
+              <p className="leading-[0px]">ONA</p>
+            </div>
+          </div>
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[758.05px] mt-0 place-items-start relative row-1" data-node-id="3406:318">
+            <div className="bg-white border border-[#6324c6] border-solid col-1 h-[32px] ml-0 mt-0 relative rounded-[4px] row-1 w-[76px]" data-node-id="3406:319" />
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[19px] mt-[11px] relative row-1 text-[#6324c6] text-[14px] whitespace-nowrap" data-node-id="3406:320">
+              <p className="leading-[0px]">Music</p>
+            </div>
+          </div>
+        </div>
+        <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0" data-node-id="3406:322" data-name="Busca">
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-0 mt-0 place-items-start relative row-1" data-node-id="3407:331" data-name="Campo Texto">
+            <div className="bg-white border border-[#c4cad4] border-solid col-1 h-[38px] ml-0 mt-0 relative rounded-[4px] row-1 w-[915.769px]" data-node-id="3407:332" data-name="Rectangle 13.9" />
+            <p className="[word-break:break-word] col-1 font-['Mulish:Regular'] font-normal leading-[normal] ml-[10.2px] mt-[10px] relative row-1 text-[#a7b0be] text-[14px] w-[114.216px]" data-node-id="3407:333">
+              Digite algo aqui...
+            </p>
+          </div>
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[925.88px] mt-0 place-items-start relative row-1" data-node-id="3407:335" data-name="Botão">
+            <div className="bg-[#6324c6] col-1 h-[38px] ml-0 mt-0 relative rounded-[4px] row-1 w-[86px]" data-node-id="3407:336" />
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] [word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[20px] mt-[14px] relative row-1 text-[14px] text-center text-white whitespace-nowrap" data-node-id="3407:337">
+              <p className="leading-[0px]">Buscar</p>
+            </div>
+          </div>
+        </div>
+        <div className="content-start flex flex-wrap gap-[21px_16px] items-start relative shrink-0 w-[1316px]" data-node-id="3396:578" data-name="Cards">
+          <Card className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" />
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:362" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:362;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame994} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:362;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:362;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:362;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:362;3396:276">
+                      <p className="leading-[normal]">Mushoku Tensei II: Isekai Ittara Honki Dasu</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:362;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:362;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:362;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:362;3396:282;39092:11596">
+                        <p className="leading-[normal]">Adventure</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:362;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:362;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:362;3396:292;39092:11596">
+                        <p className="leading-[normal]">Drama</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:362;3396:294">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:362;3396:295" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:362;3396:295;39092:11596">
+                        <p className="leading-[normal]">Ecchi</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:362;3396:303">
+                <div className="absolute bg-[#01ada6] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:362;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:362;3396:304;39092:11596">
+                    <p className="leading-[normal]">83%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:381" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:381;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame995} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:381;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:381;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:381;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:381;3396:276">
+                      <p className="leading-[normal]">One Piece</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:381;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:381;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:381;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:381;3396:282;39092:11596">
+                        <p className="leading-[normal]">Action</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:381;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:381;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:381;3396:292;39092:11596">
+                        <p className="leading-[normal]">Comedy</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:381;3396:294">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:381;3396:295" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:381;3396:295;39092:11596">
+                        <p className="leading-[normal]">Adventure</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:381;3396:303">
+                <div className="absolute bg-[#01ada6] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:381;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:381;3396:304;39092:11596">
+                    <p className="leading-[normal]">87%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:400" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:400;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame996} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:400;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:400;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:400;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:400;3396:276">
+                      <p className="leading-[normal]">Masamune-jun no Revenge R</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:400;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:400;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:400;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:400;3396:282;39092:11596">
+                        <p className="leading-[normal]">Romance</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:400;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:400;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:400;3396:292;39092:11596">
+                        <p className="leading-[normal]">Comedy</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:400;3396:303">
+                <div className="absolute bg-[#ffb800] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:400;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:400;3396:304;39092:11596">
+                    <p className="leading-[normal]">70%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:426" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:426;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame997} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:426;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:426;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:426;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:426;3396:276">
+                      <p className="leading-[normal]">Bleach: Sennen Kessen-hen - Ketsubetsu-tan</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:426;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:426;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:426;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:426;3396:282;39092:11596">
+                        <p className="leading-[normal]">Action</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:426;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:426;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:426;3396:292;39092:11596">
+                        <p className="leading-[normal]">Adventure</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col h-[22px] items-start relative shrink-0 w-[52px]" data-node-id="I3396:426;3396:294" />
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:426;3396:303">
+                <div className="absolute bg-[#01ada6] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:426;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:426;3396:304;39092:11596">
+                    <p className="leading-[normal]">87%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:427" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:427;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame998} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:427;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:427;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:427;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:427;3396:276">
+                      <p className="leading-[normal]">Lv1 Maou to One Room Yuusha</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:427;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:427;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:427;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:427;3396:282;39092:11596">
+                        <p className="leading-[normal]">Action</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:427;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:427;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:427;3396:292;39092:11596">
+                        <p className="leading-[normal]">Comedy</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:427;3396:294">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:427;3396:295" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:427;3396:295;39092:11596">
+                        <p className="leading-[normal]">Adventure</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:427;3396:303">
+                <div className="absolute bg-[#e92151] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:427;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:427;3396:304;39092:11596">
+                    <p className="leading-[normal]">48%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:428" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:428;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame999} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:428;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:428;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:428;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:428;3396:276">
+                      <p className="leading-[normal]">Jujutsu Kaisen 2nd Season</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:428;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:428;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:428;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:428;3396:282;39092:11596">
+                        <p className="leading-[normal]">Action</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:428;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:428;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:428;3396:292;39092:11596">
+                        <p className="leading-[normal]">Drama</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:428;3396:303">
+                <div className="absolute bg-[#01ada6] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:428;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:428;3396:304;39092:11596">
+                    <p className="leading-[normal]">86%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:429" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:429;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame1000} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:429;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:429;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:429;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:429;3396:276">
+                      <p className="leading-[normal]">Horimiya: piece</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:429;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:429;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:429;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:429;3396:282;39092:11596">
+                        <p className="leading-[normal]">Comedy</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:429;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:429;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:429;3396:292;39092:11596">
+                        <p className="leading-[normal]">Romance</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:429;3396:303">
+                <div className="absolute bg-[#01ada6] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:429;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:429;3396:304;39092:11596">
+                    <p className="leading-[normal]">81%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:502" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:502;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame1001} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:502;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:502;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:502;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:502;3396:276">
+                      <p className="leading-[normal]">Watashi no Shiawase na Kekkon</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:502;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:502;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:502;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:502;3396:282;39092:11596">
+                        <p className="leading-[normal]">Drama</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:502;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:502;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:502;3396:292;39092:11596">
+                        <p className="leading-[normal]">Romance</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:502;3396:303">
+                <div className="absolute bg-[#01ada6] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:502;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:502;3396:304;39092:11596">
+                    <p className="leading-[normal]">81%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:503" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:503;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame1002} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:503;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:503;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:503;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:503;3396:276">
+                      <p className="leading-[normal]">Tate no Yuusha no Nariagari</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:503;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:503;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:503;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:503;3396:282;39092:11596">
+                        <p className="leading-[normal]">Action</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:503;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:503;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:503;3396:292;39092:11596">
+                        <p className="leading-[normal]">Adventure</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:503;3396:294">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:503;3396:295" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:503;3396:295;39092:11596">
+                        <p className="leading-[normal]">Fantasy</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:503;3396:303">
+                <div className="absolute bg-[#01ada6] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:503;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:503;3396:304;39092:11596">
+                    <p className="leading-[normal]">83%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:504" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:504;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame1003} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:504;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:504;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:504;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:504;3396:276">
+                      <p className="leading-[normal]">Goblin Slayer II</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:504;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:504;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:504;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:504;3396:282;39092:11596">
+                        <p className="leading-[normal]">Action</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:504;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:504;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:504;3396:292;39092:11596">
+                        <p className="leading-[normal]">Adventure</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:504;3396:294">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:504;3396:295" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:504;3396:295;39092:11596">
+                        <p className="leading-[normal]">Fantasy</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:504;3396:303">
+                <div className="absolute bg-[#ffb800] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:504;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:504;3396:304;39092:11596">
+                    <p className="leading-[normal]">78%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col h-[270px] items-start relative shrink-0 w-[317px]" data-node-id="3396:505" data-name="Card">
+            <div className="flex-[1_0_0] min-h-px relative rounded-[8px] w-[317px]" data-node-id="I3396:505;3396:273">
+              <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[8px]">
+                <img alt="" className="absolute max-w-none object-cover rounded-[8px] size-full" src={imgFrame1004} />
+                <div className="absolute inset-0 rounded-[8px]" style={{ backgroundImage: "linear-gradient(180.18372692649365deg, rgba(0, 0, 0, 0.85) 0.18754%, rgba(0, 0, 0, 0.17) 105.04%)" }} />
+              </div>
+              <div className="absolute content-stretch flex flex-col gap-[11px] items-start left-[28px] top-[23px] w-[261px]" data-node-id="I3396:505;3396:307">
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="I3396:505;3396:274" data-name="description">
+                  <div className="content-stretch flex items-start relative shrink-0 w-full" data-node-id="I3396:505;3396:275">
+                    <div className="[word-break:break-word] flex flex-col font-['Mulish:Bold'] font-bold justify-center leading-[0] relative shrink-0 text-[24px] text-white w-[261px]" data-node-id="I3396:505;3396:276">
+                      <p className="leading-[normal]">Shingeki no Kyojin: The Final Season - Kanketsu...</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[11px] items-start relative shrink-0" data-node-id="I3396:505;3396:297">
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:505;3396:290">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:505;3396:282" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:505;3396:282;39092:11596">
+                        <p className="leading-[normal]">Action</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:505;3396:291">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:505;3396:292" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:505;3396:292;39092:11596">
+                        <p className="leading-[normal]">Drama</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-col items-start relative shrink-0" data-node-id="I3396:505;3396:294">
+                    <div className="bg-[#774dc5] content-stretch flex items-center justify-center px-[8px] py-[3px] relative rounded-[4px] shrink-0" data-node-id="I3396:505;3396:295" data-name="Chips">
+                      <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[12px] whitespace-nowrap" data-node-id="I3396:505;3396:295;39092:11596">
+                        <p className="leading-[normal]">Fantasy</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute h-[57px] left-[207px] top-[205px] w-[102px]" data-node-id="I3396:505;3396:303">
+                <div className="absolute bg-[#ffb800] content-stretch flex items-center justify-center left-[34px] px-[8px] py-[3px] rounded-[4px] top-[20px]" data-node-id="I3396:505;3396:304" data-name="Chips">
+                  <div className="[word-break:break-word] flex flex-col font-['Mulish:Regular'] font-normal justify-center leading-[0] relative shrink-0 text-[#e2e5e9] text-[24px] whitespace-nowrap" data-node-id="I3396:505;3396:304;39092:11596">
+                    <p className="leading-[normal]">79%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0" data-node-id="3396:75" data-name="Ver mais">
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-0 mt-0 place-items-start relative row-1" data-node-id="3396:76">
+            <div className="bg-[#ffb800] col-1 h-[48px] ml-0 mt-0 relative rounded-[8px] row-1 w-[1316px]" data-node-id="3396:77" />
+          </div>
+          <div className="col-1 grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[585.3px] mt-[12px] place-items-start relative row-1" data-node-id="3396:78">
+            <div className="[word-break:break-word] col-1 flex flex-col font-['Mulish:SemiBold'] font-semibold justify-center ml-[42.25px] mt-0 relative row-1 text-[20px] text-center text-white w-[101.9px]" data-node-id="3396:79">
+              <p className="leading-[normal]">Ver mais</p>
+            </div>
+            <div className="col-1 h-[24px] ml-0 mt-0 relative row-1 w-[29.824px]" data-node-id="3396:80" data-name="Icon/add">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconAdd} />
+            </div>
+          </div>
+        </div>
+        <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0" data-node-id="3398:729" data-name="Footer">
+          <div className="bg-[#6324c6] col-1 h-[54px] ml-0 mt-0 relative row-1 w-[1366px]" data-node-id="3398:730" />
+          <div className="[word-break:break-word] col-1 font-['Mulish:Regular'] font-normal grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-[608px] mt-[10px] place-items-start relative row-1 text-center text-white whitespace-nowrap" data-node-id="3406:263">
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] col-1 flex flex-col justify-center ml-0 mt-[27px] relative row-1 text-[10px]" data-node-id="3406:250">
+              <p className="leading-[normal]">TODOS OS DIREITOS RESERVADOS</p>
+            </div>
+            <div className="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both] col-1 flex flex-col justify-center ml-[12px] mt-0 relative row-1 text-[0px]" data-node-id="3406:249">
+              <p className="text-[24px]">
+                <span className="leading-[normal]">BUSC</span>
+                <span className="leading-[normal] text-[#ffb800]">ANIME</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
