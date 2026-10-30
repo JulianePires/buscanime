@@ -48,3 +48,9 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 #### Added
 
 - Cenário BDD de cor da nota no UC02 e AniList na stack.
+
+### `docs: confirm score color thresholds`
+
+#### Changed
+
+- `DESIGN.md` e AI log: faixas da nota reconfirmadas (50 e 80 na faixa amarela), prevalecendo sobre o exemplo de 80% em verde no Figma.

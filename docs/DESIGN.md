@@ -37,6 +37,8 @@ Referência visual extraída do [Figma do desafio Winnin](https://www.figma.com/
 | `50` a `80`           | `Feedback/Warning` |
 | `> 80`                | `Feedback/Success` |
 
+Os limites 50 e 80 pertencem à faixa amarela. O exemplo de 80% em verde no Figma não segue a regra; vale a regra.
+
 ### Tipografia
 
 Família **Mulish**.

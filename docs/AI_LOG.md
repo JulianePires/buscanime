@@ -93,7 +93,7 @@ O comando `pnpm validate` concentra a validação local:
 - A descrição do README foi reescrita a partir do frame do Figma (header, filtros, busca, grade de cards, "Ver mais" e footer).
 - As faixas de cor da nota e a relação dos formatos com a API do AniList, antes inferidas do design, foram confirmadas na revisão e documentadas em `docs/DESIGN.md`.
 - Os conteúdos de RF, RNF e casos de uso ajustados manualmente (ver "Meus ajustes") foram preservados; só RF06 e UC06 mudaram de scroll infinito para "Ver mais", por solicitação na revisão, e o UC02 ganhou o cenário de cor da nota.
-- No Figma, o card com 80% aparece verde, mas pela regra definida 80 é amarelo; a regra definida prevalece.
+- No Figma, o card com 80% aparece verde, mas pela regra definida 80 é amarelo; a regra foi reconfirmada na revisão (abaixo de 50 vermelho, entre 50 e 80 amarelo, acima de 80 verde) e prevalece sobre o exemplo do design.
 
 ## Pendências
 
