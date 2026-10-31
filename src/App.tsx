@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "./components/feedback/ErrorBoundary";
 import { LoadingState } from "./components/feedback/LoadingState";
 import { FormatFilter } from "./components/filters/FormatFilter";
+import { SearchBar } from "./components/filters/SearchBar";
 import { SiteFooter } from "./components/layout/SiteFooter";
 import { SiteHeader } from "./components/layout/SiteHeader";
 import { CatalogResults } from "./features/catalog/CatalogResults";
@@ -10,7 +11,7 @@ import { useCatalogFilters, useCatalogRetry } from "./features/catalog/use-catal
 
 function App() {
   const retry = useCatalogRetry();
-  const { selectedFilters, toggleFormat, clearFormats } = useCatalogFilters();
+  const { selectedFilters, toggleFormat, clearFormats, search } = useCatalogFilters();
 
   return (
     <div className="flex flex-col gap-section">
@@ -24,6 +25,7 @@ function App() {
           onToggle={toggleFormat}
           onClear={clearFormats}
         />
+        <SearchBar defaultValue={selectedFilters.search} onSearch={search} />
         <ErrorBoundary onReset={retry}>
           <Suspense fallback={<LoadingState count={initialCatalogFilters.perPage} />}>
             <CatalogResults />

@@ -8,4 +8,10 @@ describe("EmptyState", () => {
 
     expect(screen.getByRole("status")).toHaveTextContent("Nenhum anime encontrado.");
   });
+
+  it("informa o termo pesquisado", () => {
+    render(<EmptyState term="xyz" />);
+
+    expect(screen.getByRole("status")).toHaveTextContent('Nenhum anime encontrado para "xyz"');
+  });
 });
