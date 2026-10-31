@@ -106,3 +106,48 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 - `ARQUITETURA-E-FERRAMENTAS.md`: seção de integração contínua, estágios, decisões e novos comandos.
 - README: seção de integração contínua e pré-requisitos.
 - AI log: registro desta alteração.
+
+### `build: add apollo client and graphql codegen`
+
+#### Added
+
+- `@apollo/client` 4, `graphql` 16 e `rxjs` como dependências; GraphQL Codegen (`cli`, `schema-ast`, `typescript-operations`, `typed-document-node`, `near-operation-file-preset`), `@graphql-typed-document-node/core` e `msw` como devDependencies.
+- `codegen.ts` com dois alvos: `pnpm codegen:schema` (baixa `src/services/anilist/schema.graphql`, versionado) e `pnpm codegen` (tipos das operações ao lado de cada query); `codegen:watch` e pre-scripts em `validate`, `typecheck`, `test` e `build`.
+- Query `AnimePage` em `src/services/anilist/queries/page.graphql.ts`.
+- `no-restricted-imports` no ESLint: `@apollo/client*` só em `src/services` e `src/features`.
+
+#### Changed
+
+- `.gitignore`, ESLint e Biome ignoram `*.generated.ts`; o Biome passa a formatar `codegen.ts`.
+- `pnpm.overrides` fixa `@graphql-tools/utils@^12.0.2` no `near-operation-file-preset` (GHSA-7mx3-vvmw-hjmv, GHSA-c4qx-w738-7hr3).
+
+### `feat: configure apollo cache and catalog facade`
+
+#### Added
+
+- `createApolloClient()` (ErrorLink → HttpLink, `cache-first`, sem reenvio automático) e `createCache()`: páginas acumuladas sem repetição, `pageInfo` da última página e uma entrada por combinação de filtros.
+- `mappers.ts` (tipos gerados ↔ domínio) e `src/domain/anime.ts`.
+- `catalog-filters-reducer.ts` (`toggleFormat`, `clearFormats`, `search`, `setPerPage`), `CatalogProvider`, `useCatalog()` e `useCatalogRetry()`.
+- `ErrorBoundary` com "Tentar novamente".
+- Testes: cache, client (MSW, erros GraphQL/500/429), mappers, reducer, facade (Suspense, "Ver mais", cache ao voltar a um filtro), Error Boundary e fronteira de lint. Utilitários `src/test/apollo.tsx`, `src/test/msw/*` e `src/test/fixtures/anime-page.ts`.
+
+#### Changed
+
+- `src/main.tsx` cria o client e envolve o `App` no `CatalogProvider`.
+
+### `ci: generate graphql types in pipeline`
+
+#### Changed
+
+- Passo "Gerar tipos (GraphQL Codegen)" nos jobs de qualidade, testes e build, antes do primeiro comando que depende dos tipos.
+
+### `docs: replace tanstack query with apollo client (adr-003)`
+
+#### Added
+
+- `docs/adr/ADR-003-apollo-client-como-camada-de-dados.md`, com o custo de bundle medido.
+- Prompt `docs/prompts/SETUP-01-apollo-client-e-codegen.md` no índice dos prompts.
+
+#### Changed
+
+- ADR-002 parcialmente substituído (só a parte de dados); plano, prompts UC02 a UC06, arquitetura, README e AI log alinhados ao Apollo Client.

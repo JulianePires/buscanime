@@ -2,14 +2,15 @@
 
 Um prompt por caso de uso, pronto para colar no Claude Code na raiz do repositório. Todos seguem o mesmo padrão para que o resultado seja previsível, revisável e fiel ao design.
 
-| UC   | Prompt                                                               | Branch                     |
-| ---- | -------------------------------------------------------------------- | -------------------------- |
-| UC01 | [Estrutura da página](UC01-estrutura-da-pagina.md)                   | `feat/uc01-estrutura`      |
-| UC02 | [Listagem de animes](UC02-listagem-de-animes.md)                     | `feat/uc02-listagem`       |
-| UC03 | [Detalhe do anime](UC03-detalhe-do-anime.md)                         | `feat/uc03-detalhe`        |
-| UC04 | [Filtro por formato](UC04-filtro-por-formato.md)                     | `feat/uc04-filtro-formato` |
-| UC05 | [Busca por texto](UC05-busca-por-texto.md)                           | `feat/uc05-busca-texto`    |
-| UC06 | [Ver mais e tamanho da página](UC06-ver-mais-e-tamanho-da-pagina.md) | `feat/uc06-ver-mais`       |
+| UC       | Prompt                                                                 | Branch                     |
+| -------- | ---------------------------------------------------------------------- | -------------------------- |
+| UC01     | [Estrutura da página](UC01-estrutura-da-pagina.md)                     | `feat/uc01-estrutura`      |
+| SETUP-01 | [Apollo Client e GraphQL Codegen](SETUP-01-apollo-client-e-codegen.md) | `feat/setup-01-apollo`     |
+| UC02     | [Listagem de animes](UC02-listagem-de-animes.md)                       | `feat/uc02-listagem`       |
+| UC03     | [Detalhe do anime](UC03-detalhe-do-anime.md)                           | `feat/uc03-detalhe`        |
+| UC04     | [Filtro por formato](UC04-filtro-por-formato.md)                       | `feat/uc04-filtro-formato` |
+| UC05     | [Busca por texto](UC05-busca-por-texto.md)                             | `feat/uc05-busca-texto`    |
+| UC06     | [Ver mais e tamanho da página](UC06-ver-mais-e-tamanho-da-pagina.md)   | `feat/uc06-ver-mais`       |
 
 ## Estrutura padrão
 

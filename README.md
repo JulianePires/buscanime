@@ -49,16 +49,17 @@ Detalhes em [docs/USE_CASES.md](docs/USE_CASES.md).
 
 ## Plano de implementação
 
-Sequência UC01 → UC02 → (UC03, UC04 → UC05, UC06), arquitetura em camadas (domínio, adapter do AniList, feature, apresentação), padrões de projeto, características de qualidade (ISO/IEC 25010) e Definition of Done. Cada UC tem um prompt documentado para o Claude Code.
+Sequência UC01 → SETUP-01 (camada de dados) → UC02 → (UC03, UC04 → UC05, UC06), arquitetura em camadas (domínio, adapter do AniList, feature, apresentação), padrões de projeto, características de qualidade (ISO/IEC 25010) e Definition of Done. Cada UC tem um prompt documentado para o Claude Code.
 
 Detalhes em [docs/PLANO-IMPLEMENTACAO.md](docs/PLANO-IMPLEMENTACAO.md) e [docs/prompts/](docs/prompts/README.md).
 
 ## Arquitetura e ferramentas
 
-React 19 + TypeScript + Vite, Tailwind CSS 4, ESLint + SonarJS (code smells), Biome, Vitest + Testing Library, Playwright, Commitlint + Husky + lint-staged e Lighthouse.
+React 19 + TypeScript + Vite, Apollo Client 4 + GraphQL Codegen, Tailwind CSS 4, ESLint + SonarJS (code smells), Biome, Vitest + Testing Library + MSW, Playwright, Commitlint + Husky + lint-staged e Lighthouse.
 
 - **React 19:** escolhido pelas novas funcionalidades (`use` + `Suspense`, transições assíncronas, `useOptimistic`, `ref` como prop e metadados no componente), que atendem à busca, aos filtros, ao detalhe e ao carregamento pelo "Ver mais".
 - **Fonte de dados:** [API GraphQL do AniList](https://docs.anilist.co/), cujos formatos (`MediaFormat`) são os mesmos dos filtros do design.
+- **Camada de dados:** Apollo Client 4 com cache normalizado e tipos gerados pelo GraphQL Codegen, atrás da facade `use-catalog` ([ADR-003](docs/adr/ADR-003-apollo-client-como-camada-de-dados.md)).
 - **React Compiler:** escolhido para otimizar a renderização com memoização automática em tempo de build, sem `useMemo`/`useCallback` manuais.
 
 Detalhes em [docs/ARQUITETURA-E-FERRAMENTAS.md](docs/ARQUITETURA-E-FERRAMENTAS.md).
@@ -82,6 +83,7 @@ Pré-requisitos: Node.js 22.12+ e pnpm 10 (versão fixada em `packageManager`; `
 ```bash
 pnpm install
 pnpm exec playwright install chromium   # navegador do e2e e do Lighthouse
+pnpm codegen                            # tipos GraphQL (também roda antes de test, typecheck e build)
 pnpm dev                                # http://localhost:5173
 pnpm validate                           # formato, lint, testes unitários e build
 pnpm test:e2e                           # fluxos no navegador

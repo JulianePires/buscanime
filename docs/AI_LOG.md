@@ -11,6 +11,8 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 - **ESLint + SonarJS:** identificação de erros e principais code smells.
 - **Biome:** formatação e lint complementar.
 - **Vitest + Testing Library:** testes rápidos de componentes.
+- **Apollo Client 4 + GraphQL Codegen:** camada de dados com cache normalizado e tipos gerados do schema do AniList.
+- **MSW 3:** mock do AniList na fronteira de rede nos testes de integração.
 - **Playwright:** validação da experiência no navegador.
 - **Commitlint + Husky + lint-staged:** padronização de mensagens e checagem dos arquivos antes do commit.
 - **Lighthouse:** auditoria de performance, acessibilidade, boas práticas e SEO (executado com o Chromium do Playwright).
@@ -35,11 +37,11 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 14. Exportar os assets do Figma para `public/` e montar a base de contexto de design (`docs/design-context/`) para retrieval.
 15. Registrar a decisão de RAG no ADR-001 e escrever o plano de implementação com um prompt documentado por caso de uso.
 16. Montar o CI no GitHub Actions em estágios por custo (commits e versão → qualidade e segurança → testes → build → e2e e Lighthouse), com notas mínimas do Lighthouse definidas em TDD.
+17. Trocar o TanStack Query pelo Apollo Client 4 (SETUP-01) em TDD: testes de cache, client, mappers, reducer, facade, Error Boundary e fronteira de lint antes da implementação; medir o bundle e registrar o ADR-003.
 
 ## Verificação do trabalho
 
 O comando `pnpm validate` concentra a validação local:
-
 - `pnpm format:check`: garante que o Biome não detecta divergências.
 - `pnpm lint`: executa ESLint e regras de code smells.
 - `pnpm test`: executa os testes unitários.
@@ -49,7 +51,7 @@ O comando `pnpm validate` concentra a validação local:
 
 No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em PRs e na `main`, somando commits, versionamento e segurança.
 
-Última verificação (30/10/2026): `pnpm validate` verde (Biome, ESLint, 2 testes Vitest, build), `pnpm test:e2e` com 1 teste aprovado e Lighthouse com Performance 100, Acessibilidade 100, Boas práticas 100 e SEO 91.
+Última verificação (30/10/2026, SETUP-01): `pnpm codegen`, `pnpm validate` verde (Biome, ESLint, 67 testes Vitest em 10 arquivos, build), `pnpm typecheck`, `pnpm test:e2e` com 1 teste aprovado, `pnpm audit --audit-level high` sem achados altos e Lighthouse com Performance 100, Acessibilidade 100, Boas práticas 100 e SEO 91.
 
 ## Correções realizadas
 
@@ -70,6 +72,10 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - `$schema` do Biome alinhado à versão instalada do CLI (2.6.2) e override para permitir módulos Node nos arquivos de configuração.
 - O Lighthouse só gerava o relatório, sem reprovar nada; passou a falhar abaixo das notas mínimas, condição para ter valor no CI.
 - `scripts/lighthouse.js` chamava o CLI com `shell: true` (aviso DEP0190 do Node, argumentos sem escape); passou a executar o CLI direto pelo Node.
+- Com só `perPage` na chave do `Page` (como o prompt SETUP-01 pedia), o `pageInfo` era compartilhado entre combinações de filtros; os filtros (`$search`, `$formats`, `$sort`) entraram no `keyArgs`, com teste.
+- O "Tentar novamente" do Error Boundary não refazia a requisição: o Apollo devolvia a referência com erro guardada no suspense cache. A nova tentativa troca o `queryKey`.
+- Componentes suspensos não voltavam a renderizar nos testes: no React 19, o `act` síncrono do `render` não agenda a retomada. `renderWithCatalog` e `clickAndWait` passaram a usar `act` assíncrono.
+- O `near-operation-file-preset` trouxe `@graphql-tools/utils` 11 com duas vulnerabilidades _high_, que reprovariam o CI; um `pnpm.overrides` fixa a versão corrigida.
 
 ## Decisões
 
@@ -96,6 +102,7 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - **Base de contexto de design (RAG):** o Figma foi convertido em uma base local versionada (`docs/design-context/`) com índice por UC, specs por seção, tokens, renders, fixtures e o código bruto como último recurso. A IA consulta essa base antes de cada implementação e só volta ao Figma se faltar informação. Retrieval determinístico por arquivo, sem embeddings, pelo volume pequeno. Detalhes no [ADR-001](adr/ADR-001-base-de-contexto-de-design-rag.md).
 - **TanStack Query, sem shadcn e sem React Hook Form:** critério "a dependência entra quando apaga mais código do que traz". O Query substitui cache de promises (exigido pelo `use`), acúmulo de páginas, abort e retry; o AniList usa `POST`, então o cache HTTP do navegador não ajuda. Filtros seguem num reducer puro. Componentes ficam sobre elementos nativos (`<dialog>`, `<select>`) e a busca usa input não controlado com `FormData` no `onSubmit` (o `<form action>` do React 19 resetaria o campo). Detalhes no [ADR-002](adr/ADR-002-dependencias-de-dados-ui-e-formularios.md).
 - **Assets em SVG exportados do nó:** logo e ícone saíram do próprio Figma (`exportAsync`, texto em contorno), sem redesenho; o logo em SVG dispensa a fonte para manter a fidelidade.
+- **Apollo Client 4 no lugar do TanStack Query:** decidido na revisão de 30/10/2026. Pesaram os tipos gerados do schema, o cache normalizado (o detalhe lê o `Media` da listagem) e a paginação declarativa; o custo de bundle (+63,6 KB gzip contra +9,9 KB) foi medido e registrado. Sem os dois juntos, para não manter dois caches. Detalhes no [ADR-003](adr/ADR-003-apollo-client-como-camada-de-dados.md).
 - **Capas fora do repositório:** as imagens dos cards são arte de terceiros e vêm do AniList em tempo de execução; aparecem apenas nos renders de referência.
 - **CI em estágios por custo:** convenções de commit, tamanho e versão barram o pipeline antes de qualquer instalação de navegador; qualidade, `pnpm audit`/Dependency Review e CodeQL rodam em paralelo; e2e e Lighthouse usam o mesmo `dist` do build.
 - **Notas mínimas do Lighthouse:** performance 90, acessibilidade 95 (RNF01), boas práticas 90 e SEO 90, abaixo das notas atuais (100/100/100/91) para tolerar a variação dos runners.
@@ -121,8 +128,19 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - Confirmar as decisões em aberto do plano: contraste do "Ver mais" e do chip da nota e o seletor de itens por página (RF07).
 - Ativar no GitHub a proteção da `main` exigindo os checks do CI antes do merge.
 - Avaliar um mínimo de cobertura no Vitest quando os UCs com lógica de domínio forem implementados.
+- UC06: a facade deve expor `loadMoreError` (hoje um erro no `fetchMore` sobe para o Error Boundary).
+- Acompanhar o bundle quando o UC02 passar a usar a facade (esperado perto de +64 KB gzip) e o Lighthouse de Performance.
+- Revisar o `pnpm.overrides` de `@graphql-tools/utils` ao atualizar o GraphQL Codegen.
 
 ## Registro de alterações
+
+### SETUP-01: Apollo Client 4 e GraphQL Codegen
+
+- **Escopo:** dependências e `codegen.ts`; schema do AniList versionado; `apollo-client.ts`, `cache.ts`, `mappers.ts` e query `AnimePage`; reducer de filtros, `CatalogProvider` e facade `use-catalog`; `ErrorBoundary`; utilitários de teste (MSW, fixtures, `renderWithCatalog`); regra de fronteira no ESLint; passo de codegen no CI; ADR-003, ADR-002, plano, prompts UC02 a UC06, arquitetura, README e changelog. Nenhuma tela nova.
+- **Abordagem:** TDD. Os testes (cache, client, mappers, reducer, facade, Error Boundary e fronteira de lint) vieram antes da implementação e falharam pela ausência dos módulos. Depois, a menor implementação até ficar verde e o refactor com a suíte verde. Documentação externa do Apollo 4 (migração, Codegen, paginação) consultada na hora, não da memória.
+- **Verificação:** `pnpm codegen`, `pnpm validate` (67 testes), `pnpm typecheck`, `pnpm test:e2e`, `pnpm audit --audit-level high`, `pnpm lighthouse:ci` (100/100/100/91). Bundle medido no build (+49,9 KB gzip) e isolado com esbuild (Apollo +63,6 KB contra TanStack Query +9,9 KB).
+- **Commits:** `build: add apollo client and graphql codegen`, `feat: configure apollo cache and catalog facade`, `ci: generate graphql types in pipeline`, `docs: replace tanstack query with apollo client (adr-003)`.
+- **PR sugerido:** `feat: configure apollo client as data layer`.
 
 ### Integração contínua no GitHub Actions
 

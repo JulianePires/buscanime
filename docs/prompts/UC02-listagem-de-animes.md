@@ -12,21 +12,21 @@ Listar a primeira página de animes do AniList em cards fiéis ao Figma, com a n
 <retrieval>
 1. docs/adr/ADR-001-base-de-contexto-de-design-rag.md
 2. docs/USE_CASES.md (UC02), docs/REQUISITOS.md (RF02, RNF02, RNF06), docs/DESIGN.md (cor da nota)
-3. docs/PLANO-IMPLEMENTACAO.md (arquitetura alvo e padrões)
+3. docs/PLANO-IMPLEMENTACAO.md (arquitetura alvo e padrões) e docs/adr/ADR-003-apollo-client-como-camada-de-dados.md (camada de dados)
 4. docs/design-context/manifest.json (seção "card" e notInDesign "estados")
 5. docs/design-context/specs/card.md e specs/layout.md (grade)
 6. docs/design-context/tokens.json e fixtures/figma-cards.json
 7. Alvo visual: docs/design-context/references/card.png e desktop-frame.png
 Fonte da API: https://docs.anilist.co (endpoint https://graphql.anilist.co).
+8. Código existente (SETUP-01): src/features/catalog/use-catalog.ts, src/components/feedback/ErrorBoundary.tsx, src/test/apollo.tsx, src/test/msw/*
 </retrieval>
 
 <restricoes>
-- Domínio puro em src/domain/ (anime.ts, score.ts). scoreTone usa tabela de faixas, sem if aninhado.
-- Adapter em src/services/anilist/: client.ts (fetch POST com AbortSignal e AniListError), queries.ts, mappers.ts, anime-repository.ts com a interface AnimeRepository { searchPage(params, signal): Promise<AnimePage> }.
-- Estado em src/features/catalog/: reducer puro só para filtros (catalog-filters-reducer.ts) e páginas com @tanstack/react-query (useSuspenseInfiniteQuery, chave ['animes', params], queryFn chama o repositório repassando signal). Hook facade use-catalog esconde o Query dos componentes; CatalogProvider injeta QueryClient e repositório (testes usam fakes). Ver docs/adr/ADR-002.
-- Leitura com Suspense; erros com Error Boundary + QueryErrorResetBoundary e ação "Tentar novamente". Nos testes, createTestQueryClient() com retry: false.
+- Domínio puro em src/domain/ (anime.ts já existe; criar score.ts). scoreTone usa tabela de faixas, sem if aninhado.
+- A camada de dados já existe (SETUP-01, ADR-003): Apollo Client 4, cache, mappers e a facade useCatalog(). Componentes leem { animes, hasNextPage, ... } de useCatalog() e nunca importam @apollo/client (o ESLint bloqueia) nem tipos gerados.
+- Leitura com Suspense; erros com <ErrorBoundary onReset={useCatalogRetry()}> e ação "Tentar novamente". Nos testes, renderWithCatalog() e clickAndWait() de src/test/apollo.tsx (act assíncrono, exigido pelo Suspense no React 19) e createTestApolloClient() com cache novo por teste.
 - Sem shadcn/ui: componentes próprios sobre elementos nativos.
-- Instale @tanstack/react-query como dependency. Testes de integração com msw (instale como devDependency); nunca chamar a API real nos testes.
+- Não instale dependências de dados: Apollo, Codegen e msw já estão no projeto. Testes de integração com msw (anilist.query("AnimePage", ...) de src/test/msw/handlers.ts); nunca chamar a API real nos testes.
 - Capas vêm de coverImage.extraLarge; não adicionar imagens do Figma ao repositório.
 - Anti-objetivos: sem filtros, busca, detalhe ou "Ver mais" (outros UCs).
 </restricoes>
@@ -54,12 +54,10 @@ Então deve exibir uma mensagem de erro com a opção de tentar novamente
 
 <plano_tdd>
 1. src/domain/score.test.ts: 0, 49 → danger; 50, 80 → warning; 81, 100 → success; null → undefined. Use test.each com os fixtures (expectedColor).
-2. src/services/anilist/mappers.test.ts: DTO completo → Anime; averageScore null; genres limitado a 3; title.romaji com fallback para english.
-3. src/services/anilist/anime-repository.test.ts (msw): envia page=1, perPage=12, type=ANIME, sort=POPULARITY_DESC; propaga AniListError em HTTP 500 e em "errors" do GraphQL.
-4. src/domain/pagination.test.ts: flattenUniqueById achata páginas, remove ids repetidos e preserva a ordem; src/features/catalog/catalog-filters-reducer.test.ts: estado inicial (sem formatos, sem termo, perPage 12).
-5. src/components/anime/AnimeCard.test.tsx: título (heading), até 3 chips, nota "80%" com classe/variável do tom esperado, img com alt vazio, width/height e loading="lazy".
-6. src/App.test.tsx (msw): skeleton/loading → 12 itens de lista; vazio; erro + "Tentar novamente" refaz a requisição.
-7. e2e/home.spec.ts: com page.route mockando graphql.anilist.co, 12 cards visíveis e grade de 4 colunas em 1366 px.
+2. Mapper, variáveis (page=1, perPage=12, sort=POPULARITY_DESC), erros (CombinedGraphQLErrors, ServerError) e reducer já estão cobertos pelo SETUP-01; acrescente casos só se o card precisar de um campo novo (e então rode pnpm codegen).
+3. src/components/anime/AnimeCard.test.tsx: título (heading), até 3 chips, nota "80%" com classe/variável do tom esperado, img com alt vazio, width/height e loading="lazy".
+4. src/App.test.tsx (msw + renderWithCatalog): skeleton/loading → 12 itens de lista; vazio; erro + "Tentar novamente" refaz a requisição.
+5. e2e/home.spec.ts: com page.route mockando graphql.anilist.co, 12 cards visíveis e grade de 4 colunas em 1366 px.
 </plano_tdd>
 
 <design>
@@ -72,9 +70,9 @@ Então deve exibir uma mensagem de erro com a opção de tentar novamente
 </design>
 
 <arquivos>
-src/domain/{anime,score}.ts (+ testes), src/services/anilist/* (+ testes), src/features/catalog/* (+ testes),
+src/domain/score.ts (+ teste), src/test/fixtures/* (reaproveitar anime-page.ts),
 src/components/anime/{AnimeCard,AnimeGrid,ScoreBadge,GenreChip}.tsx (+ testes),
-src/components/feedback/{LoadingState,EmptyState,ErrorState}.tsx, src/test/msw/*, src/test/fixtures/*, src/App.tsx, e2e/home.spec.ts.
+src/components/feedback/{LoadingState,EmptyState}.tsx (o erro usa o ErrorBoundary existente), src/App.tsx, e2e/home.spec.ts.
 Se passar de 30 arquivos, divida em commits: domínio+serviço, feature+componentes, e2e+docs.
 </arquivos>
 

@@ -16,13 +16,14 @@ Carregar a próxima página pelo botão "Ver mais" sem recarregar a tela e mante
 4. docs/design-context/manifest.json (seção "ver-mais" e notInDesign "tamanho-pagina")
 5. docs/design-context/specs/ver-mais.md e tokens.json
 6. Alvo visual: docs/design-context/references/ver-mais.png; asset public/icons/add.svg
-7. Código existente: src/features/catalog/*, src/domain/*
+7. Código existente: src/features/catalog/use-catalog.ts, src/services/anilist/cache.ts, src/domain/*
+8. docs/adr/ADR-003-apollo-client-como-camada-de-dados.md (paginação por typePolicies)
 </retrieval>
 
 <restricoes>
-- loadMore = fetchNextPage do useSuspenseInfiniteQuery; getNextPageParam devolve currentPage + 1 quando hasNextPage, senão undefined. Deduplicação só em flattenUniqueById (src/domain/pagination.ts), usada no select.
-- Reducer de filtros: setPerPage(n) gera nova queryKey e reinicia a lista; filtros/busca idem.
-- Erro ao carregar a página seguinte (isFetchNextPageError) mantém as páginas anteriores e mostra "Tentar novamente" junto ao botão.
+- loadMore, isLoadingMore e hasNextPage já vêm da facade: fetchMore({ page: currentPage + 1 }) em useTransition, e o merge de Page.media (cache.ts) acumula e deduplica por id. Não duplique a deduplicação na UI.
+- setPerPage(n) já existe na facade: perPage entra na chave do cache, então a lista recomeça na página 1, e voltar a um tamanho já visto vem do cache.
+- Hoje um erro no fetchMore sobe para o Error Boundary e esconde a lista. Neste UC, a facade deve capturá-lo e expor loadMoreError (com teste antes), mantendo as páginas anteriores e mostrando "Tentar novamente" junto ao botão.
 - Foco: após carregar, mover o foco para o primeiro card novo usando ref como prop (React 19).
 - Ícone: <img src="/icons/add.svg" alt="" width="30" height="24">, sem redesenhar nem alterar dimensões.
 - Seletor de tamanho (RF07, ausente no Figma): <select> rotulado "Itens por página" com 12, 24 e 48; padrão 12.
@@ -45,12 +46,11 @@ Então deve exibir a primeira página com a nova quantidade
 </criterios_bdd>
 
 <plano_tdd>
-1. catalog-query.test.ts: getNextPageParam (hasNextPage true → currentPage + 1; false → undefined).
-2. catalog-filters-reducer.test.ts: setPerPage altera perPage e a queryKey; use-catalog (msw): erro na página seguinte preserva itens.
-3. anime-repository.test.ts (msw): page=2 com os mesmos filtros e perPage.
-4. LoadMoreButton.test.tsx: nome "Ver mais"; aria-busy e disabled durante o carregamento; oculto sem hasNextPage.
-5. App.test.tsx (msw): 12 → clique → 24 itens; foco no 13º card; última página esconde o botão; trocar para 24 recarrega com 24.
-6. e2e: clicar em "Ver mais" e verificar que a URL não muda e os primeiros cards continuam no DOM.
+1. Acúmulo, deduplicação, pageInfo da última página e hasNextPage já estão cobertos no SETUP-01 (cache.test.ts, use-catalog.test.tsx).
+2. use-catalog.test.tsx (msw): erro na página seguinte preserva os itens e expõe loadMoreError; tentar de novo carrega a página.
+3. LoadMoreButton.test.tsx: nome "Ver mais"; aria-busy e disabled durante o carregamento; oculto sem hasNextPage.
+4. App.test.tsx (msw + renderWithCatalog + clickAndWait): 12 → clique → 24 itens; foco no 13º card; última página esconde o botão; trocar para 24 recarrega com 24.
+5. e2e: clicar em "Ver mais" e verificar que a URL não muda e os primeiros cards continuam no DOM.
 </plano_tdd>
 
 <design>
@@ -61,7 +61,7 @@ Então deve exibir a primeira página com a nova quantidade
 </design>
 
 <arquivos>
-src/domain/pagination.ts (+ teste), src/features/catalog/* (+ testes), src/services/anilist/anime-repository.ts (+ teste),
+src/features/catalog/use-catalog.ts (+ teste, loadMoreError),
 src/components/pagination/{LoadMoreButton,PageSizeSelect}.tsx (+ testes), src/components/anime/AnimeGrid.tsx, src/App.tsx, e2e/load-more.spec.ts.
 </arquivos>
 

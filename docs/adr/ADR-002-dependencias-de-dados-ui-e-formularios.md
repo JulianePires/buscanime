@@ -1,6 +1,6 @@
 # ADR-002 — TanStack Query para dados remotos; componentes e formulário nativos
 
-- **Status:** aceita
+- **Status:** parcialmente substituída pelo [ADR-003](ADR-003-apollo-client-como-camada-de-dados.md) na parte de dados remotos (TanStack Query → Apollo Client 4 + GraphQL Codegen). As decisões de componentes e formulário continuam aceitas.
 - **Data:** 2026-10-30
 - **Contexto de decisão:** revisão do [plano de implementação](../PLANO-IMPLEMENTACAO.md) antes do UC02, avaliando três dependências candidatas.
 
@@ -21,11 +21,13 @@ Critério adotado: **uma dependência entra quando remove mais complexidade do q
 
 | Tema          | Decisão                                                                                | Motivo                                                                                                                                                                                            |
 | ------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Dados remotos | **Adotar `@tanstack/react-query` (v5)** com `useSuspenseInfiniteQuery`                 | Substitui cache de promises, acúmulo de páginas, cancelamento, retry e deduplicação de requisições escritos à mão.                                                                                |
+| Dados remotos | ~~Adotar `@tanstack/react-query` (v5)~~ — substituída pelo ADR-003                     | Substitui cache de promises, acúmulo de páginas, cancelamento, retry e deduplicação de requisições escritos à mão.                                                                                |
 | Componentes   | **Não adotar shadcn/ui**; componentes próprios sobre elementos nativos                 | `<dialog>` já resolve foco, Esc e top-layer; `<select>` atende 12/24/48. O shadcn traria Radix/Base UI, `cva`, `clsx`, `tailwind-merge` e variáveis de tema concorrentes com os tokens do design. |
 | Formulário    | **Não adotar React Hook Form**; input não controlado lido via `FormData` no `onSubmit` | Um campo, sem validação complexa nem estado _dirty_.                                                                                                                                              |
 
 ### Como o TanStack Query entra sem quebrar a arquitetura
+
+> Histórico: substituído pelo [ADR-003](ADR-003-apollo-client-como-camada-de-dados.md). Continuam valendo a facade `use-catalog`, o reducer de filtros e as transições.
 
 - A chave é `['animes', { formats, search, perPage }]`; o `queryFn` chama `AnimeRepository.searchPage(params, signal)`. A UI continua dependendo da interface, não do AniList (DIP).
 - O **estado dos filtros** (formatos, termo, tamanho da página) continua num reducer puro (`catalog-filters-reducer.ts`). O **estado do servidor** (páginas, carregamento, erro) passa a ser do Query. Cada um no lugar certo.

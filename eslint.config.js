@@ -7,7 +7,14 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  globalIgnores(["dist", "coverage", "playwright-report", "test-results", "reports"]),
+  globalIgnores([
+    "dist",
+    "coverage",
+    "playwright-report",
+    "test-results",
+    "reports",
+    "**/*.generated.ts",
+  ]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [
@@ -43,6 +50,32 @@ export default defineConfig([
       "sonarjs/cognitive-complexity": ["warn", 15],
       "sonarjs/no-duplicate-string": ["warn", { threshold: 3 }],
       "sonarjs/no-identical-functions": "error",
+      // Fronteira da camada de dados (ADR-003): só services/ e features/ conhecem o Apollo
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@apollo/client", "@apollo/client/*"],
+              message:
+                "Use a facade de src/features/catalog (use-catalog); o Apollo fica em src/services e src/features (ADR-003).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // Cenários Gherkin viram describe aninhados (Dado → Quando → Então) + callbacks do teste
+    files: ["**/*.test.{ts,tsx}"],
+    rules: {
+      "max-nested-callbacks": ["warn", 5],
+    },
+  },
+  {
+    files: ["src/services/**/*.{ts,tsx}", "src/features/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": "off",
     },
   },
 ]);
