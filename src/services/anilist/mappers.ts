@@ -39,10 +39,16 @@ function toEnglishTitle(title: Media["title"]) {
  * `<br>` vira quebra de linha, as demais tags (`<i>`, `<b>`) saem e as entidades são decodificadas.
  */
 function toDescription(description: Media["description"]) {
-  const text = (description ?? "")
-    .replace(/<br\s*\/?>/gi, "\n")
-    // Sem "<" na classe: cada tentativa para no próximo "<", então a varredura fica linear
-    .replace(/<[^<>]*>/g, "")
+  let text = description ?? "";
+  let previous: string;
+  do {
+    previous = text;
+    text = text
+      .replace(/<br\s*\/?>/gi, "\n")
+      // Sem "<" na classe: cada tentativa para no próximo "<", então a varredura fica linear
+      .replace(/<[^<>]*>/g, "");
+  } while (text !== previous);
+  text = text
     .replace(/&(?:amp|quot|#0?39|lt|gt|nbsp);/g, (entity) => HTML_ENTITIES[entity])
     .replace(/\n{3,}/g, "\n\n")
     .trim();
