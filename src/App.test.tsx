@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { act, fireEvent, screen, within } from "@testing-library/react";
 import { delay, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
@@ -138,5 +138,76 @@ describe("UC02 - Visualizar listagem de animes", () => {
         expect(calls).toBe(2);
       });
     });
+  });
+});
+
+describe("UC03 - Visualizar detalhe do anime listado", () => {
+  const PAGE_TITLE = "Buscanime | Busca de animes";
+
+  // O <title> do index.html não existe no jsdom
+  beforeEach(() => {
+    document.title = PAGE_TITLE;
+  });
+
+  /** Uma página com três animes; conta as requisições para provar que o detalhe vem do cache. */
+  function countingApi() {
+    const api = { calls: 0 };
+    server.use(
+      anilist.query("AnimePage", () => {
+        api.calls += 1;
+        return HttpResponse.json({ data: buildPageData({ ids: [1, 2, 3] }) });
+      }),
+    );
+    return api;
+  }
+
+  async function openDetail(title: string) {
+    await renderWithCatalog(<App />);
+    const card = await screen.findByRole("button", { name: title });
+    fireEvent.click(card);
+    return { card, dialog: screen.getByRole("dialog", { name: title }) };
+  }
+
+  describe("Dado que a listagem contém um anime", () => {
+    describe("Quando o visitante selecionar esse anime", () => {
+      it("Então deve visualizar seus dados detalhados em um modal", async () => {
+        const api = countingApi();
+        const { dialog } = await openDetail("Anime 2");
+
+        expect(dialog).toHaveAttribute("open");
+        expect(within(dialog).getByText("Anime 2 (EN)")).toBeInTheDocument();
+        expect(within(dialog).getByText("Sinopse do anime 2.")).toBeInTheDocument();
+        expect(within(dialog).getByText("TV Show")).toBeInTheDocument();
+        expect(document.title).toBe("Anime 2 | Buscanime");
+
+        // O Media:2 já está normalizado no cache: abrir o detalhe não chama a rede
+        await act(() => delay(20));
+        expect(api.calls).toBe(1);
+      });
+    });
+  });
+
+  describe("Dado que o modal de detalhe está aberto", () => {
+    const closeWith = {
+      Esc: (dialog: HTMLElement) => fireEvent.keyDown(dialog, { key: "Escape" }),
+      Fechar: (dialog: HTMLElement) =>
+        fireEvent.click(within(dialog).getByRole("button", { name: "Fechar" })),
+    };
+
+    describe.each(Object.keys(closeWith) as (keyof typeof closeWith)[])(
+      'Quando o visitante pressionar Esc ou acionar "Fechar" (%s)',
+      (action) => {
+        it("Então o modal deve fechar E o foco deve voltar para o card selecionado", async () => {
+          countingApi();
+          const { card, dialog } = await openDetail("Anime 3");
+
+          closeWith[action](dialog);
+
+          expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+          expect(card).toHaveFocus();
+          expect(document.title).toBe(PAGE_TITLE);
+        });
+      },
+    );
   });
 });
