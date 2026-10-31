@@ -13,8 +13,13 @@ src/
 ├── App.test.tsx         # Testes de comportamento da página (UC01)
 ├── App.css              # Ajustes locais que não são utilitários Tailwind
 ├── index.css            # Tokens globais e importação do Tailwind
-├── main.tsx             # Bootstrap da aplicação
-└── test/                # Setup compartilhado do Vitest
+├── main.tsx             # Bootstrap: cria o ApolloClient e o injeta no CatalogProvider
+├── domain/              # Tipos e regras puras (Anime, AnimeFormat, CatalogFilters)
+├── services/anilist/    # Apollo Client, cache, schema versionado, query e mappers (ADR-003)
+├── features/catalog/    # Reducer de filtros, CatalogProvider e a facade use-catalog
+├── components/          # Apresentação; não importa @apollo/client (regra do ESLint)
+└── test/                # Setup do Vitest, MSW, fixtures e utilitários do Apollo
+codegen.ts               # GraphQL Codegen: schema do AniList e tipos das operações
 public/
 ├── brand/logo.svg       # Logo exportado do Figma
 └── icons/add.svg        # Ícone do "Ver mais" exportado do Figma
@@ -35,10 +40,11 @@ O Vite faz o bundling e o Tailwind é integrado pelo plugin oficial. O ESLint cu
 
 - React 19 + TypeScript + Vite (com React Compiler via Babel).
 - [API GraphQL do AniList](https://docs.anilist.co/) como fonte de dados (busca, formatos, gêneros, nota e capa dos animes).
+- Apollo Client 4 (cache normalizado, `useSuspenseQuery`) e GraphQL Codegen (`typescript-operations` + `typed-document-node` + `near-operation-file`) como camada de dados ([ADR-003](adr/ADR-003-apollo-client-como-camada-de-dados.md)).
 - Tailwind CSS 4 para estilos utilitários.
 - ESLint 10 + `typescript-eslint` + `eslint-plugin-sonarjs` para code smells.
 - Biome para formatação, organização de imports e lint complementar.
-- Vitest + Testing Library (jsdom) para testes unitários e de integração.
+- Vitest + Testing Library (jsdom) para testes unitários e de integração, com MSW mockando o AniList na fronteira de rede.
 - Playwright (Chromium) para testes end-to-end sobre o build de produção.
 - Commitlint + Husky + lint-staged para commits convencionais e checagens antes do commit.
 - Lighthouse para auditoria de performance, acessibilidade, boas práticas e SEO.
@@ -50,14 +56,14 @@ O Vite faz o bundling e o Tailwind é integrado pelo plugin oficial. O ESLint cu
 
 Escolhido pelas novas funcionalidades, que atendem diretamente aos casos de uso:
 
-| Funcionalidade                                | Uso previsto no Buscanime                                                                                                                                                             |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Suspense` (via `useSuspenseInfiniteQuery`)   | Ler a busca de forma declarativa; o TanStack Query fornece as promises estáveis que o Suspense exige (UC02, RNF06, [ADR-002](adr/ADR-002-dependencias-de-dados-ui-e-formularios.md)). |
-| Transições assíncronas (`useTransition`)      | Manter a interface responsiva ao aplicar filtros de formato e busca por texto (UC04, UC05).                                                                                           |
-| `useDeferredValue` com valor inicial          | Adiar a atualização da listagem enquanto o usuário digita na busca (UC05).                                                                                                            |
-| `useOptimistic` / Actions                     | Refletir imediatamente a seleção de filtros antes da resposta dos dados (UC04).                                                                                                       |
-| `ref` como prop                               | Devolver o foco ao primeiro item novo após o "Ver mais", sem `forwardRef` (UC06, RNF01).                                                                                              |
-| Metadados no componente (`<title>`, `<meta>`) | Atualizar título e descrição ao abrir o detalhe de um anime, favorecendo SEO e acessibilidade (UC03, RNF01).                                                                          |
+| Funcionalidade                                | Uso previsto no Buscanime                                                                                                                                                 |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Suspense` (via `useSuspenseQuery`)           | Ler a busca de forma declarativa; o Apollo fornece as promises estáveis que o Suspense exige (UC02, RNF06, [ADR-003](adr/ADR-003-apollo-client-como-camada-de-dados.md)). |
+| Transições assíncronas (`useTransition`)      | Manter a interface responsiva ao aplicar filtros de formato e busca por texto (UC04, UC05).                                                                               |
+| `useDeferredValue` com valor inicial          | Adiar a atualização da listagem enquanto o usuário digita na busca (UC05).                                                                                                |
+| `useOptimistic` / Actions                     | Refletir imediatamente a seleção de filtros antes da resposta dos dados (UC04).                                                                                           |
+| `ref` como prop                               | Devolver o foco ao primeiro item novo após o "Ver mais", sem `forwardRef` (UC06, RNF01).                                                                                  |
+| Metadados no componente (`<title>`, `<meta>`) | Atualizar título e descrição ao abrir o detalhe de um anime, favorecendo SEO e acessibilidade (UC03, RNF01).                                                              |
 
 ### React Compiler
 
@@ -72,6 +78,14 @@ Escolhido para otimizar a renderização sem memoização manual:
 ### Base de contexto de design (RAG)
 
 O desenvolvimento assistido por IA recupera o design de `docs/design-context/` em vez de consultar o Figma a cada ciclo: o `manifest.json` liga cada caso de uso às specs, referências e assets da seção. Motivação, alternativas e consequências no [ADR-001](adr/ADR-001-base-de-contexto-de-design-rag.md).
+
+### Camada de dados (Apollo Client + GraphQL Codegen)
+
+- **Única camada de dados remotos:** Apollo Client 4 com cache normalizado (`Media:<id>`). As páginas do "Ver mais" se acumulam pelas `typePolicies` de `cache.ts`, e voltar a uma combinação de filtros já vista não faz requisição. Substitui o TanStack Query do ADR-002 ([ADR-003](adr/ADR-003-apollo-client-como-camada-de-dados.md)).
+- **Tipos gerados:** `pnpm codegen` gera os tipos das operações a partir de `src/services/anilist/schema.graphql`, que é versionado. Os `*.generated.ts` ficam fora do Git e são ignorados pelo ESLint e pelo Biome. O schema só muda com `pnpm codegen:schema`, que acessa a rede.
+- **Fronteira:** os componentes usam a facade `useCatalog()` e tipos do domínio. Importar `@apollo/client*` fora de `src/services` e `src/features` é erro de lint (`no-restricted-imports`), e um teste garante a regra.
+- **Erros:** não há reenvio automático (nem em HTTP 429). O `ErrorBoundary` oferece "Tentar novamente" via `useCatalogRetry()`.
+- **Custo:** cerca de +64 KB gzip, contra ~10 KB do TanStack Query, medido no ADR-003. O Lighthouse segue em Performance 100.
 
 ## Code smells verificados (ESLint)
 
@@ -110,18 +124,21 @@ Os finais de linha são normalizados para LF pelo `.gitattributes`, evitando div
 
 ## Comandos
 
-| Comando              | Finalidade                                                   |
-| -------------------- | ------------------------------------------------------------ |
-| `pnpm dev`           | Inicia o servidor de desenvolvimento.                        |
-| `pnpm validate`      | Executa formatação, lint, testes unitários e build.          |
-| `pnpm format`        | Formata os arquivos com o Biome.                             |
-| `pnpm test:watch`    | Executa os testes unitários em modo observação (ciclo TDD).  |
-| `pnpm test:coverage` | Gera cobertura dos testes unitários.                         |
-| `pnpm test:e2e`      | Executa os fluxos no navegador sobre o preview.              |
-| `pnpm typecheck`     | Verifica os tipos com o TypeScript.                          |
-| `pnpm lighthouse`    | Audita um preview já em execução e aplica as notas mínimas.  |
-| `pnpm lighthouse:ci` | Sobe o preview, audita e gera `reports/lighthouse.report.*`. |
-| `pnpm version:bump`  | Calcula e grava a versão (`--dry-run` só mostra).            |
+| Comando               | Finalidade                                                                      |
+| --------------------- | ------------------------------------------------------------------------------- |
+| `pnpm dev`            | Inicia o servidor de desenvolvimento.                                           |
+| `pnpm codegen`        | Gera os tipos GraphQL (roda antes de validate, typecheck, test e build).        |
+| `pnpm codegen:watch`  | Regenera os tipos ao editar as queries.                                         |
+| `pnpm codegen:schema` | Baixa o schema do AniList para `schema.graphql` (manual; commitar o resultado). |
+| `pnpm validate`       | Executa formatação, lint, testes unitários e build.                             |
+| `pnpm format`         | Formata os arquivos com o Biome.                                                |
+| `pnpm test:watch`     | Executa os testes unitários em modo observação (ciclo TDD).                     |
+| `pnpm test:coverage`  | Gera cobertura dos testes unitários.                                            |
+| `pnpm test:e2e`       | Executa os fluxos no navegador sobre o preview.                                 |
+| `pnpm typecheck`      | Verifica os tipos com o TypeScript.                                             |
+| `pnpm lighthouse`     | Audita um preview já em execução e aplica as notas mínimas.                     |
+| `pnpm lighthouse:ci`  | Sobe o preview, audita e gera `reports/lighthouse.report.*`.                    |
+| `pnpm version:bump`   | Calcula e grava a versão (`--dry-run` só mostra).                               |
 
 O Lighthouse usa o Chrome indicado em `CHROME_PATH` ou, na falta dele, o Chromium instalado pelo Playwright. Ele gera relatórios HTML e JSON e falha se alguma categoria ficar abaixo do mínimo definido em `scripts/lighthouse.js`: performance 90, acessibilidade 95 (RNF01), boas práticas 90 e SEO 90. As regras de nota têm testes em `scripts/lighthouse.test.js`.
 
@@ -138,11 +155,11 @@ O workflow `.github/workflows/ci.yml` roda em PRs para a `main` (abertura, novos
 | Estágio          | Verificações                                                                                                                                                                                                                                                         | Artefato            |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1 · Commits (PR) | Commitlint nos commits da branch e no título do PR (que vira o commit do squash); máximo de 30 arquivos por commit (`check-commit-size.js --range`); versão do `package.json` e tipo do título compatíveis com o bump (`bump-versions.js --check` e `--check-title`) | —                   |
-| 2 · Qualidade    | Formatação (Biome), lint e code smells (ESLint + SonarJS), tipos (`tsc`)                                                                                                                                                                                             | —                   |
+| 2 · Qualidade    | Formatação (Biome), tipos GraphQL (`pnpm codegen`), lint e code smells (ESLint + SonarJS), tipos (`tsc`)                                                                                                                                                             | —                   |
 | 2 · Segurança    | `pnpm audit` (falha em severidade alta) e Dependency Review nas dependências novas do PR                                                                                                                                                                             | —                   |
 | 2 · CodeQL       | Análise estática de segurança de JavaScript/TypeScript e dos workflows (`security-extended`)                                                                                                                                                                         | Alertas no GitHub   |
-| 3 · Testes       | Vitest com cobertura                                                                                                                                                                                                                                                 | `coverage`          |
-| 4 · Build        | `tsc -b` + `vite build`                                                                                                                                                                                                                                              | `dist`              |
+| 3 · Testes       | `pnpm codegen` + Vitest com cobertura                                                                                                                                                                                                                                | `coverage`          |
+| 4 · Build        | `pnpm codegen` + `tsc -b` + `vite build`                                                                                                                                                                                                                             | `dist`              |
 | 5 · E2E          | Playwright (Chromium) sobre o `dist` do estágio 4                                                                                                                                                                                                                    | `playwright-report` |
 | 5 · Lighthouse   | Auditoria do `dist` com notas mínimas                                                                                                                                                                                                                                | `lighthouse`        |
 
@@ -153,3 +170,4 @@ Decisões do pipeline:
 - **Segurança da própria pipeline:** Actions de terceiros fixadas por SHA de commit, permissões mínimas (`contents: read`, `security-events: write` só no CodeQL) e título do PR passado por variável de ambiente, nunca interpolado no script.
 - **Reprodutibilidade:** pnpm na versão do campo `packageManager`, `pnpm install --frozen-lockfile` e Node 24 (LTS); a instalação fica na ação composta `.github/actions/setup`.
 - **Concorrência:** um novo push no mesmo PR cancela a execução anterior.
+- **Tipos GraphQL offline:** o passo "Gerar tipos (GraphQL Codegen)" roda nos jobs que compilam ou testam, a partir do `schema.graphql` versionado, sem acessar o AniList. O `pnpm.overrides` do `package.json` mantém o `@graphql-tools/utils` do preset numa versão corrigida, para o `pnpm audit` passar.

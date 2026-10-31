@@ -14,14 +14,16 @@ Ao selecionar um card, abrir um modal com os dados detalhados do anime, acessív
 2. docs/USE_CASES.md (UC03), docs/REQUISITOS.md (RF05, RNF01)
 3. docs/design-context/manifest.json (seção "card" e notInDesign "detalhe")
 4. docs/design-context/specs/card.md e tokens.json
-5. Código existente: src/components/anime/*, src/services/anilist/*, src/domain/anime.ts
+5. Código existente: src/components/anime/*, src/services/anilist/* (queries/page.graphql.ts, mappers.ts, cache.ts), src/domain/anime.ts
+6. docs/adr/ADR-003-apollo-client-como-camada-de-dados.md (Media normalizado no cache)
 O modal não existe no Figma: derive dos tokens e do card, sem inventar cores ou fontes novas.
 </retrieval>
 
 <restricoes>
 - Use <dialog> nativo com showModal()/close(); nome acessível pelo título (aria-labelledby).
 - O card vira <button> (ou contém um) com nome igual ao título; ao fechar, o foco volta para ele.
-- Dados extras via campos adicionais na query (description(asHtml: false), episodes, seasonYear, status, format, title.english, siteUrl) mapeados no domínio; nada de dangerouslySetInnerHTML.
+- Dados extras via campos adicionais em ANIME_PAGE (description(asHtml: false), episodes, seasonYear, status, siteUrl), seguidos de pnpm codegen e mapeados em mappers.ts para o domínio; nada de dangerouslySetInnerHTML.
+- O detalhe usa o anime já carregado (Media:<id> normalizado no cache): abrir o modal não dispara requisição. Se um dia precisar de query própria, ela fica atrás da facade (use-catalog ou um hook irmão em src/features), nunca em src/components.
 - Metadados do React 19: renderize <title>{título} | Buscanime</title> enquanto o modal estiver aberto.
 - Anti-objetivos: sem rota nova, sem biblioteca de modal.
 </restricoes>
@@ -40,7 +42,7 @@ E o foco deve voltar para o card selecionado
 <plano_tdd>
 1. mappers.test.ts: sinopse sem tags HTML (<br>, <i>) e nulos tratados.
 2. AnimeDetailDialog.test.tsx: renderiza título, título em inglês, capa, gêneros, nota com o tom correto, formato legível (rótulo de FORMAT_OPTIONS), episódios, ano e sinopse.
-3. App.test.tsx: clicar no card abre role="dialog" com nome do anime; Esc fecha; foco volta ao card; document.title muda e é restaurado.
+3. App.test.tsx (renderWithCatalog): clicar no card abre role="dialog" com nome do anime sem nova requisição (contar chamadas no handler do msw); Esc fecha; foco volta ao card; document.title muda e é restaurado.
 4. e2e: abrir e fechar o detalhe por teclado (Tab até o card, Enter, Esc).
 Observação: jsdom não implementa showModal; faça polyfill mínimo em src/test/setup.ts.
 </plano_tdd>
@@ -53,7 +55,7 @@ Observação: jsdom não implementa showModal; faça polyfill mínimo em src/tes
 
 <arquivos>
 src/components/anime/AnimeDetailDialog.tsx (+ teste), src/components/anime/AnimeCard.tsx, src/domain/anime.ts,
-src/services/anilist/{queries,mappers}.ts (+ testes), src/test/setup.ts, src/App.tsx, e2e/detail.spec.ts.
+src/services/anilist/{queries/page.graphql,mappers}.ts (+ testes), src/test/setup.ts, src/App.tsx, e2e/detail.spec.ts.
 </arquivos>
 
 <verificacao>
