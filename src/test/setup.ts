@@ -1,11 +1,19 @@
 import "@testing-library/jest-dom/vitest";
 import { afterAll, afterEach, beforeAll } from "vitest";
 import { server } from "./msw/server";
+import { installViewport, resetViewport } from "./viewport";
 
 // Nenhum teste chama a API real: requisição sem handler falha o teste.
 beforeAll(() => server.listen({ onUnhandledFrame: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+// Todo teste começa na largura de desktop; o tamanho da página depende dela
+if (typeof window !== "undefined") {
+  installViewport();
+  resetViewport();
+  afterEach(resetViewport);
+}
 
 /**
  * O jsdom não implementa o <dialog> modal. Polyfill mínimo do comportamento do navegador:

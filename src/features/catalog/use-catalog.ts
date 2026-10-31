@@ -1,29 +1,51 @@
 import { useSuspenseQuery } from "@apollo/client/react";
-import { useTransition } from "react";
-import type { AnimeFormat } from "../../domain/anime";
+import { useState, useTransition } from "react";
+import type { AnimeFormat, CatalogFilters } from "../../domain/anime";
 import { toAnimePage, toAnimePageVariables } from "../../services/anilist/mappers";
 import { ANIME_PAGE } from "../../services/anilist/queries/page.graphql";
 import { useCatalogContext } from "./catalog-context";
 
 /**
  * Facade do catálogo: os componentes recebem só tipos do domínio e ações. useSuspenseQuery,
- * fetchMore e o cache ficam escondidos aqui (ADR-003). Suspende na primeira carga de cada
- * combinação de filtros; erros sobem para o Error Boundary.
+ * a busca da próxima página e o cache ficam escondidos aqui (ADR-003). Suspende na primeira carga de cada
+ * combinação de filtros; erros da primeira página sobem para o Error Boundary, os do "Ver mais"
+ * viram `loadMoreError` (UC06).
  */
 export function useCatalog() {
   const { filters, attempt } = useCatalogContext();
   const actions = useCatalogFilters();
   const [isLoadingMore, startLoadingMore] = useTransition();
-  const { data, fetchMore } = useSuspenseQuery(ANIME_PAGE, {
-    variables: toAnimePageVariables(filters),
+  const variables = toAnimePageVariables(filters);
+  const { data, client } = useSuspenseQuery(ANIME_PAGE, {
+    variables,
     queryKey: ["catalog", attempt],
   });
   const { animes, currentPage, hasNextPage } = toAnimePage(data);
+  // Guarda os filtros da falha: trocar de combinação descarta o erro sem efeito nem reset manual
+  const [failure, setFailure] = useState<{ filters: CatalogFilters; error: Error } | null>(null);
+  const loadMoreError = failure?.filters === filters ? failure.error : null;
 
+  /**
+   * Próxima página por `client.query`, não pelo `fetchMore` do useSuspenseQuery: o `fetchMore`
+   * rejeita a promise que a lista lê com `use()` e a falha derrubaria a lista no Error Boundary,
+   * qualquer que seja o errorPolicy. Como `page` fica fora da chave do `Page` (cache.ts), a
+   * resposta grava na mesma entrada e o `merge` de `Page.media` acumula e deduplica, como faria
+   * o `fetchMore`.
+   */
   function loadMore() {
     if (!hasNextPage || isLoadingMore) return;
+    setFailure(null);
     startLoadingMore(async () => {
-      await fetchMore({ variables: { page: currentPage + 1 } });
+      try {
+        await client.query({
+          query: ANIME_PAGE,
+          variables: { ...variables, page: currentPage + 1 },
+          fetchPolicy: "network-only",
+        });
+      } catch (error) {
+        // As páginas já carregadas continuam no cache; o erro fica junto ao "Ver mais"
+        setFailure({ filters, error: error instanceof Error ? error : new Error(String(error)) });
+      }
     });
   }
 
@@ -32,6 +54,7 @@ export function useCatalog() {
     hasNextPage,
     isLoadingMore,
     loadMore,
+    loadMoreError,
     ...actions,
     filters,
   };
@@ -49,7 +72,6 @@ export function useCatalogFilters() {
     toggleFormat: (format: AnimeFormat) => changeFilters({ type: "toggleFormat", format }),
     clearFormats: () => changeFilters({ type: "clearFormats" }),
     search: (term: string) => changeFilters({ type: "search", term }),
-    setPerPage: (perPage: number) => changeFilters({ type: "setPerPage", perPage }),
   };
 }
 

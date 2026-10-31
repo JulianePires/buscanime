@@ -13,7 +13,7 @@ Casos de uso previstos:
 - **UC03** - Visualizar detalhe do anime listado
 - **UC04** - Filtrar lista por um ou mais formatos
 - **UC05** - Filtrar lista por busca de texto
-- **UC06** - Alterar tamanho de paginação ("Ver mais")
+- **UC06** - Carregar mais animes ("Ver mais")
 
 Estado atual: estrutura base da página (UC01) com cabeçalho, navegação e área principal; os demais casos de uso estão especificados e serão implementados em ciclos TDD.
 
@@ -31,7 +31,7 @@ Decisão em [ADR-001](docs/adr/ADR-001-base-de-contexto-de-design-rag.md); base 
 
 ## Requisitos funcionais (RF)
 
-Navegação, listagem, filtro por formato, busca por texto, detalhes, paginação pelo botão "Ver mais", tamanho da paginação e responsividade (RF01 a RF08).
+Navegação, listagem, filtro por formato, busca por texto, detalhes, paginação pelo botão "Ver mais" e responsividade (RF01 a RF06 e RF08).
 
 Detalhes em [docs/REQUISITOS.md](docs/REQUISITOS.md#requisitos-funcionais-rf).
 

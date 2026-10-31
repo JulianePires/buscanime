@@ -65,7 +65,6 @@
   ],
   "notInDesign": [
     { "id": "detalhe", "useCases": ["UC03"], "note": "Modal de detalhe não existe no Figma; derivar dos tokens e do card." },
-    { "id": "tamanho-pagina", "useCases": ["UC06"], "note": "Seletor de itens por página (RF07) não existe no Figma." },
     { "id": "estados", "useCases": ["UC02"], "note": "Carregando, vazio e erro (RNF06) não existem no Figma." },
     { "id": "mobile", "useCases": ["UC01", "UC02"], "note": "Figma só tem desktop (RF08)." }
   ]

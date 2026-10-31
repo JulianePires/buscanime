@@ -72,4 +72,4 @@ As capas dos cards não são assets do projeto: vêm do AniList (`coverImage.ext
 - O design mostra só o desktop; o layout responsivo (RF08) deve ser derivado da grade de cards.
 - A paginação é feita pelo botão "Ver mais" (padrão definido), sem scroll infinito.
 - Contraste abaixo do WCAG AA no design: texto branco sobre o "Ver mais" amarelo (≈ 1,7:1) e texto `Gray/Light2` sobre a nota verde (≈ 2,2:1). Ajuste proposto em [PLANO-IMPLEMENTACAO.md](PLANO-IMPLEMENTACAO.md#decisões-em-aberto).
-- Não existem no design: modal de detalhe (UC03), seletor de itens por página (RF07), estados de carregamento, vazio e erro (RNF06) e layout mobile (RF08).
+- Não existem no design: modal de detalhe (UC03), estados de carregamento, vazio e erro (RNF06) e layout mobile (RF08).

@@ -43,9 +43,13 @@ describe("catalogFiltersReducer", () => {
     expect(catalogFiltersReducer(searched, { type: "search", term: "   " }).search).toBeUndefined();
   });
 
-  it("setPerPage troca o tamanho da página", () => {
+  it("setPerPage troca o tamanho da página; o mesmo tamanho devolve o mesmo estado", () => {
     expect(
-      catalogFiltersReducer(initialCatalogFilters, { type: "setPerPage", perPage: 24 }).perPage,
-    ).toBe(24);
+      catalogFiltersReducer(initialCatalogFilters, { type: "setPerPage", perPage: 3 }).perPage,
+    ).toBe(3);
+    // Sem objeto novo: a lista não recarrega e o erro/foco do "Ver mais" continuam valendo
+    expect(catalogFiltersReducer(initialCatalogFilters, { type: "setPerPage", perPage: 12 })).toBe(
+      initialCatalogFilters,
+    );
   });
 });

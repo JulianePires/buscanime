@@ -6,7 +6,6 @@ import { SearchBar } from "./components/filters/SearchBar";
 import { SiteFooter } from "./components/layout/SiteFooter";
 import { SiteHeader } from "./components/layout/SiteHeader";
 import { CatalogResults } from "./features/catalog/CatalogResults";
-import { initialCatalogFilters } from "./features/catalog/catalog-filters-reducer";
 import { useCatalogFilters, useCatalogRetry } from "./features/catalog/use-catalog";
 
 function App() {
@@ -27,7 +26,7 @@ function App() {
         />
         <SearchBar defaultValue={selectedFilters.search} onSearch={search} />
         <ErrorBoundary onReset={retry}>
-          <Suspense fallback={<LoadingState count={initialCatalogFilters.perPage} />}>
+          <Suspense fallback={<LoadingState count={selectedFilters.perPage} />}>
             <CatalogResults />
           </Suspense>
         </ErrorBoundary>

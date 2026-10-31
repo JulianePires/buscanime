@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { type Ref, useId } from "react";
 import type { Anime } from "../../domain/anime";
 import { GenreChip } from "./GenreChip";
 import { ScoreBadge } from "./ScoreBadge";
@@ -13,6 +13,8 @@ interface AnimeCardProps {
   priority?: boolean;
   /** Abre o detalhe (UC03); recebe o botão acionado, para onde o foco volta ao fechar. */
   onSelect: (trigger: HTMLButtonElement) => void;
+  /** Ref do botão que abre o detalhe (prop comum no React 19, sem forwardRef). */
+  ref?: Ref<HTMLButtonElement>;
 }
 
 /**
@@ -20,7 +22,7 @@ interface AnimeCardProps {
  * detalhe; o nome dele vem do título (aria-labelledby). O anel de foco fica no article (o
  * article não recebe foco, por isso `has-[:focus-visible]`): o overflow-hidden cortaria o do botão.
  */
-export function AnimeCard({ anime, priority = false, onSelect }: AnimeCardProps) {
+export function AnimeCard({ anime, priority = false, onSelect, ref }: AnimeCardProps) {
   const titleId = useId();
 
   return (
@@ -57,6 +59,7 @@ export function AnimeCard({ anime, priority = false, onSelect }: AnimeCardProps)
       </div>
       <ScoreBadge score={anime.averageScore} className="absolute right-2 bottom-2" />
       <button
+        ref={ref}
         type="button"
         aria-labelledby={titleId}
         onClick={(event) => onSelect(event.currentTarget)}

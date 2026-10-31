@@ -2,14 +2,14 @@
 
 ## Casos de uso
 
-| Código | Ator      | Objetivo                                        |
-| ------ | --------- | ----------------------------------------------- |
-| UC01   | Visitante | Visualizar estrutura da página.                 |
-| UC02   | Visitante | Visualizar listagem de animes.                  |
-| UC03   | Visitante | Visualizar detalhe do anime listado.            |
-| UC04   | Visitante | Filtrar lista por um ou mais formatos.          |
-| UC05   | Visitante | Filtrar lista por busca de texto.               |
-| UC06   | Visitante | Alterar tamanho de paginação usando "Ver mais". |
+| Código | Ator      | Objetivo                               |
+| ------ | --------- | -------------------------------------- |
+| UC01   | Visitante | Visualizar estrutura da página.        |
+| UC02   | Visitante | Visualizar listagem de animes.         |
+| UC03   | Visitante | Visualizar detalhe do anime listado.   |
+| UC04   | Visitante | Filtrar lista por um ou mais formatos. |
+| UC05   | Visitante | Filtrar lista por busca de texto.      |
+| UC06   | Visitante | Carregar mais animes pelo "Ver mais".  |
 
 ## Critérios BDD
 
@@ -62,7 +62,7 @@ Quando o visitante informar um texto de busca
 Então a listagem deve exibir os animes correspondentes ao texto
 ```
 
-### UC06 — Alterar tamanho de paginação usando "Ver mais"
+### UC06 — Carregar mais animes pelo "Ver mais"
 
 ```gherkin
 Dado que a primeira página de animes foi carregada
