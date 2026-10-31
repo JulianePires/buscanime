@@ -4,6 +4,9 @@
 #                ├─> 2. security ─┤                        └─> 5. lighthouse
 #                └─> 2. codeql ───┘
 #
+# Os tipos do GraphQL (*.generated.ts) não são versionados: os jobs que compilam ou testam geram
+# os tipos a partir do schema versionado (src/services/anilist/schema.graphql), sem acessar a rede.
+#
 # Um estágio só roda se os anteriores passaram. O estágio 1 só existe em PRs (verifica os commits
 # da branch); em push na main o pipeline começa no estágio 2.
 name: CI
@@ -67,6 +70,9 @@ jobs:
       - name: Formatação (Biome)
         run: pnpm format:check
 
+      - name: Gerar tipos (GraphQL Codegen)
+        run: pnpm codegen
+
       - name: Lint e code smells (ESLint + SonarJS)
         run: pnpm lint
 
@@ -122,6 +128,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
 
+      - name: Gerar tipos (GraphQL Codegen)
+        run: pnpm codegen
+
       - name: Vitest com cobertura
         run: pnpm test:coverage
 
@@ -141,6 +150,9 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
+
+      - name: Gerar tipos (GraphQL Codegen)
+        run: pnpm codegen
 
       - name: Build de produção
         run: pnpm build
