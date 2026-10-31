@@ -6,6 +6,8 @@ import { ANIME_GRID_CLASS_NAME } from "./grid-layout";
 
 interface AnimeGridProps {
   animes: Anime[];
+  /** Nova combinação de filtros carregando: a lista atual fica visível, esmaecida. */
+  busy?: boolean;
 }
 
 /**
@@ -15,7 +17,7 @@ interface AnimeGridProps {
  * O detalhe (UC03) mostra o anime já carregado na lista, sem nova requisição. Ao fechar, o foco
  * volta ao botão do card que o abriu (nem todo navegador foca o botão no clique).
  */
-export function AnimeGrid({ animes }: AnimeGridProps) {
+export function AnimeGrid({ animes, busy = false }: AnimeGridProps) {
   const [selected, setSelected] = useState<Anime | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
@@ -31,7 +33,11 @@ export function AnimeGrid({ animes }: AnimeGridProps) {
 
   return (
     <>
-      <ul aria-label="Animes" className={ANIME_GRID_CLASS_NAME}>
+      <ul
+        aria-label="Animes"
+        aria-busy={busy || undefined}
+        className={`${ANIME_GRID_CLASS_NAME} transition-opacity aria-busy:opacity-60`}
+      >
         {animes.map((anime, index) => (
           <li key={anime.id}>
             <AnimeCard

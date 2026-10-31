@@ -4,7 +4,7 @@ import { useCatalog } from "./use-catalog";
 
 /** Liga a facade à apresentação. Suspende na primeira carga; erros sobem para o Error Boundary. */
 export function CatalogResults() {
-  const { animes } = useCatalog();
+  const { animes, isFiltering } = useCatalog();
   if (animes.length === 0) return <EmptyState />;
-  return <AnimeGrid animes={animes} />;
+  return <AnimeGrid animes={animes} busy={isFiltering} />;
 }

@@ -11,7 +11,8 @@ import { useCatalogContext } from "./catalog-context";
  * combinação de filtros; erros sobem para o Error Boundary.
  */
 export function useCatalog() {
-  const { filters, changeFilters, isFiltering, attempt } = useCatalogContext();
+  const { filters, attempt } = useCatalogContext();
+  const actions = useCatalogFilters();
   const [isLoadingMore, startLoadingMore] = useTransition();
   const { data, fetchMore } = useSuspenseQuery(ANIME_PAGE, {
     variables: toAnimePageVariables(filters),
@@ -31,7 +32,19 @@ export function useCatalog() {
     hasNextPage,
     isLoadingMore,
     loadMore,
+    ...actions,
     filters,
+  };
+}
+
+/**
+ * Filtros sem a consulta: para os controles que ficam fora do Suspense da lista (UC04). Expõe a
+ * seleção otimista, que já reflete o clique enquanto a nova combinação carrega.
+ */
+export function useCatalogFilters() {
+  const { selectedFilters, changeFilters, isFiltering } = useCatalogContext();
+  return {
+    selectedFilters,
     isFiltering,
     toggleFormat: (format: AnimeFormat) => changeFilters({ type: "toggleFormat", format }),
     clearFormats: () => changeFilters({ type: "clearFormats" }),

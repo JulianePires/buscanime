@@ -1,9 +1,10 @@
-import { act, fireEvent, screen, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { delay, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
+import { FORMAT_OPTIONS } from "./domain/formats";
 import { clickAndWait, renderWithCatalog } from "./test/apollo";
-import { buildPageData } from "./test/fixtures/anime-page";
+import { buildMedia, buildPageData } from "./test/fixtures/anime-page";
 import { anilist } from "./test/msw/handlers";
 import { server } from "./test/msw/server";
 
@@ -64,7 +65,7 @@ describe("UC02 - Visualizar listagem de animes", () => {
 
         expect(screen.getByRole("status")).toHaveTextContent("Carregando animes");
 
-        const list = await screen.findByRole("list", { name: "Animes" });
+        const list = await screen.findByRole("list", { name: /Animes/ });
         const cards = within(list).getAllByRole("article");
         expect(cards).toHaveLength(12);
         expect(list.children).toHaveLength(12);
@@ -133,9 +134,104 @@ describe("UC02 - Visualizar listagem de animes", () => {
 
         await clickAndWait(within(alert).getByRole("button", { name: "Tentar novamente" }));
 
-        const list = await screen.findByRole("list", { name: "Animes" });
+        const list = await screen.findByRole("list", { name: /Animes/ });
         expect(within(list).getAllByRole("article")).toHaveLength(12);
         expect(calls).toBe(2);
+      });
+    });
+  });
+});
+
+describe("UC04 - Filtrar lista por um ou mais formatos", () => {
+  const [ALL_FORMATS, , MOVIE, , , OVA] = FORMAT_OPTIONS.map((option) => option.label);
+
+  /** Acervo com formatos diferentes; o handler aplica o format_in como o AniList. */
+  const CATALOG = [
+    { id: 1, format: "TV" },
+    { id: 2, format: "MOVIE" },
+    { id: 3, format: "OVA" },
+    { id: 4, format: "MOVIE" },
+  ] as const;
+
+  function formatAwareApi({ delayMs = 0 } = {}) {
+    const requests: (string[] | undefined)[] = [];
+    server.use(
+      anilist.query("AnimePage", async ({ variables }) => {
+        const formats: string[] | undefined = variables.formats;
+        requests.push(formats);
+        await delay(delayMs);
+        const page = buildPageData({ ids: [] });
+        page.Page!.media = CATALOG.filter((item) => !formats || formats.includes(item.format)).map(
+          (item) => buildMedia(item.id, { format: item.format }),
+        );
+        return HttpResponse.json({ data: page });
+      }),
+    );
+    return requests;
+  }
+
+  async function renderCatalog(options?: { delayMs: number }) {
+    const requests = formatAwareApi(options);
+    await renderWithCatalog(<App />);
+    await screen.findByText("Anime 3");
+    return requests;
+  }
+
+  const select = (name: string) => clickAndWait(screen.getByRole("button", { name }));
+  const animeList = () => screen.getByRole("list", { name: "Animes" });
+  const listed = () =>
+    within(animeList())
+      .getAllByRole("heading")
+      .map((heading) => heading.textContent);
+  const pressed = () =>
+    within(screen.getByRole("group", { name: "Formato" }))
+      .getAllByRole("button", { pressed: true })
+      .map((button) => button.textContent);
+
+  describe("Dado que existem animes de formatos diferentes", () => {
+    describe("Quando o visitante selecionar um ou mais formatos", () => {
+      it("Então a listagem deve exibir somente os animes compatíveis", async () => {
+        const requests = await renderCatalog();
+
+        await select(MOVIE);
+        await waitFor(() => expect(listed()).toEqual(["Anime 2", "Anime 4"]));
+        expect(pressed()).toEqual([MOVIE]);
+
+        await select(OVA);
+        await waitFor(() => expect(listed()).toEqual(["Anime 2", "Anime 3", "Anime 4"]));
+        expect(pressed()).toEqual([MOVIE, OVA]);
+        expect(requests).toEqual([undefined, ["MOVIE"], ["MOVIE", "OVA"]]);
+      });
+
+      it("Então o botão fica marcado na hora e a lista anterior continua visível enquanto carrega", async () => {
+        await renderCatalog({ delayMs: 100 });
+
+        await select(MOVIE);
+
+        expect(pressed()).toEqual([MOVIE]);
+        expect(animeList()).toHaveAttribute("aria-busy", "true");
+        expect(listed()).toContain("Anime 1");
+
+        await waitFor(() => expect(listed()).not.toContain("Anime 1"));
+        expect(animeList()).not.toHaveAttribute("aria-busy");
+      });
+    });
+  });
+
+  describe("Dado que há formatos selecionados", () => {
+    describe('Quando o visitante acionar "All Formats"', () => {
+      it("Então a seleção deve ser limpa E a listagem deve exibir animes de todos os formatos", async () => {
+        const requests = await renderCatalog();
+        await select(MOVIE);
+        await waitFor(() => expect(listed()).not.toContain("Anime 1"));
+
+        await select(ALL_FORMATS);
+
+        await waitFor(() => expect(listed()).toEqual(["Anime 1", "Anime 2", "Anime 3", "Anime 4"]));
+        expect(pressed()).toEqual([ALL_FORMATS]);
+        // A combinação sem formatos já estava no cache: nenhuma requisição nova
+        await act(() => delay(20));
+        expect(requests).toEqual([undefined, ["MOVIE"]]);
       });
     });
   });

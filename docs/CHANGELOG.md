@@ -199,3 +199,19 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 - e2e do UC03: Tab até o card, Enter abre, Esc fecha com o foco de volta e o título restaurado, sem nova requisição; superfície do modal conferida (branco, raio 8, padding 24, 720 px).
 - `e2e/support/anilist.ts` com o mock do AniList compartilhado pelos specs.
 - Entrada do UC03 no `AI_LOG.md`.
+
+### `feat: filter anime list by format`
+
+#### Added
+
+- `FormatFilter`: linha de 8 botões de `FORMAT_OPTIONS` num `fieldset` (papel `group`, legenda "Formato"), seleção múltipla com `aria-pressed`; "All Formats" limpa a seleção e fica ativo quando nada está marcado. Altura 32, raio 4, SemiBold 14, gap 19, centralizada e com quebra de linha no mobile; hover `primary-light-1` a 10% e foco de 2 px `primary` com offset 2.
+- `useCatalogFilters()` na facade: seleção e ações sem a consulta, para os controles fora do `Suspense` da lista.
+- e2e do UC04: `format_in` da requisição interceptada com dois formatos, "All Formats" servido do cache, medidas e cores a 1366 px e quebra sem rolagem a 375 px.
+
+#### Changed
+
+- `CatalogProvider` guarda a seleção otimista (`useOptimistic` com o mesmo reducer): o botão marca na hora, enquanto a lista anterior segue visível até a nova combinação carregar.
+- `AnimeGrid` recebe `busy` (`aria-busy` e opacidade 60%) durante a troca de filtros.
+- `main` em coluna com `gap-section` (24 px) entre filtros e grade.
+- e2e do UC03 atravessa os 8 filtros com Tab antes de chegar ao primeiro card; o mock do AniList registra as variáveis de cada requisição.
+- Entrada do UC04 no `AI_LOG.md`.
