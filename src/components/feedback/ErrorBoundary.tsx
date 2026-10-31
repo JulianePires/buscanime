@@ -31,9 +31,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   render() {
     if (!this.state.hasError) return this.props.children;
     return (
-      <div role="alert">
+      <div role="alert" className="flex flex-col items-center gap-4 py-12 text-center text-primary">
         <p>Não foi possível carregar os animes.</p>
-        <button type="button" onClick={this.reset}>
+        <button
+          type="button"
+          onClick={this.reset}
+          className="h-8 rounded-control bg-primary px-4 font-semibold text-sm text-white"
+        >
           Tentar novamente
         </button>
       </div>
