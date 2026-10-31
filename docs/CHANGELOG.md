@@ -151,3 +151,30 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 #### Changed
 
 - ADR-002 parcialmente substituído (só a parte de dados); plano, prompts UC02 a UC06, arquitetura, README e AI log alinhados ao Apollo Client.
+
+### `feat: add score tone rule to domain`
+
+#### Added
+
+- `src/domain/score.ts`: `scoreTone()` com as faixas da nota em tabela (`< 50` danger, `50–80` warning, `> 80` success) e `formatScore()`, testados nos limites e com os 12 cards do Figma.
+
+### `feat: list animes in cards with loading, empty and error states`
+
+#### Added
+
+- `AnimeCard`, `AnimeGrid`, `ScoreBadge` e `GenreChip` (card 317 × 270, grade de 4 colunas responsiva); `LoadingState` (esqueleto) e `EmptyState`; `CatalogResults` lendo `useCatalog()`.
+- Token `--color-black` para o texto da nota sobre `warning`/`success` (contraste WCAG).
+- Preconnect para `graphql.anilist.co` e `s4.anilist.co`.
+
+#### Changed
+
+- `App` compõe `ErrorBoundary` (`onReset={useCatalogRetry()}`) + `Suspense`; o `main` limita 1316 px ao conteúdo, com o gutter por fora.
+- `ErrorBoundary` estilizado com os tokens do projeto.
+- Testes do UC01 renderizam dentro do `CatalogProvider`.
+
+### `test: verify anime listing end to end`
+
+#### Added
+
+- e2e do UC02 com `page.route` (12 cards do Figma, grade de 4 colunas a 1366 px, nota 80 em amarelo); a API e as capas ficam mockadas em todo o arquivo.
+- Entrada do UC02 no `AI_LOG.md`.

@@ -134,6 +134,16 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 
 ## Registro de alterações
 
+### UC02: Visualizar listagem de animes
+
+- **Escopo:** `src/domain/score.ts` (faixas da nota como tabela); `AnimeCard`, `AnimeGrid`, `ScoreBadge`, `GenreChip` e `grid-layout.ts`; `LoadingState` (esqueleto na mesma grade) e `EmptyState`; `CatalogResults` ligando a facade `useCatalog()` à apresentação; `App` com `ErrorBoundary` + `Suspense`; estilo do `ErrorBoundary`; token `--color-black`; preconnect para o AniList; e2e com `page.route`. Sem filtros, busca, detalhe ou "Ver mais".
+- **Abordagem:** TDD em camadas (domínio → apresentação → integração → e2e), com cada teste vermelho antes da implementação. A regra da nota é testada com os 12 cards de `figma-cards.json` (`expectedColor`). Na integração, o msw responde ao `AnimePage` e `renderWithCatalog`/`clickAndWait` cuidam do Suspense. Os critérios BDD viram `describe` com o mesmo texto.
+- **Divergências do Figma:** nota 80 em amarelo (regra de negócio; o Figma pinta de verde). Texto da nota escuro sobre `warning`/`success`, porque `gray-light-2` dá 1,37:1 e 2,21:1, abaixo dos 3:1 do texto grande. Card como `article` até o UC03 transformá-lo em botão. Estados de carregamento, vazio e erro derivados dos tokens (`notInDesign`). Só a primeira capa sem `lazy` (`fetchpriority="high"`, candidata a LCP).
+- **Correção no UC01:** o `max-w-content` do `main` incluía o padding, e a grade ficava com 1266 px (colunas de 304,5 px). Agora o limite vale para o conteúdo (1316 px), com o gutter por fora.
+- **Verificação:** `pnpm validate` (134 testes), `pnpm test:e2e` (5), nenhuma URL `figma.com` no código, nota 80 em `rgb(255, 184, 0)` no e2e. `pnpm lighthouse:ci` com CLS 0 em todas as rodadas, mas performance de 89 a 91 (mínimo 90): LCP de 3,4 a 3,7 s na cadeia HTML → JS → preflight CORS → GraphQL → capa.
+- **Commits:** `feat: add score tone rule to domain`, `feat: list animes in cards with loading, empty and error states`, `test: verify anime listing end to end`.
+- **PR sugerido:** `feat: list animes from anilist (uc02)`.
+
 ### SETUP-01: Apollo Client 4 e GraphQL Codegen
 
 - **Escopo:** dependências e `codegen.ts`; schema do AniList versionado; `apollo-client.ts`, `cache.ts`, `mappers.ts` e query `AnimePage`; reducer de filtros, `CatalogProvider` e facade `use-catalog`; `ErrorBoundary`; utilitários de teste (MSW, fixtures, `renderWithCatalog`); regra de fronteira no ESLint; passo de codegen no CI; ADR-003, ADR-002, plano, prompts UC02 a UC06, arquitetura, README e changelog. Nenhuma tela nova.
@@ -194,3 +204,4 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 
 - Removi o excesso de conteúdo da página de exemplo porque ela será substituida em breve
 - Modifiquei os Requisitos Funcionais, Requisitos Não Funcionais e Casos de Uso para os que tinha criado baseado no desafio
+- Corrigi detalhes de layout para corresponder ao frame do figma (peso e cor da fonte - o Claude tinha ajustado para seguir regras de contraste)
