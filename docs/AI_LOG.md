@@ -40,6 +40,7 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 17. Trocar o TanStack Query pelo Apollo Client 4 (SETUP-01) em TDD: testes de cache, client, mappers, reducer, facade, Error Boundary e fronteira de lint antes da implementação; medir o bundle e registrar o ADR-003.
 18. Implementar o UC04 em TDD: filtro de formatos com seleção múltipla, seleção otimista com `useOptimistic` e verificação do `format_in` no e2e.
 19. Implementar o UC05 em TDD: busca por texto disparada no submit ou após o debounce da digitação, combinada com os formatos, e lista vazia com o termo pesquisado.
+20. Implementar o UC06 em TDD: "Ver mais" acumulando páginas com foco no primeiro card novo e erro da página seguinte sem derrubar a lista; o seletor de itens por página foi removido na revisão por não constar no Figma.
 
 ## Verificação do trabalho
 
@@ -129,14 +130,27 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 ## Pendências
 
 - SEO do Lighthouse em 91: avaliar os itens apontados no relatório.
-- Confirmar as decisões em aberto do plano: contraste do "Ver mais" e do chip da nota e o seletor de itens por página (RF07).
+- Confirmar as decisões em aberto do plano: contraste do "Ver mais" e do chip da nota.
 - Ativar no GitHub a proteção da `main` exigindo os checks do CI antes do merge.
 - Avaliar um mínimo de cobertura no Vitest quando os UCs com lógica de domínio forem implementados.
-- UC06: a facade deve expor `loadMoreError` (hoje um erro no `fetchMore` sobe para o Error Boundary).
+- Contraste do "Ver mais": o UC06 manteve o branco do Figma (≈ 1,7:1) e a Acessibilidade do Lighthouse caiu de 100 para 96 só por esse item; decidir entre o design e o texto `primary` (≈ 4,6:1).
+- Performance do Lighthouse em 87–88 (mínimo 90) já na base do UC06, por LCP de 3,7–3,9 s na capa servida pelo AniList real.
 - Acompanhar o bundle quando o UC02 passar a usar a facade (esperado perto de +64 KB gzip) e o Lighthouse de Performance.
 - Revisar o `pnpm.overrides` de `@graphql-tools/utils` ao atualizar o GraphQL Codegen.
 
 ## Registro de alterações
+
+### UC06: Carregar mais animes pelo "Ver mais"
+
+- **Escopo:** `src/components/pagination/LoadMoreButton.tsx`; `loadMoreError` em `use-catalog.ts`; `ref` como prop no `AnimeCard` e `focusIndex` no `AnimeGrid`; botão no `CatalogResults`; `e2e/load-more.spec.ts` e `pages` no `mockAniList`. O reducer, a chave do cache com `perPage` e o `merge` de `Page.media` já vinham do SETUP-01; a ação `setPerPage` saiu da facade junto com o RF07 e ficou só no reducer, disparada pela largura da tela (`src/domain/page-size.ts` e `use-viewport-page-size.ts`). Sem scroll infinito e sem `IntersectionObserver`.
+- **Abordagem:** TDD na ordem do prompt: facade (msw: a falha da página 2 mantém os itens, expõe `loadMoreError`, a nova tentativa carrega e trocar os filtros descarta o erro), `LoadMoreButton.test.tsx`, foco no `AnimeGrid.test.tsx`, integração em `src/App.load-more.test.tsx` (acervo de 36 paginado por `page`/`perPage`) e e2e. Cada camada ficou vermelha antes da implementação; um teste de mutação (tirar a ref do card alvo) derruba o cenário de foco.
+- **Decisão (próxima página sem `fetchMore`):** o `fetchMore` do `useSuspenseQuery` rejeita a promise que a lista lê com `use()` quando a requisição falha (`QueryReference.initiateFetch`), com qualquer `errorPolicy`, e o `try/catch` não impede a lista de ir ao Error Boundary. A facade passou a pedir a página com `client.query` (`network-only`): como `page` fica fora da chave do `Page`, a resposta grava na mesma entrada e o `merge` acumula e deduplica, como antes; a deduplicação continua só no `cache.ts`. O erro guarda os filtros em que ocorreu e só aparece para eles (estado derivado, sem efeito de reset).
+- **Foco:** o `CatalogResults` guarda o índice do primeiro card novo junto com os filtros do clique; o `AnimeGrid` passa uma ref de callback estável (`focusOnMount`) ao card nesse índice, que foca o botão do card ao montar. Trocar os filtros invalida o alvo, então a lista nova não rouba o foco, e uma falha não foca nada.
+- **Tamanho da página por largura (pedido na revisão):** `pageSizeForWidth` em `src/domain/page-size.ts` (até 610 px → 3, até 919 → 6, até 1219 → 9, a partir de 1220 → 12; as bordas 920 e 1220 ficaram na faixa de cima). O `CatalogProvider` inicia o reducer com a largura atual e `useViewportPageSize` escuta três `matchMedia` (`min-width` 611, 920 e 1220) com `useEffectEvent`: o evento só dispara ao cruzar uma faixa, e a troca vai pela mesma transição dos filtros (lista anterior visível, depois a página 1 com o novo tamanho; voltar a uma faixa já vista vem do cache). O `setPerPage` devolve o mesmo estado para o mesmo tamanho, então cruzar várias faixas de uma vez gera uma requisição só e não invalida o erro nem o foco do "Ver mais". O esqueleto reserva o tamanho da faixa (3 cards no mobile). Nos testes, `src/test/viewport.ts` começa em 1280 px e tem um polyfill de `matchMedia` com `resizeViewport`.
+- **Divergências do Figma e do prompt:** o texto e o ícone ficam brancos sobre `#FFB800` (≈ 1,7:1, abaixo do AA), porque a decisão de contraste do plano segue em aberto; o Lighthouse aponta só esse item (Acessibilidade 96). O seletor de itens por página (RF07) chegou a ser implementado e foi removido na revisão por não constar no Figma; o RF07 saiu dos requisitos (e o `notInDesign.tamanho-pagina` do manifesto); o tamanho da página passou a seguir a largura da tela (3 itens até 610 px, 6 até 919 px, 9 até 1219 px e 12 a partir de 1220 px, pedido na revisão). Carregamento ("Carregando...", desabilitado, opacidade 80%), hover (`brightness-95`), foco (2 px `primary`) e a mensagem de erro com "Tentar novamente" são derivados. O botão fica dentro do `Suspense` (some na primeira carga, no erro e na lista vazia, quando não há o que paginar). O prompt pedia `fetchMore`; ver a decisão acima.
+- **Verificação:** `pnpm validate` (Biome, ESLint sem avisos, 213 testes em 27 arquivos, build) e `pnpm test:e2e` (17). Capturas a 1366 e 375 px comparadas com `references/ver-mais.png`: botão de 1316 × 48, ícone 30 × 24 e texto centralizados, sem rolagem horizontal a 375 px. `pnpm lighthouse:ci` reprovou: Performance 85 (mínimo 90; antes do tamanho por largura, 87; a base sem o UC06 mediu 88; LCP de 3,7–3,9 s na capa do AniList em todas), Acessibilidade 96 (contraste do "Ver mais"), Boas práticas 100, SEO 92.
+- **Commit:** `feat: load more animes`.
+- **PR sugerido:** `feat: load more animes (uc06)`.
 
 ### UC05: Filtrar lista por busca de texto
 
@@ -247,3 +261,4 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - Testei o `preconnect()` do React 19 no `App` para a queda de performance na requisição ao AniList e mantive apenas o preconnect do `index.html`: o do React não trouxe ganho medível (ver "Decisões")
 - Com o preconnect do `index.html` (API e CDN das capas) e `loading="eager"` nas capas, o LCP caiu de 2,75 s para 0,88 s em média (ver "Decisões")
 - Pedi debounce na busca por texto, que o prompt do UC05 excluía: a busca dispara 400 ms depois da última tecla, e o Enter/"Buscar" continua imediato (ver UC05 em "Registro de alterações")
+- Pedi para remover um seletor de páginas que foi adicionado à parte. Divergia do layout proposto.

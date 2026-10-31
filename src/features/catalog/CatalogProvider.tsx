@@ -3,6 +3,7 @@ import { type ReactNode, useOptimistic, useReducer, useState, useTransition } fr
 import type { CatalogClient } from "../../services/anilist/apollo-client";
 import { CatalogContext } from "./catalog-context";
 import { catalogFiltersReducer, initialCatalogFilters } from "./catalog-filters-reducer";
+import { currentPageSize, useViewportPageSize } from "./use-viewport-page-size";
 
 interface CatalogProviderProps {
   /** Injetado pela composição (main.tsx) ou pelos testes (createTestApolloClient). */
@@ -12,20 +13,27 @@ interface CatalogProviderProps {
 
 /** Único ponto com ApolloProvider; guarda os filtros e o contador de novas tentativas. */
 export function CatalogProvider({ client, children }: CatalogProviderProps) {
-  const [filters, dispatch] = useReducer(catalogFiltersReducer, initialCatalogFilters);
+  // O tamanho da página começa pela largura atual e acompanha as faixas (domain/page-size.ts)
+  const [filters, dispatch] = useReducer(catalogFiltersReducer, initialCatalogFilters, (state) => ({
+    ...state,
+    perPage: currentPageSize(),
+  }));
   // Os controles mostram a escolha na hora; a lista só troca quando a nova combinação carrega
   const [selectedFilters, applyOptimistic] = useOptimistic(filters, catalogFiltersReducer);
   const [isFiltering, startFiltering] = useTransition();
   const [attempt, setAttempt] = useState(0);
 
+  const changeFilters = (action: Parameters<typeof dispatch>[0]) =>
+    startFiltering(() => {
+      applyOptimistic(action);
+      dispatch(action);
+    });
+  useViewportPageSize((perPage) => changeFilters({ type: "setPerPage", perPage }));
+
   const value = {
     filters,
     selectedFilters,
-    changeFilters: (action: Parameters<typeof dispatch>[0]) =>
-      startFiltering(() => {
-        applyOptimistic(action);
-        dispatch(action);
-      }),
+    changeFilters,
     isFiltering,
     attempt,
     retry: () => setAttempt((current) => current + 1),

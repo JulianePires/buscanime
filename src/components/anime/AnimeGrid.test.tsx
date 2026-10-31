@@ -26,6 +26,16 @@ describe("AnimeGrid", () => {
     expect(within(cards[0]).getByRole("heading")).toHaveTextContent(figmaCards.cards[0].title);
   });
 
+  it("foca o card em focusIndex quando ele entra na lista (primeiro card novo do Ver mais)", () => {
+    const firstPage = animes.slice(0, 6);
+    const { rerender } = render(<AnimeGrid animes={firstPage} focusIndex={6} />);
+    expect(document.body).toHaveFocus();
+
+    rerender(<AnimeGrid animes={animes} focusIndex={6} />);
+
+    expect(screen.getByRole("button", { name: animes[6].title })).toHaveFocus();
+  });
+
   it.each(figmaCards.cards)("$title: nota $averageScore% → $expectedColor", (card) => {
     render(<AnimeGrid animes={animes} />);
 

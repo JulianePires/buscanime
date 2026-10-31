@@ -215,3 +215,20 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 - `main` em coluna com `gap-section` (24 px) entre filtros e grade.
 - e2e do UC03 atravessa os 8 filtros com Tab antes de chegar ao primeiro card; o mock do AniList registra as variáveis de cada requisição.
 - Entrada do UC04 no `AI_LOG.md`.
+
+### `feat: load more animes`
+
+#### Added
+
+- `LoadMoreButton`: "Ver mais" do Figma (largura do conteúdo, 48 px, `warning`, raio 8, ícone `add.svg` 30 × 24 + SemiBold 20, gap 12); `aria-busy`, desabilitado e "Carregando..." durante a carga; some sem `hasNextPage`; erro com "Tentar novamente" junto ao botão.
+- `loadMoreError` na facade: a falha da página seguinte mantém as páginas carregadas e não sobe ao Error Boundary; trocar de filtros descarta o erro.
+- Foco no primeiro card novo depois do "Ver mais", por `ref` como prop no `AnimeCard` (React 19).
+- Tamanho da página pela largura da tela: 3 até 610 px, 6 até 919 px, 9 até 1219 px e 12 a partir de 1220 px (`src/domain/page-size.ts`), acompanhando o redimensionamento por `matchMedia` (`use-viewport-page-size.ts`); o esqueleto reserva o tamanho da faixa. Polyfill de `matchMedia` e `resizeViewport` em `src/test/viewport.ts`, testes de integração e e2e.
+- Testes de integração do UC06 em `src/App.load-more.test.tsx` e e2e em `e2e/load-more.spec.ts` (URL e cards mantidos, foco, botão some na última página, medidas a 1366 px); `mockAniList` aceita `pages`.
+
+#### Changed
+
+- A próxima página vem de `client.query` (`network-only`) em vez do `fetchMore` do `useSuspenseQuery`, cuja falha rejeita a promise lida pela lista. O acúmulo e a deduplicação continuam só no `merge` de `Page.media`.
+- RF07 (tamanho da paginação) removido de `REQUISITOS.md`, do README, do `DESIGN.md`, do plano e do `notInDesign` do manifesto: não consta no Figma; a numeração dos RF foi mantida.
+- UC06 renomeado para "Carregar mais animes pelo 'Ver mais'" (casos de uso, README, plano e testes); a ação `setPerPage` saiu da facade.
+- Entrada do UC06 no `AI_LOG.md`.

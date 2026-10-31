@@ -37,7 +37,7 @@ src/
 │   ├── layout/                 # SiteHeader, SiteFooter, Logo
 │   ├── filters/                # FormatFilter, SearchBar
 │   ├── anime/                  # AnimeCard, AnimeGrid, ScoreBadge, GenreChip, AnimeDetailDialog
-│   ├── pagination/             # LoadMoreButton, PageSizeSelect
+│   ├── pagination/             # LoadMoreButton
 │   └── feedback/               # ErrorBoundary (SETUP-01), LoadingState, EmptyState
 ├── test/
 │   ├── setup.ts
@@ -88,7 +88,7 @@ UC01 ──► SETUP-01 ──► UC02 ──┬──► UC03
 | 4     | UC03     | `feat/uc03-detalhe`        | Modal de detalhe acessível                                           | UC02       |
 | 5     | UC04     | `feat/uc04-filtro-formato` | Filtro multiformato com `format_in`                                  | UC02       |
 | 6     | UC05     | `feat/uc05-busca-texto`    | Busca por texto combinada com os formatos                            | UC04       |
-| 7     | UC06     | `feat/uc06-ver-mais`       | "Ver mais" acumulando páginas + tamanho da página                    | UC02       |
+| 7     | UC06     | `feat/uc06-ver-mais`       | "Ver mais" acumulando páginas                                        | UC02       |
 
 UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02.
 
@@ -139,11 +139,11 @@ UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02.
 - **Qualidade:** adequação funcional, usabilidade (label acessível, feedback de vazio), eficiência (uma requisição por submit; termo repetido vem do cache).
 - **Prompt:** [UC05](prompts/UC05-busca-por-texto.md).
 
-### UC06 — Alterar tamanho de paginação usando "Ver mais"
+### UC06 — Carregar mais animes pelo "Ver mais"
 
-- **Retrieval:** `specs/ver-mais.md`, `tokens.json`, `manifest.json → notInDesign.tamanho-pagina`; referência `ver-mais.png`; asset `public/icons/add.svg`.
-- **Red:** "Ver mais" busca a página seguinte e mantém os itens; botão some sem `hasNextPage`; `aria-busy` durante o carregamento; foco vai para o primeiro card novo; seletor 12/24/48 reinicia a lista.
-- **Green:** `LoadMoreButton`, `PageSizeSelect`; `loadMore`/`isLoadingMore` e `setPerPage` da facade (`fetchMore` e o `merge` do cache vêm do SETUP-01).
+- **Retrieval:** `specs/ver-mais.md`, `tokens.json`; referência `ver-mais.png`; asset `public/icons/add.svg`.
+- **Red:** "Ver mais" busca a página seguinte e mantém os itens; botão some sem `hasNextPage`; `aria-busy` durante o carregamento; foco vai para o primeiro card novo.
+- **Green:** `LoadMoreButton`; `loadMore`/`isLoadingMore` da facade (`fetchMore` e o `merge` do cache vêm do SETUP-01).
 - **Refactor:** garantir que a deduplicação fique só no `merge` de `Page.media` (`cache.ts`).
 - **Qualidade:** eficiência (sem refazer páginas já carregadas), acessibilidade (foco e anúncio), confiabilidade (erro na página seguinte não apaga as anteriores: a facade passa a expor `loadMoreError` em vez de lançar para o boundary).
 - **Prompt:** [UC06](prompts/UC06-ver-mais-e-tamanho-da-pagina.md).
@@ -165,7 +165,7 @@ UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02.
 | ------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------- |
 | Contraste do "Ver mais"   | Branco sobre `#FFB800` tem ≈ 1,7:1; usar texto e ícone `primary` (≈ 4,6:1)                         | Sim                    |
 | Contraste do chip de nota | `#E2E5E9` sobre `#01ADA6` tem ≈ 2,2:1; avaliar texto `white` em negrito                            | Sim                    |
-| Tamanho da página (RF07)  | Seletor 12/24/48 ao lado do "Ver mais", padrão 12 (3 linhas × 4)                                   | Sim                    |
+| Tamanho da página (RF07)  | RF07 removido: sem seletor; o tamanho segue a largura da tela (3, 6, 9 ou 12)                      | Não (decidido)         |
 | Título exibido            | `title.romaji` (igual ao design), `english` no detalhe                                             | Não                    |
 | UI e formulário           | Sem shadcn; sem React Hook Form ([ADR-002](adr/ADR-002-dependencias-de-dados-ui-e-formularios.md)) | Não (decidido)         |
 | Dados remotos             | Apollo Client 4 + GraphQL Codegen ([ADR-003](adr/ADR-003-apollo-client-como-camada-de-dados.md))   | Não (decidido)         |

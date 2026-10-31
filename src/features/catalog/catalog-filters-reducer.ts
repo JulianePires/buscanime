@@ -31,6 +31,7 @@ export function catalogFiltersReducer(
     case "search":
       return { ...state, search: action.term.trim() || undefined };
     case "setPerPage":
-      return { ...state, perPage: action.perPage };
+      // Mesmo tamanho, mesmo estado: a consulta não muda e o erro/foco do "Ver mais" seguem valendo
+      return state.perPage === action.perPage ? state : { ...state, perPage: action.perPage };
   }
 }

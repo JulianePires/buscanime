@@ -21,13 +21,31 @@ function figmaPage() {
   return page;
 }
 
-/** Mocka a API e as capas; devolve o contador e as variáveis das requisições ao GraphQL. */
-export async function mockAniList(page: Page) {
+/** Página seguinte (UC06): 12 animes genéricos, com ids depois dos do Figma. */
+function nextPage(currentPage: number) {
+  return buildPageData({
+    ids: Array.from({ length: 12 }, (_, index) => (currentPage - 1) * 12 + index + 1),
+  });
+}
+
+/**
+ * Mocka a API e as capas; devolve o contador e as variáveis das requisições ao GraphQL. A
+ * primeira página traz os cards do Figma; com `pages` > 1 o "Ver mais" encontra as seguintes.
+ */
+export async function mockAniList(page: Page, { pages = 1 } = {}) {
   const api = { calls: 0, variables: [] as Record<string, unknown>[] };
   await page.route("https://graphql.anilist.co/**", (route) => {
     api.calls += 1;
-    api.variables.push(route.request().postDataJSON()?.variables ?? {});
-    return route.fulfill({ json: { data: figmaPage() } });
+    const variables = route.request().postDataJSON()?.variables ?? {};
+    api.variables.push(variables);
+    const current: number = variables.page ?? 1;
+    const data = current === 1 ? figmaPage() : nextPage(current);
+    data.Page!.pageInfo = {
+      __typename: "PageInfo",
+      currentPage: current,
+      hasNextPage: current < pages,
+    };
+    return route.fulfill({ json: { data } });
   });
   await page.route("https://img.anili.st/**", (route) =>
     route.fulfill({ contentType: "image/png", body: COVER }),
