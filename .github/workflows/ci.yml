@@ -206,3 +206,11 @@ jobs:
           name: lighthouse
           path: reports/lighthouse.report.*
           retention-days: 7
+
+  ok:
+    name: ✅ Tudo certo
+    needs: [quality, security, codeql, test, build, e2e, lighthouse]
+    if: ${{ !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Tudo certo!"
