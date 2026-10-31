@@ -27,3 +27,6 @@ reports/*
 *.njsproj
 *.sln
 *.sw?
+
+# Tipos gerados pelo GraphQL Codegen (pnpm codegen)
+*.generated.ts
