@@ -134,6 +134,17 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 
 ## Registro de alterações
 
+### UC03: Visualizar detalhe do anime listado
+
+- **Escopo:** campos do detalhe em `ANIME_PAGE` (`description(asHtml: false)`, `episodes`, `seasonYear`, `status`, `siteUrl`) + `pnpm codegen`; domínio (`Anime` ampliado, `formats.ts`, `status.ts`); `toAnime` com sinopse em texto puro; `AnimeDetailDialog`; botão no `AnimeCard`; seleção e volta do foco no `AnimeGrid`; polyfill de `<dialog>` no setup; e2e por teclado com mock compartilhado. Sem rota nova e sem biblioteca de modal.
+- **Abordagem:** TDD na ordem do prompt: mappers → diálogo → integração (`renderWithCatalog` + msw contando chamadas) → e2e, cada camada vermelha antes da implementação. Os cenários Gherkin viram `describe` com o mesmo texto; Esc e "Fechar" rodam o mesmo cenário por `describe.each`.
+- **Decisões derivadas (o modal não está no Figma):** superfície `white`, raio `card` (8), padding 24, até 720 px, backdrop `black` a 60%; título H3/Bold 24 em `primary`; "Fechar" como botão de texto no estilo do filtro inativo (borda e texto `primary`, raio `control`, SemiBold 14, foco 2 px `primary`); rótulos dos dados em `primary` e valores em `black` (token já usado na nota; os cinzas não passam no contraste sobre branco); capa 230 × 325 (proporção do AniList) com `alt=""`; `GenreChip` e `ScoreBadge` reaproveitados. O card continua `article` com um botão transparente por cima (nome = título), para manter os testes e o heading do UC02.
+- **Foco:** o `AnimeGrid` guarda o botão acionado e o foca ao fechar, em vez de depender do navegador (o Safari não foca botões no clique, então o "elemento previamente focado" seria o `body`).
+- **Sinopse:** o AniList manda `<br>`, `<i>` e entidades mesmo com `asHtml: false`. O mapper troca `<br>` por quebra de linha, remove as demais tags, decodifica as entidades e a UI usa `whitespace-pre-line` (sem `dangerouslySetInnerHTML`). A regex de tags exclui `<` da classe (`<[^<>]*>`) para ficar linear (SonarJS `super-linear-regex`).
+- **Verificação:** `pnpm lint`, `pnpm test` (162), `pnpm typecheck`, `pnpm build`, `pnpm test:e2e` (7). `pnpm lighthouse:ci`: acessibilidade 100 nas 4 rodadas (o commit do UC02 medido no mesmo momento deu 95); performance de 82 a 86, abaixo do mínimo de 90, mas o UC02 no mesmo momento deu de 81 a 89: variação da rede ao vivo (AniList e capas), não regressão do UC03.
+- **Commits:** `feat: open anime detail in accessible dialog`, `test: verify anime detail by keyboard end to end`.
+- **PR sugerido:** `feat: show anime detail in accessible dialog (uc03)`.
+
 ### UC02: Visualizar listagem de animes
 
 - **Escopo:** `src/domain/score.ts` (faixas da nota como tabela); `AnimeCard`, `AnimeGrid`, `ScoreBadge`, `GenreChip` e `grid-layout.ts`; `LoadingState` (esqueleto na mesma grade) e `EmptyState`; `CatalogResults` ligando a facade `useCatalog()` à apresentação; `App` com `ErrorBoundary` + `Suspense`; estilo do `ErrorBoundary`; token `--color-black`; preconnect para o AniList; e2e com `page.route`. Sem filtros, busca, detalhe ou "Ver mais".

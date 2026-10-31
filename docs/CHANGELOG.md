@@ -178,3 +178,24 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 
 - e2e do UC02 com `page.route` (12 cards do Figma, grade de 4 colunas a 1366 px, nota 80 em amarelo); a API e as capas ficam mockadas em todo o arquivo.
 - Entrada do UC02 no `AI_LOG.md`.
+
+### `feat: open anime detail in accessible dialog`
+
+#### Added
+
+- `AnimeDetailDialog`: `<dialog>` nativo com `showModal()`, nome pelo título (`aria-labelledby`), título em inglês, capa, gêneros, nota, formato, episódios, ano, situação, sinopse e link para o AniList; `<title>` do React 19 enquanto aberto.
+- `src/domain/formats.ts` (`FORMAT_OPTIONS`, `formatLabel`) e `src/domain/status.ts` (`statusLabel`) como tabelas de rótulos.
+- Polyfill mínimo de `showModal`/`close`/Esc em `src/test/setup.ts` e fixture `zom100` compartilhada.
+
+#### Changed
+
+- `ANIME_PAGE` pede `description(asHtml: false)`, `episodes`, `seasonYear`, `status` e `siteUrl`; `toAnime` limpa a sinopse (tags e entidades HTML) e não repete o título em inglês igual ao principal.
+- `AnimeCard` ganha um botão que cobre o card (nome = título); o anel de foco passa a `has-[:focus-visible]` no `article`. `AnimeGrid` guarda o anime selecionado e devolve o foco ao card ao fechar.
+
+### `test: verify anime detail by keyboard end to end`
+
+#### Added
+
+- e2e do UC03: Tab até o card, Enter abre, Esc fecha com o foco de volta e o título restaurado, sem nova requisição; superfície do modal conferida (branco, raio 8, padding 24, 720 px).
+- `e2e/support/anilist.ts` com o mock do AniList compartilhado pelos specs.
+- Entrada do UC03 no `AI_LOG.md`.
