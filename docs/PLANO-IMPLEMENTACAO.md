@@ -21,17 +21,20 @@ src/
 ├── domain/                     # Regras puras, sem React nem rede
 │   ├── anime.ts                # Anime, AnimeFormat, AnimePage, CatalogFilters (SETUP-01)
 │   ├── formats.ts              # FORMAT_OPTIONS: rótulo do design ↔ AnimeFormat
-│   └── score.ts                # scoreTone(score): "danger" | "warning" | "success"
+│   ├── score.ts                # scoreTone(score): "danger" | "warning" | "success"
+│   └── page-size.ts            # Itens por página pela largura da tela (UC06)
 ├── services/anilist/           # Adapter da API GraphQL (ADR-003)
 │   ├── apollo-client.ts        # createApolloClient(): ErrorLink → HttpLink, cache-first (SETUP-01)
 │   ├── cache.ts                # createCache(): typePolicies de Page, media e pageInfo (SETUP-01)
 │   ├── schema.graphql          # Schema do AniList versionado (pnpm codegen:schema)
 │   ├── queries/page.graphql.ts # ANIME_PAGE; page.graphql.generated.ts fica fora do Git
-│   └── mappers.ts              # Tipos gerados ↔ domínio (única camada que os conhece)
+│   ├── mappers.ts              # Tipos gerados ↔ domínio (única camada que os conhece)
+│   └── prefetch.ts             # Primeira página pedida pelo index.html, antes do JS
 ├── features/catalog/           # Estado e orquestração da listagem
 │   ├── catalog-filters-reducer.ts # Estado do cliente: formats, search, perPage (SETUP-01)
 │   ├── catalog-context.ts      # Contexto dos filtros e da nova tentativa
-│   ├── use-catalog.ts          # Facade: useSuspenseQuery e fetchMore escondidos (SETUP-01)
+│   ├── use-catalog.ts          # Facade: useSuspenseQuery e a próxima página escondidos
+│   ├── use-viewport-page-size.ts # Tamanho da página acompanha a largura (matchMedia)
 │   └── CatalogProvider.tsx     # Único ApolloProvider; client injetado por prop (DIP)
 ├── components/                 # Apresentação (props in, eventos out)
 │   ├── layout/                 # SiteHeader, SiteFooter, Logo
@@ -143,7 +146,7 @@ UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02.
 
 - **Retrieval:** `specs/ver-mais.md`, `tokens.json`; referência `ver-mais.png`; asset `public/icons/add.svg`.
 - **Red:** "Ver mais" busca a página seguinte e mantém os itens; botão some sem `hasNextPage`; `aria-busy` durante o carregamento; foco vai para o primeiro card novo.
-- **Green:** `LoadMoreButton`; `loadMore`/`isLoadingMore` da facade (`fetchMore` e o `merge` do cache vêm do SETUP-01).
+- **Green:** `LoadMoreButton`; `loadMore`/`isLoadingMore`/`loadMoreError` da facade (próxima página por `client.query`; o `merge` do cache vem do SETUP-01).
 - **Refactor:** garantir que a deduplicação fique só no `merge` de `Page.media` (`cache.ts`).
 - **Qualidade:** eficiência (sem refazer páginas já carregadas), acessibilidade (foco e anúncio), confiabilidade (erro na página seguinte não apaga as anteriores: a facade passa a expor `loadMoreError` em vez de lançar para o boundary).
 - **Prompt:** [UC06](prompts/UC06-ver-mais-e-tamanho-da-pagina.md).

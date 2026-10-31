@@ -1,12 +1,8 @@
 import { InMemoryCache, type Reference } from "@apollo/client";
 
 /**
- * Cache normalizado do catálogo (ADR-003).
- *
- * O `Page` do AniList não tem id, então fica embutido no ROOT_QUERY. O argumento `page` fica
- * fora da chave para que o "Ver mais" grave todas as páginas de uma combinação no mesmo objeto.
- * Os filtros entram na chave do `Page` pelas variáveis da operação: sem isso, o `pageInfo` de
- * uma combinação sobrescreveria o de outra (ele é irmão de `media`, não filho).
+ * `page` fica fora da chave: o "Ver mais" grava todas as páginas de uma combinação no mesmo
+ * objeto. Os filtros entram nela, senão o `pageInfo` de uma combinação sobrescreveria o de outra.
  */
 export function createCache() {
   return new InMemoryCache({
@@ -34,7 +30,6 @@ export function createCache() {
             },
           },
           pageInfo: {
-            // Vale o pageInfo da última página carregada
             merge(_, incoming) {
               return incoming;
             },

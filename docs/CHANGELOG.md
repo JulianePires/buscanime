@@ -223,7 +223,7 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 - `LoadMoreButton`: "Ver mais" do Figma (largura do conteúdo, 48 px, `warning`, raio 8, ícone `add.svg` 30 × 24 + SemiBold 20, gap 12); `aria-busy`, desabilitado e "Carregando..." durante a carga; some sem `hasNextPage`; erro com "Tentar novamente" junto ao botão.
 - `loadMoreError` na facade: a falha da página seguinte mantém as páginas carregadas e não sobe ao Error Boundary; trocar de filtros descarta o erro.
 - Foco no primeiro card novo depois do "Ver mais", por `ref` como prop no `AnimeCard` (React 19).
-- Tamanho da página pela largura da tela: 3 até 610 px, 6 até 919 px, 9 até 1219 px e 12 a partir de 1220 px (`src/domain/page-size.ts`), acompanhando o redimensionamento por `matchMedia` (`use-viewport-page-size.ts`); o esqueleto reserva o tamanho da faixa. Polyfill de `matchMedia` e `resizeViewport` em `src/test/viewport.ts`, testes de integração e e2e.
+- Tamanho da página pela largura da tela: 3 até 600 px, 6 até 919 px, 9 até 1219 px e 12 a partir de 1220 px (`src/domain/page-size.ts`), acompanhando o redimensionamento por `matchMedia` (`use-viewport-page-size.ts`); o esqueleto reserva o tamanho da faixa. Polyfill de `matchMedia` e `resizeViewport` em `src/test/viewport.ts`, testes de integração e e2e.
 - Testes de integração do UC06 em `src/App.load-more.test.tsx` e e2e em `e2e/load-more.spec.ts` (URL e cards mantidos, foco, botão some na última página, medidas a 1366 px); `mockAniList` aceita `pages`.
 
 #### Changed
@@ -232,3 +232,17 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 - RF07 (tamanho da paginação) removido de `REQUISITOS.md`, do README, do `DESIGN.md`, do plano e do `notInDesign` do manifesto: não consta no Figma; a numeração dos RF foi mantida.
 - UC06 renomeado para "Carregar mais animes pelo 'Ver mais'" (casos de uso, README, plano e testes); a ação `setPerPage` saiu da facade.
 - Entrada do UC06 no `AI_LOG.md`.
+
+### `perf: request first anime page before the bundle`
+
+#### Added
+
+- Script inline no `index.html`, gerado no build (`src/services/anilist/prefetch.ts` e plugin no `vite.config.ts`): pede a primeira página logo depois do HTML, com o tamanho da faixa de largura, e pré-carrega a capa do primeiro anime; o Apollo reaproveita a resposta. Com throttling real no Lighthouse mobile, a requisição passou de ~2,5 s para ~0,65 s e o LCP de 4,9–5,3 s para 3,4–3,5 s.
+- e2e com emulação de celular: o pedido antecipado usa a largura do celular e é o único.
+
+#### Changed
+
+- As consultas ao AniList vão em campos de formulário: requisição simples de CORS, sem o `OPTIONS` antes. Os testes de integração mantêm o JSON (msw).
+- `useViewportPageSize` confere a largura ao se inscrever, para não perder uma troca de faixa entre o primeiro render e o efeito.
+- `formEncodedFetch` e `ANILIST_ACCEPT` sem export (uso interno); limpeza da antecipação global entre testes.
+- Documentação: árvore e camada de dados em `ARQUITETURA-E-FERRAMENTAS.md` (sem o `App.css` removido), árvore e UC06 no plano, nota de atualização no ADR-003 (`client.query`, tamanho por largura, transporte em formulário e prefetch) e última verificação no `AI_LOG.md`.

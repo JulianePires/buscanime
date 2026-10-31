@@ -1,17 +1,11 @@
 interface LoadMoreButtonProps {
-  /** Sem próxima página (`pageInfo.hasNextPage === false`) o botão some. */
   hasNextPage: boolean;
   loading?: boolean;
-  /** A página seguinte falhou: as anteriores continuam na lista e o visitante pode repetir. */
   error?: boolean;
   onLoadMore: () => void;
 }
 
-/**
- * "Ver mais" do Figma (specs/ver-mais.md): largura do conteúdo, 48 px, `warning`, raio 8, ícone
- * 30 × 24 + SemiBold 20 com gap de 12. O texto branco do design fica (≈ 1,7:1, abaixo do AA). O carregamento
- * (não desenhado) mantém o botão, desabilitado e com aria-busy.
- */
+/** Texto branco do Figma (≈ 1,7:1, abaixo do AA) até a decisão de contraste do plano. */
 export function LoadMoreButton({
   hasNextPage,
   loading = false,

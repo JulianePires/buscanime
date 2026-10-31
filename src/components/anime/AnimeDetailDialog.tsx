@@ -5,17 +5,15 @@ import { statusLabel } from "../../domain/status";
 import { GenreChip } from "./GenreChip";
 import { ScoreBadge } from "./ScoreBadge";
 
-/** Proporção das capas do AniList (extraLarge ≈ 460 × 650); reserva o espaço sem CLS. */
+/** Proporção das capas extraLarge do AniList (≈ 460 × 650). */
 const COVER_WIDTH = 230;
 const COVER_HEIGHT = 325;
 
 interface AnimeDetailDialogProps {
   anime: Anime;
-  /** Chamado depois que o diálogo fecha (Esc ou "Fechar"); quem abriu devolve o foco. */
   onClose: () => void;
 }
 
-/** Termo → valor da lista de dados; o que o AniList não informou fica de fora. */
 function toFacts(anime: Anime) {
   const facts = [
     { term: "Formato", value: anime.format && formatLabel(anime.format) },
@@ -55,11 +53,7 @@ function AnimeSynopsis({ description }: { description: string }) {
   );
 }
 
-/**
- * Detalhe do anime (UC03). Não existe no Figma: derivado dos tokens e do card (superfície
- * branca, raio do card, título H3/Bold em primary, chips e nota do UC02). <dialog> nativo com
- * showModal(): o navegador cuida do backdrop, do foco preso e do Esc.
- */
+/** `<dialog>` com showModal(): o navegador cuida do backdrop, do foco preso e do Esc. */
 export function AnimeDetailDialog({ anime, onClose }: AnimeDetailDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();

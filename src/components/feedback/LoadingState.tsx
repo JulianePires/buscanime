@@ -1,11 +1,10 @@
 import { ANIME_GRID_CLASS_NAME } from "../anime/grid-layout";
 
 interface LoadingStateProps {
-  /** Quantos cards reservar: o tamanho da página pedida. */
   count: number;
 }
 
-/** Esqueleto na mesma grade e proporção dos cards: a lista entra sem deslocar o rodapé (CLS 0). */
+/** Mesma grade e proporção dos cards: a lista entra sem deslocar o rodapé. */
 export function LoadingState({ count }: LoadingStateProps) {
   return (
     <div role="status">

@@ -78,6 +78,14 @@ Usar **Apollo Client 4 como a única camada de dados remotos**, com tipos gerado
 - **Ferramentas do Codegen exigem cuidado.** O preset pede `graphql@16` e um override de segurança. Ao atualizar o Codegen, rever o `pnpm.overrides`.
 - **Testes com Suspense precisam de `act` assíncrono.** Está documentado em `src/test/apollo.tsx` e nos prompts dos UCs.
 
+## Atualização (31/10/2026, UC06 e desempenho)
+
+O núcleo da decisão continua; mudaram três peças da tabela acima.
+
+- **Próxima página por `client.query`, não por `fetchMore`:** quando a requisição falha, o `fetchMore` do `useSuspenseQuery` rejeita a promise que a lista lê com `use()`, com qualquer `errorPolicy`, e a lista cairia no Error Boundary. A facade pede a página com `client.query` (`network-only`); como `page` fica fora da chave do `Page`, o `merge` acumula e deduplica como antes. A facade passou a expor `loadMoreError`.
+- **Facade e estado do cliente:** `setPerPage` saiu da facade com o RF07. O tamanho da página segue a largura da tela (`src/domain/page-size.ts`), e o `CatalogProvider` despacha `setPerPage` ao cruzar uma faixa.
+- **Client e transporte:** `createApolloClient` ganhou `formEncoded` (padrão `true`): o corpo vai em campos de formulário, uma requisição simples de CORS, sem o `OPTIONS` antes. Os testes de integração usam `formEncoded: false`, porque o MSW só lê GraphQL em JSON. A primeira página é pedida por um script inline no `index.html`, gerado no build (`prefetch.ts`), e o Apollo reaproveita essa resposta. Medições no `AI_LOG.md` (Decisões).
+
 ## Referências
 
 - Apollo, [Migrating to Apollo Client 4](https://www.apollographql.com/docs/react/migrating/apollo-client-4-migration), [GraphQL Codegen](https://www.apollographql.com/docs/react/development-testing/graphql-codegen) e [Pagination core API](https://www.apollographql.com/docs/react/pagination/core-api).

@@ -1,7 +1,5 @@
 import type { AnimeFormat } from "./anime";
 
-// Rótulos de formato do design (specs/filtros.md) como dados: única fonte para filtro e detalhe.
-
 export interface FormatOption {
   label: string;
   /** `null` é "All Formats": sem filtro de formato. */

@@ -1,9 +1,6 @@
 import { formatScore, type ScoreTone, scoreTone } from "../../domain/score";
 
-/**
- * Fundo pelo tom (Figma). O texto gray-light-2 do Figma só atinge 3:1 sobre danger; sobre
- * warning (1,37:1) e success (2,21:1) o texto fica escuro para cumprir o WCAG (RNF01).
- */
+/** Sobre warning e success, o texto gray-light-2 do Figma não passa no contraste: fica escuro. */
 const TONE_CLASSES: Record<ScoreTone, string> = {
   danger: "bg-danger",
   warning: "bg-warning",

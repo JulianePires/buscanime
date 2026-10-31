@@ -59,10 +59,31 @@ test.describe("Tamanho da página por largura de tela", () => {
     await page.goto("/");
 
     await expect.poll(() => api.variables[0]).toMatchObject({ page: 1, perPage: 3 });
+    expect(api.contentTypes[0]).toMatch(/^application\/x-www-form-urlencoded/);
+    // A lista usa o pedido antecipado do index.html: uma requisição só
+    await expect(page.getByRole("list", { name: "Animes" }).getByRole("article")).not.toHaveCount(
+      0,
+    );
+    expect(api.calls).toBe(1);
 
     await page.setViewportSize({ width: 1366, height: 900 });
 
     await expect.poll(() => api.variables.at(-1)).toMatchObject({ page: 1, perPage: 12 });
     expect(api.variables.map((variables) => variables.perPage)).toEqual([3, 12]);
+  });
+});
+
+test.describe("Primeira página pedida pelo index.html no celular", () => {
+  // isMobile aplica o <meta name="viewport">: antes dele a largura de layout é 980 px
+  test.use({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+
+  test("o pedido antecipado usa a largura do celular e é o único", async ({ page }) => {
+    const api = await mockAniList(page);
+    await page.goto("/");
+
+    await expect(page.getByRole("list", { name: "Animes" }).getByRole("article")).not.toHaveCount(
+      0,
+    );
+    expect(api.variables).toEqual([expect.objectContaining({ page: 1, perPage: 3 })]);
   });
 });

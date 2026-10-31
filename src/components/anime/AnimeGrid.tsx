@@ -6,21 +6,17 @@ import { ANIME_GRID_CLASS_NAME } from "./grid-layout";
 
 interface AnimeGridProps {
   animes: Anime[];
-  /** Nova combinação de filtros carregando: a lista atual fica visível, esmaecida. */
   busy?: boolean;
-  /** Card que recebe o foco ao entrar na lista: o primeiro novo depois do "Ver mais" (UC06). */
+  /** Índice do card que recebe o foco ao montar: o primeiro novo depois do "Ver mais". */
   focusIndex?: number;
 }
 
-/** Ref de callback estável: roda quando o card alvo monta, não a cada render. */
+// Fora do componente para ter identidade estável: só roda quando o card alvo monta
 const focusOnMount = (button: HTMLButtonElement | null) => button?.focus();
 
 /**
- * Só a primeira capa é prioritária: é o LCP em qualquer largura. Antecipar a linha inteira
- * fez as capas disputarem banda no mobile (1 coluna) e piorou o LCP no Lighthouse.
- *
- * O detalhe (UC03) mostra o anime já carregado na lista, sem nova requisição. Ao fechar, o foco
- * volta ao botão do card que o abriu (nem todo navegador foca o botão no clique).
+ * Só a primeira capa é prioritária: priorizar a linha inteira fez as capas disputarem banda no
+ * celular. O foco volta pelo ref porque nem todo navegador foca o botão no clique.
  */
 export function AnimeGrid({ animes, busy = false, focusIndex }: AnimeGridProps) {
   const [selected, setSelected] = useState<Anime | null>(null);

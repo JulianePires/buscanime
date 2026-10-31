@@ -9,11 +9,8 @@ interface FormatFilterProps {
 }
 
 /**
- * Linha de filtros do Figma (specs/filtros.md). Seleção múltipla com `aria-pressed`; "All Formats"
- * fica pressionado quando nada está selecionado. O fieldset dá o papel "group" com o nome da
- * legend; `min-w-0` desfaz o min-content padrão dele, que impediria a quebra de linha no mobile.
- * Todos os botões têm borda (no ativo, da cor do fundo) para manter a mesma altura; o padding
- * substitui as larguras fixas do Figma.
+ * `min-w-0` desfaz o min-content do fieldset, que impediria a quebra de linha no celular. O botão
+ * ativo tem borda da cor do fundo para manter a altura dos outros.
  */
 export function FormatFilter({ selected, onToggle, onClear }: FormatFilterProps) {
   return (

@@ -1,6 +1,6 @@
 import type { AnimeFormat, CatalogFilters } from "../../domain/anime";
 
-// Estado do cliente (filtros). O estado do servidor (páginas, erro) fica no cache do Apollo.
+// Só o estado do cliente: páginas e erros ficam no cache do Apollo.
 
 export type CatalogFiltersAction =
   | { type: "toggleFormat"; format: AnimeFormat }
@@ -31,7 +31,7 @@ export function catalogFiltersReducer(
     case "search":
       return { ...state, search: action.term.trim() || undefined };
     case "setPerPage":
-      // Mesmo tamanho, mesmo estado: a consulta não muda e o erro/foco do "Ver mais" seguem valendo
+      // Mesmo objeto: não recarrega a lista nem invalida o erro e o foco do "Ver mais"
       return state.perPage === action.perPage ? state : { ...state, perPage: action.perPage };
   }
 }

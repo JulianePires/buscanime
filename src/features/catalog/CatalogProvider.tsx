@@ -6,19 +6,16 @@ import { catalogFiltersReducer, initialCatalogFilters } from "./catalog-filters-
 import { currentPageSize, useViewportPageSize } from "./use-viewport-page-size";
 
 interface CatalogProviderProps {
-  /** Injetado pela composição (main.tsx) ou pelos testes (createTestApolloClient). */
   client: CatalogClient;
   children: ReactNode;
 }
 
-/** Único ponto com ApolloProvider; guarda os filtros e o contador de novas tentativas. */
 export function CatalogProvider({ client, children }: CatalogProviderProps) {
-  // O tamanho da página começa pela largura atual e acompanha as faixas (domain/page-size.ts)
   const [filters, dispatch] = useReducer(catalogFiltersReducer, initialCatalogFilters, (state) => ({
     ...state,
     perPage: currentPageSize(),
   }));
-  // Os controles mostram a escolha na hora; a lista só troca quando a nova combinação carrega
+  // Os controles mostram a escolha na hora; a lista troca quando a nova combinação carrega
   const [selectedFilters, applyOptimistic] = useOptimistic(filters, catalogFiltersReducer);
   const [isFiltering, startFiltering] = useTransition();
   const [attempt, setAttempt] = useState(0);

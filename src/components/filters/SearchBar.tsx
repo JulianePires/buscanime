@@ -1,21 +1,14 @@
 import { type FormEvent, useEffect, useRef } from "react";
 
-/** Pausa na digitação que conta como intenção de buscar. */
 export const SEARCH_DEBOUNCE_MS = 400;
 
 interface SearchBarProps {
-  /** Termo aplicado: o campo não é controlado, então só vale na montagem. */
+  /** O campo não é controlado: só vale na montagem. */
   defaultValue?: string;
-  /** Recebe o texto como digitado; a facade normaliza (trim; vazio remove o filtro). */
   onSearch: (term: string) => void;
 }
 
-/**
- * Busca do Figma (specs/busca.md). Dispara depois de uma pausa na digitação (debounce) ou na hora
- * pelo submit (botão ou Enter), que cancela a busca agendada. O campo não é controlado e é lido com
- * FormData; `<form action>` ficou de fora porque o React 19 reseta os campos não controlados
- * depois da action.
- */
+/** Sem `<form action>`: o React 19 reseta os campos não controlados depois da action. */
 export function SearchBar({ defaultValue, onSearch }: SearchBarProps) {
   const pending = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(pending.current), []);

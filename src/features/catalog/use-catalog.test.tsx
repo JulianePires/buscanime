@@ -8,7 +8,6 @@ import { anilist } from "../../test/msw/handlers";
 import { server } from "../../test/msw/server";
 import { useCatalog } from "./use-catalog";
 
-/** Marca do probe para `loadMoreError`. */
 const LOAD_MORE_FAILED = "Falha ao carregar a próxima página. Tente de novo.";
 
 /** Consumidor mínimo da facade: só vê tipos do domínio. */

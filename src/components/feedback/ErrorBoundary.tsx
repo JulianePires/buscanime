@@ -2,7 +2,7 @@ import { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
-  /** Chamado antes de remontar os filhos (ex.: useCatalogRetry). */
+  /** Chamado antes de remontar os filhos. */
   onReset?: () => void;
   onError?: (error: unknown, info: ErrorInfo) => void;
 }
@@ -11,7 +11,6 @@ interface ErrorBoundaryState {
   hasError: boolean;
 }
 
-/** Captura erros de renderização (incluindo os da query suspensa) e oferece nova tentativa. */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false };
 

@@ -3,25 +3,18 @@ import type { Anime } from "../../domain/anime";
 import { GenreChip } from "./GenreChip";
 import { ScoreBadge } from "./ScoreBadge";
 
-/** Dimensões do card no Figma; viram width/height da capa para reservar espaço (sem CLS). */
 const CARD_WIDTH = 317;
 const CARD_HEIGHT = 270;
 
 interface AnimeCardProps {
   anime: Anime;
-  /** Capa candidata a LCP: sem lazy e com fetchpriority alto (RNF02). */
   priority?: boolean;
-  /** Abre o detalhe (UC03); recebe o botão acionado, para onde o foco volta ao fechar. */
+  /** Recebe o botão acionado, que volta a ter o foco quando o detalhe fecha. */
   onSelect: (trigger: HTMLButtonElement) => void;
-  /** Ref do botão que abre o detalhe (prop comum no React 19, sem forwardRef). */
   ref?: Ref<HTMLButtonElement>;
 }
 
-/**
- * Card 317 × 270 do Figma (specs/card.md). Um botão transparente cobre o card inteiro e abre o
- * detalhe; o nome dele vem do título (aria-labelledby). O anel de foco fica no article (o
- * article não recebe foco, por isso `has-[:focus-visible]`): o overflow-hidden cortaria o do botão.
- */
+/** O anel de foco fica no article: o overflow-hidden cortaria o do botão que cobre o card. */
 export function AnimeCard({ anime, priority = false, onSelect, ref }: AnimeCardProps) {
   const titleId = useId();
 
@@ -29,7 +22,6 @@ export function AnimeCard({ anime, priority = false, onSelect, ref }: AnimeCardP
     <article
       aria-labelledby={titleId}
       className="relative aspect-317/270 overflow-hidden rounded-card bg-primary hover:cursor-pointer hover:brightness-80 has-focus-visible:ring-2 has-focus-visible:ring-primary-light-1 has-focus-visible:ring-offset-2 transform transition-all duration-150 hover:scale-[1.01]"
-      // Cor média da capa (AniList) enquanto a imagem carrega
       style={{ backgroundColor: anime.coverColor ?? undefined }}
     >
       {anime.coverUrl && (

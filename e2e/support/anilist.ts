@@ -33,11 +33,18 @@ function nextPage(currentPage: number) {
  * primeira página traz os cards do Figma; com `pages` > 1 o "Ver mais" encontra as seguintes.
  */
 export async function mockAniList(page: Page, { pages = 1 } = {}) {
-  const api = { calls: 0, variables: [] as Record<string, unknown>[] };
+  const api = {
+    calls: 0,
+    variables: [] as Record<string, unknown>[],
+    contentTypes: [] as string[],
+  };
   await page.route("https://graphql.anilist.co/**", (route) => {
     api.calls += 1;
-    const variables = route.request().postDataJSON()?.variables ?? {};
+    // Corpo em formulário: `variables` chega como texto JSON
+    const form = new URLSearchParams(route.request().postData() ?? "");
+    const variables = JSON.parse(form.get("variables") ?? "{}");
     api.variables.push(variables);
+    api.contentTypes.push(route.request().headers()["content-type"] ?? "");
     const current: number = variables.page ?? 1;
     const data = current === 1 ? figmaPage() : nextPage(current);
     data.Page!.pageInfo = {
