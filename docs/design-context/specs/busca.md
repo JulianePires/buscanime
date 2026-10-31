@@ -12,4 +12,5 @@
 
 - `form role="search"` com `label` visualmente oculto ("Buscar anime") ligado ao `input type="search"`.
 - O submit do formulário dispara a busca (`search` do AniList); Enter também submete.
+- Digitar também busca, com debounce de 400 ms depois da última tecla; o submit busca na hora e cancela a busca agendada.
 - Foco visível: borda `primary`.

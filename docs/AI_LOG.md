@@ -39,6 +39,7 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 16. Montar o CI no GitHub Actions em estágios por custo (commits e versão → qualidade e segurança → testes → build → e2e e Lighthouse), com notas mínimas do Lighthouse definidas em TDD.
 17. Trocar o TanStack Query pelo Apollo Client 4 (SETUP-01) em TDD: testes de cache, client, mappers, reducer, facade, Error Boundary e fronteira de lint antes da implementação; medir o bundle e registrar o ADR-003.
 18. Implementar o UC04 em TDD: filtro de formatos com seleção múltipla, seleção otimista com `useOptimistic` e verificação do `format_in` no e2e.
+19. Implementar o UC05 em TDD: busca por texto disparada no submit ou após o debounce da digitação, combinada com os formatos, e lista vazia com o termo pesquisado.
 
 ## Verificação do trabalho
 
@@ -111,6 +112,7 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - **`packageManager` e `engines`:** fixam pnpm 10.34.6 e Node 22.12+ para o CI e o ambiente local usarem as mesmas versões.
 - **Prompts por caso de uso:** cada UC tem um prompt em `docs/prompts/` com retrieval obrigatório, restrições, cenários BDD, plano TDD, valores de design, arquivos, verificação e formato de saída.
 - **Preconnect do GraphQL no `index.html`, não no `preconnect()` do React 19:** testado em 31/10/2026 com quatro builds (sem preconnect; só `index.html`; `index.html` + `preconnect()` no `App`; só `preconnect()`), contra o AniList real. No trace do Lighthouse, o `<link rel="preconnect" crossorigin>` do HTML encurtou o preflight CORS de ~163 ms para ~65 ms (a conexão já estava aberta) e a resposta chegou ~50 ms antes. O `preconnect()` sozinho reduziu pouco (~133 ms): numa SPA ele só roda no render, junto com a própria requisição, e sem `crossOrigin` cai no pool de conexões errado para o fetch CORS anônimo. Somado ao link do HTML, não muda nada: o React encontra o link existente e não insere outro. Nenhuma variante tirou o LCP (3,6–3,7 s) nem a nota de performance (81–90) da faixa de ruído; o gargalo do LCP segue sendo a cadeia HTML → JS → GraphQL → capa. O `preconnect()` do React só faria diferença com SSR, em que entra no `<head>` do HTML enviado.
+- **LCP de 2,75 s para 0,88 s em média:** a combinação dos ajustes no carregamento derrubou o LCP médio de 2,75 s para 0,88 s (−68%). Os ajustes foram o `preconnect` do `index.html` para a API (`graphql.anilist.co`, com `crossorigin`) e para o CDN das capas (`s4.anilist.co`), e `loading="eager"` nas capas dos cards, que deixam de esperar o lazy loading. A primeira capa continua com `fetchpriority="high"`. O gargalo apontado na decisão anterior (a cadeia HTML → JS → GraphQL → capa) ficou mais curto porque as conexões já estão abertas quando o JS pede a lista e as capas.
 
 ## Ajustes da IA
 
@@ -135,6 +137,17 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - Revisar o `pnpm.overrides` de `@graphql-tools/utils` ao atualizar o GraphQL Codegen.
 
 ## Registro de alterações
+
+### UC05: Filtrar lista por busca de texto
+
+- **Escopo:** `src/components/filters/SearchBar.tsx`; `EmptyState` com o termo pesquisado (via `CatalogResults`); busca no `main` do `App`, entre os filtros e a lista, fora do `Suspense`; `--container-search` (1012 px) no `@theme`; `e2e/search.spec.ts`. A ação `search(term)` da facade, a normalização no reducer (trim; vazio remove o filtro) e a ordenação em `toAnimePageVariables` (`SEARCH_MATCH` com termo, `POPULARITY_DESC` sem) já vinham do SETUP-01 e não mudaram. Sem autocomplete e sem estado na URL.
+- **Abordagem:** TDD na ordem do prompt: `SearchBar.test.tsx` e o caso com termo do `EmptyState.test.tsx` (vermelhos por falta do componente e da prop); integração com msw aplicando `search` e `format_in` a um acervo de três títulos; e2e com Enter, variáveis da requisição e medidas a 1366 px. Os cenários Gherkin viram `describe` com o mesmo texto, mais um cenário de campo vazio (remove o termo e volta ao cache sem requisição).
+- **Decisões:** campo não controlado lido com `FormData` no `onSubmit` + `preventDefault`, sem `<form action>` (o React 19 reseta os campos não controlados) e sem React Hook Form (ADR-002); `defaultValue` vem da seleção otimista. Repetir a mesma busca não refaz a requisição porque as variáveis normalizadas são iguais e o Apollo responde do cache. `normalizeSearch` não foi extraído para `src/domain/search.ts`: só o reducer usa o trim, e a extração seria só indireção.
+- **Debounce (pedido na revisão, contra o anti-objetivo do prompt):** a digitação agenda a busca para 400 ms (`SEARCH_DEBOUNCE_MS`) depois da última tecla; o submit (botão ou Enter) busca na hora e cancela a busca agendada, e a desmontagem também a cancela. Limpar o campo, inclusive pelo "x" do `input type="search"`, remove o filtro depois da pausa. Testado com timers falsos no `SearchBar.test.tsx` (só o último texto vira busca; o submit não duplica), na integração (três mudanças rápidas viram uma requisição) e no e2e (teclas a cada 50 ms geram uma requisição só, com o texto final). O e2e confere a ausência de requisições intermediárias pela lista de variáveis, sem espera fixa (o Sonar proíbe `waitForTimeout`).
+- **Divergências do Figma e do prompt:** `form role="search"` com `biome-ignore` do `useSemanticElements`, porque o Biome sugere `<search>` e o aria-query do Testing Library 10.4 ainda não mapeia esse elemento para o papel "search" (o teste falhou com ele). O foco é só a borda `primary` de 1 px, como no spec. O hover do botão (`primary-light-1`) é derivado. Os testes de integração do UC05 ficaram em `src/App.search.test.tsx`, não no `App.test.tsx`, para os dois arquivos ficarem dentro do `max-lines` do ESLint. O e2e do UC03 passou de 10 para 12 Tabs até o primeiro card (campo e "Buscar" entram na ordem de foco).
+- **Verificação:** `pnpm validate` (Biome, ESLint sem avisos, 184 testes em 24 arquivos, build) e `pnpm test:e2e` (14). Captura a 1366 px comparada com `references/busca.png`: conjunto de 1012 px centralizado, botão 86 × 38, gap de 10 px; a 375 px sem rolagem horizontal.
+- **Commit:** `feat: search anime by text`.
+- **PR sugerido:** `feat: search anime by text (uc05)`.
 
 ### UC04: Filtrar lista por um ou mais formatos
 
@@ -232,3 +245,5 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
   nos cards de anime e corrigi os cursores nos seus elementos
 - Alterei a decisão de utilizar o Reqact Query para o Apollo Client por questões de compatibilidade, excesso de configurações e pela tipagem integrada
 - Testei o `preconnect()` do React 19 no `App` para a queda de performance na requisição ao AniList e mantive apenas o preconnect do `index.html`: o do React não trouxe ganho medível (ver "Decisões")
+- Com o preconnect do `index.html` (API e CDN das capas) e `loading="eager"` nas capas, o LCP caiu de 2,75 s para 0,88 s em média (ver "Decisões")
+- Pedi debounce na busca por texto, que o prompt do UC05 excluía: a busca dispara 400 ms depois da última tecla, e o Enter/"Buscar" continua imediato (ver UC05 em "Registro de alterações")
