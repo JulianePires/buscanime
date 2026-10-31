@@ -4,6 +4,36 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-31
+
+Primeira versão estável: UC01 a UC06 implementados, camada de dados com Apollo Client e pipeline de CI. Gerado a partir dos commits da `main`.
+
+### Funcionalidades
+
+- configure apollo client as data layer ([#4](https://github.com/JulianePires/buscanime/pull/4)) (`ac977fd`)
+- build page structure from design tokens (`23b0f42`)
+- list animes from anilist (uc02) ([#5](https://github.com/JulianePires/buscanime/pull/5)) (`a1fd03b`)
+- show anime detail in accessible dialog (uc03) ([#6](https://github.com/JulianePires/buscanime/pull/6)) (`4dd40c4`)
+- filter anime list by format ([#7](https://github.com/JulianePires/buscanime/pull/7)) (`2c483b9`)
+- search anime by text ([#8](https://github.com/JulianePires/buscanime/pull/8)) (`a37a6c5`)
+- load more animes (uc06) ([#9](https://github.com/JulianePires/buscanime/pull/9)) (`e9f1216`)
+
+### CI
+
+- add github actions pipeline ([#3](https://github.com/JulianePires/buscanime/pull/3)) (`8061cd6`)
+
+### Documentação
+
+- define rag config and implementation plan ([#2](https://github.com/JulianePires/buscanime/pull/2)) (`bd9aafd`)
+
+### Manutenção
+
+- initial commit (`0ddce9a`)
+- estrutura base da aplicação Buscanime ([#1](https://github.com/JulianePires/buscanime/pull/1)) (`431674f`)
+- enhance application performance and documentation ([#10](https://github.com/JulianePires/buscanime/pull/10)) (`e5ad29d`)
+
+## Histórico detalhado por commit (até a 1.0.0)
+
 ### `chore: initial commit` (main)
 
 - Commit vazio que inicia a `main`, base para a branch `feat/estrutura-base` e para o cálculo de versão.
@@ -246,3 +276,6 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 - `useViewportPageSize` confere a largura ao se inscrever, para não perder uma troca de faixa entre o primeiro render e o efeito.
 - `formEncodedFetch` e `ANILIST_ACCEPT` sem export (uso interno); limpeza da antecipação global entre testes.
 - Documentação: árvore e camada de dados em `ARQUITETURA-E-FERRAMENTAS.md` (sem o `App.css` removido), árvore e UC06 no plano, nota de atualização no ADR-003 (`client.query`, tamanho por largura, transporte em formulário e prefetch) e última verificação no `AI_LOG.md`.
+
+[Unreleased]: https://github.com/JulianePires/buscanime/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/JulianePires/buscanime/releases/tag/v1.0.0
