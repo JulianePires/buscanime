@@ -37,6 +37,7 @@ export function AnimeCard({ anime, priority = false, onSelect }: AnimeCardProps)
           width={CARD_WIDTH}
           height={CARD_HEIGHT}
           fetchPriority={priority ? "high" : "auto"}
+          loading="eager"
           decoding="async"
           className="absolute inset-0 size-full object-cover"
         />

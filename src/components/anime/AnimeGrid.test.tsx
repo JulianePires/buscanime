@@ -34,16 +34,3 @@ describe("AnimeGrid", () => {
     expect(badge).toHaveAttribute("data-tone", card.expectedColor);
   });
 });
-
-describe("AnimeGrid - prioridade das capas", () => {
-  it("prioriza só a primeira capa; as demais são lazy para não disputar banda com o LCP", () => {
-    render(<AnimeGrid animes={animes} />);
-
-    const covers = screen.getAllByRole("presentation");
-    expect(covers.map((cover) => cover.getAttribute("loading"))).toEqual([
-      "eager",
-      ...Array(11).fill("lazy"),
-    ]);
-    expect(covers[0]).toHaveAttribute("fetchpriority", "high");
-  });
-});

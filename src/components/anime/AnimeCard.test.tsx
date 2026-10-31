@@ -59,7 +59,7 @@ describe("AnimeCard", () => {
     expect(badge).toHaveClass("bg-warning");
   });
 
-  it("usa a capa decorativa com dimensões fixas e carregamento preguiçoso", () => {
+  it("usa a capa decorativa com dimensões fixas e carregamento progressivo", () => {
     const card = renderCard();
 
     // alt="" tira a imagem da árvore de acessibilidade (role presentation)
@@ -68,7 +68,7 @@ describe("AnimeCard", () => {
     expect(cover).toHaveAttribute("alt", "");
     expect(cover).toHaveAttribute("width", "317");
     expect(cover).toHaveAttribute("height", "270");
-    expect(cover).toHaveAttribute("loading", "lazy");
+    expect(cover).toHaveAttribute("loading", "eager");
     expect(cover).toHaveAttribute("decoding", "async");
   });
 
