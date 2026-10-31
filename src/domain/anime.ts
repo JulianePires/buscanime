@@ -1,4 +1,4 @@
-// Tipos do domínio: estáveis, sem nulos aninhados e sem conhecer o AniList nem o Apollo.
+// Sem conhecer o AniList nem o Apollo: os mappers convertem as respostas para estes tipos.
 
 export const ANIME_FORMATS = ["TV", "TV_SHORT", "MOVIE", "SPECIAL", "OVA", "ONA", "MUSIC"] as const;
 
@@ -38,7 +38,6 @@ export interface AnimePage {
   hasNextPage: boolean;
 }
 
-/** Filtros escolhidos pelo visitante; definem qual combinação de páginas é carregada. */
 export interface CatalogFilters {
   formats: AnimeFormat[];
   search?: string;

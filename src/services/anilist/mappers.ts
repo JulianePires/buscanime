@@ -7,7 +7,7 @@ import {
 } from "../../domain/anime";
 import type { AnimePageQuery, AnimePageQueryVariables } from "./queries/page.graphql.generated";
 
-// Anti-Corruption Layer: só este arquivo conhece os tipos gerados pelo Codegen.
+// Só este arquivo conhece os tipos gerados pelo Codegen.
 
 type Media = NonNullable<NonNullable<NonNullable<AnimePageQuery["Page"]>["media"]>[number]>;
 
@@ -34,10 +34,7 @@ function toEnglishTitle(title: Media["title"]) {
   return english && english !== toTitle(title) ? english : null;
 }
 
-/**
- * Sinopse como texto puro: a UI a renderiza como texto (sem dangerouslySetInnerHTML), então
- * `<br>` vira quebra de linha, as demais tags (`<i>`, `<b>`) saem e as entidades são decodificadas.
- */
+/** Texto puro: a UI renderiza a sinopse sem dangerouslySetInnerHTML. */
 function toDescription(description: Media["description"]) {
   let text = description ?? "";
   let previous: string;
@@ -94,10 +91,7 @@ export function toAnimePage(data: AnimePageQuery): AnimePage {
   };
 }
 
-/**
- * Filtros → variáveis da primeira página. Filtros vazios vão como `undefined` (o JSON os omite),
- * o que mantém a requisição e as chaves do cache sem variáveis inúteis.
- */
+/** Filtros vazios vão como `undefined`: o JSON os omite da requisição e da chave do cache. */
 export function toAnimePageVariables(filters: CatalogFilters): AnimePageQueryVariables {
   return {
     page: 1,

@@ -3,16 +3,12 @@ import type { ReactNode } from "react";
 import { CatalogProvider } from "../features/catalog/CatalogProvider";
 import { createApolloClient } from "../services/anilist/apollo-client";
 
-/** Client real (links + typePolicies) com cache novo e sem logs; o MSW responde pela rede. */
+/** Em JSON: o MSW não lê o corpo em formulário (coberto em apollo-client.test.ts). */
 export function createTestApolloClient() {
-  return createApolloClient({ logErrors: false });
+  return createApolloClient({ logErrors: false, formEncoded: false });
 }
 
-/**
- * Renderiza dentro do CatalogProvider. É assíncrono de propósito: no React 19, um componente
- * que suspende durante o `act` síncrono do `render` não é retomado depois; com
- * `await act(async () => ...)` o React agenda a retomada e os `findBy*` funcionam.
- */
+/** Assíncrono: no React 19, o que suspende num `act` síncrono não é retomado depois. */
 export async function renderWithCatalog(ui: ReactNode, client = createTestApolloClient()) {
   let result: ReturnType<typeof render> | undefined;
   // biome-ignore lint/suspicious/useAwait: o act assíncrono é o que agenda a retomada do Suspense

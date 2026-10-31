@@ -1,7 +1,5 @@
 import type { AnimeStatus } from "./anime";
 
-// Situação de lançamento do AniList (MediaStatus) em português, para o detalhe (UC03).
-
 const STATUS_LABELS: Record<AnimeStatus, string> = {
   FINISHED: "Finalizado",
   RELEASING: "Em exibição",

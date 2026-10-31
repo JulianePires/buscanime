@@ -3,14 +3,13 @@ import type { CatalogFilters } from "../../domain/anime";
 import type { CatalogFiltersAction } from "./catalog-filters-reducer";
 
 export interface CatalogContextValue {
-  /** Filtros aplicados: definem a consulta exibida. */
+  /** Filtros da consulta exibida. */
   filters: CatalogFilters;
-  /** Filtros escolhidos, já com a mudança ainda em transição (useOptimistic). */
+  /** Já inclui a mudança ainda em transição (useOptimistic). */
   selectedFilters: CatalogFilters;
-  /** Aplica a ação dentro de uma transição: a lista anterior fica visível enquanto carrega. */
   changeFilters: (action: CatalogFiltersAction) => void;
   isFiltering: boolean;
-  /** Muda a cada "Tentar novamente" e entra no queryKey do useSuspenseQuery. */
+  /** Entra no queryKey: mudar refaz a consulta que falhou. */
   attempt: number;
   retry: () => void;
 }

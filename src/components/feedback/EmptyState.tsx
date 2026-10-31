@@ -1,5 +1,4 @@
 interface EmptyStateProps {
-  /** Termo pesquisado (UC05): a mensagem diz o que não foi encontrado. */
   term?: string;
 }
 

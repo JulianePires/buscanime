@@ -9,11 +9,12 @@
       content="Buscanime: encontre animes por texto e formato e consulte os detalhes de cada título."
     />
     <title>Buscanime | Busca de animes</title>
-    <!-- A lista depende da API e das capas: abre as conexões antes do JS (LCP). O crossorigin
-         casa com o fetch CORS do Apollo; sem ele a conexão aberta não é reaproveitada. Aqui, e não
-         no preconnect() do React: no cliente ele só roda junto com a requisição (AI_LOG, Decisões). -->
+    <!-- Sem o crossorigin, a conexão não serve ao fetch CORS da API -->
     <link rel="preconnect" href="https://graphql.anilist.co" crossorigin />
     <link rel="preconnect" href="https://s4.anilist.co" />
+    <!-- O build troca por um script que pede a lista antes do JS (vite.config.ts). Fica depois
+         do meta viewport, porque antes dele o celular mede 980 px, e antes do CSS. -->
+    <!-- anime-page-prefetch -->
   </head>
   <body>
     <div id="root"></div>
