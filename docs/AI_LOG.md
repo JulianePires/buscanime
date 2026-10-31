@@ -38,6 +38,7 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 15. Registrar a decisão de RAG no ADR-001 e escrever o plano de implementação com um prompt documentado por caso de uso.
 16. Montar o CI no GitHub Actions em estágios por custo (commits e versão → qualidade e segurança → testes → build → e2e e Lighthouse), com notas mínimas do Lighthouse definidas em TDD.
 17. Trocar o TanStack Query pelo Apollo Client 4 (SETUP-01) em TDD: testes de cache, client, mappers, reducer, facade, Error Boundary e fronteira de lint antes da implementação; medir o bundle e registrar o ADR-003.
+18. Implementar o UC04 em TDD: filtro de formatos com seleção múltipla, seleção otimista com `useOptimistic` e verificação do `format_in` no e2e.
 
 ## Verificação do trabalho
 
@@ -134,6 +135,16 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - Revisar o `pnpm.overrides` de `@graphql-tools/utils` ao atualizar o GraphQL Codegen.
 
 ## Registro de alterações
+
+### UC04: Filtrar lista por um ou mais formatos
+
+- **Escopo:** `src/components/filters/FormatFilter.tsx`; `useCatalogFilters()` e seleção otimista no `CatalogProvider`/contexto; `aria-busy` no `AnimeGrid`; filtros no `main` do `App`, fora do `Suspense`; `e2e/filters.spec.ts` e variáveis registradas no mock do AniList. `FORMAT_OPTIONS`, o reducer (`toggleFormat`/`clearFormats`) e `toAnimePageVariables` (`format_in` só com seleção) já vinham do SETUP-01/UC03 e não mudaram. Sem busca por texto e sem estado na URL.
+- **Abordagem:** TDD na ordem do prompt: `formats.test.ts` já cobria as 8 opções; reducer ganhou só o caso de vários formatos; `FormatFilter.test.tsx` (vermelho por falta do componente); integração no `App.test.tsx` com msw aplicando o `format_in` a um acervo misto; e2e. Os cenários Gherkin viram `describe` com o mesmo texto.
+- **Decisão (seleção otimista):** a facade troca os filtros em `startTransition`, então o `aria-pressed` só mudaria quando a nova página chegasse. O `useOptimistic` do React 19 com o próprio reducer mostra a escolha na hora; a consulta continua usando os filtros confirmados (usar os otimistas suspenderia a lista com urgência e mostraria o esqueleto). Um teste de mutação (trocar a seleção otimista pela confirmada) derruba o cenário "o botão fica marcado na hora".
+- **Divergências do Figma:** larguras pelo padding de 19 px (115, 100, 79, 98, 88, 70, 72, 78 contra 119, 105, 76, 105, 88, 65, 67, 76; linha de 833 contra 834 px); borda de 1 px também no ativo, da cor do fundo, para manter 32 px; `fieldset` + `legend` oculta no lugar de `div role="group"` (exigência do Biome `useSemanticElements`, mesmo papel e nome); o `form role="search"` do `layout.md` fica para o UC05; hover, foco e o esmaecimento da lista durante a carga são derivados (`notInDesign`).
+- **Verificação:** `pnpm validate` (Biome, ESLint sem avisos, 170 testes em 22 arquivos, build) e `pnpm test:e2e` (10). Captura da linha a 1366 px comparada com `references/filtros.png`; a 375 px a linha quebra em três sem rolagem horizontal.
+- **Commit:** `feat: filter anime list by format`.
+- **PR sugerido:** `feat: filter anime list by format (uc04)`.
 
 ### UC03: Visualizar detalhe do anime listado
 

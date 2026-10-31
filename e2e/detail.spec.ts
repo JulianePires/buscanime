@@ -12,9 +12,8 @@ test.describe("UC03 - Visualizar detalhe do anime listado", () => {
     const card = page.getByRole("button", { name: FIRST_TITLE });
     await expect(card).toBeVisible();
 
-    // Logo da navegação → primeiro card
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
+    // Logo da navegação → 8 filtros de formato (UC04) → primeiro card
+    for (let stop = 0; stop < 10; stop += 1) await page.keyboard.press("Tab");
     await expect(card).toBeFocused();
 
     await page.keyboard.press("Enter");

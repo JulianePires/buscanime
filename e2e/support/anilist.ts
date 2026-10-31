@@ -21,11 +21,12 @@ function figmaPage() {
   return page;
 }
 
-/** Mocka a API e as capas; devolve o contador de requisições ao GraphQL. */
+/** Mocka a API e as capas; devolve o contador e as variáveis das requisições ao GraphQL. */
 export async function mockAniList(page: Page) {
-  const api = { calls: 0 };
+  const api = { calls: 0, variables: [] as Record<string, unknown>[] };
   await page.route("https://graphql.anilist.co/**", (route) => {
     api.calls += 1;
+    api.variables.push(route.request().postDataJSON()?.variables ?? {});
     return route.fulfill({ json: { data: figmaPage() } });
   });
   await page.route("https://img.anili.st/**", (route) =>

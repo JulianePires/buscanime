@@ -17,6 +17,18 @@ describe("catalogFiltersReducer", () => {
     expect(without.formats).toEqual([]);
   });
 
+  it("toggleFormat acumula vários formatos e remove só o escolhido", () => {
+    const formats = (["TV", "MOVIE", "OVA"] as const).reduce(
+      (state, format) => catalogFiltersReducer(state, { type: "toggleFormat", format }),
+      initialCatalogFilters,
+    );
+
+    expect(formats.formats).toEqual(["TV", "MOVIE", "OVA"]);
+    expect(
+      catalogFiltersReducer(formats, { type: "toggleFormat", format: "MOVIE" }).formats,
+    ).toEqual(["TV", "OVA"]);
+  });
+
   it("clearFormats esvazia a seleção", () => {
     const state = { ...initialCatalogFilters, formats: ["TV" as const, "OVA" as const] };
 
