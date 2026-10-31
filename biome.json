@@ -29,7 +29,7 @@
   },
   "overrides": [
     {
-      "includes": ["*.config.{ts,js}", "codegen.ts"],
+      "includes": ["*.config.{ts,js}", "codegen.ts", "src/design-tokens.test.ts"],
       "linter": {
         "rules": {
           "correctness": {

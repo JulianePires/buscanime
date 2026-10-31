@@ -1,20 +1,15 @@
-import "./App.css";
+import { SiteFooter } from "./components/layout/SiteFooter";
+import { SiteHeader } from "./components/layout/SiteHeader";
 
 function App() {
   return (
-    <>
-      <header>
-        <nav
-          aria-label="Navegação principal"
-          className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8"
-        >
-          <a className="text-xl font-bold tracking-tight" href="/">
-            buscanime<span className="text-fuchsia-500">.</span>
-          </a>
-        </nav>
-      </header>
-      <main className="mx-auto max-w-7xl px-6 lg:px-8" />
-    </>
+    <div className="flex flex-col gap-section">
+      <SiteHeader />
+      <main className="mx-auto w-full max-w-content px-4 sm:px-gutter">
+        <h1 className="sr-only">Busca de animes</h1>
+      </main>
+      <SiteFooter />
+    </div>
   );
 }
 

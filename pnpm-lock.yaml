@@ -14,6 +14,9 @@ importers:
       '@apollo/client':
         specifier: ^4.3.5
         version: 4.3.5(graphql-ws@6.4.1(graphql@16.14.2)(ws@8.22.0))(graphql@16.14.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)
+      '@fontsource-variable/mulish':
+        specifier: ^5.3.0
+        version: 5.3.0
       graphql:
         specifier: ^16.14.2
         version: 16.14.2
@@ -526,6 +529,9 @@ packages:
 
   '@fastify/busboy@3.2.4':
     resolution: {integrity: sha512-lQS8xcXT54rdJb+wlG/Q7SMSdtkZEpLPHooSDUZyyZm9LJD7X1kONPhVoPaHq+dsPtWUGGLIz9gBNhs9qKbylw==}
+
+  '@fontsource-variable/mulish@5.3.0':
+    resolution: {integrity: sha512-CLh1WAcz2noJmoAun0/dsE7+0ZO6Kq/MBd+x00CcZ9dmThXqYqdhSssXGOdqb3G9YVaeGOmVkMS5yrZd1BHr9Q==}
 
   '@formatjs/ecma402-abstract@2.3.6':
     resolution: {integrity: sha512-HJnTFeRM2kVFVr5gr5kH1XP6K0JcJtE7Lzvtr3FS/so5f1kpsqqqxy5JF+FRaO6H2qmcMfAUIox7AJteieRtVw==}
@@ -4010,6 +4016,8 @@ snapshots:
   '@exodus/bytes@1.16.0': {}
 
   '@fastify/busboy@3.2.4': {}
+
+  '@fontsource-variable/mulish@5.3.0': {}
 
   '@formatjs/ecma402-abstract@2.3.6':
     dependencies:

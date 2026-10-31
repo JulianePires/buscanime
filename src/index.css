@@ -1,9 +1,37 @@
 @import "tailwindcss";
 
+/* O snapshot do Figma em docs/ tem classes arbitrárias que não devem ir para o bundle */
+@source not "../docs";
+
+/* Espelho de docs/design-context/tokens.json (ADR-001); conferido por src/design-tokens.test.ts */
+@theme {
+  --color-*: initial;
+  --color-primary: #6324c6;
+  --color-primary-light-1: #774dc5;
+  --color-white: #ffffff;
+  --color-gray-light-1: #c4cad4;
+  --color-gray-light-2: #e2e5e9;
+  --color-gray: #a7b0be;
+  --color-success: #01ada6;
+  --color-warning: #ffb800;
+  --color-danger: #e92151;
+
+  --font-sans: "Mulish Variable", system-ui, sans-serif;
+  --text-caption: 10px;
+  --text-caption--line-height: normal;
+
+  --radius-control: 4px;
+  --radius-card: 8px;
+  --radius-load-more: 8px;
+
+  --spacing-header: 68px;
+  --spacing-footer: 54px;
+  --spacing-section: 24px;
+  --spacing-gutter: 25px;
+  --container-content: 1316px;
+}
+
 :root {
-  font-family: Inter, system-ui, sans-serif;
-  color: #0f172a;
-  background: #f8fafc;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -16,4 +44,5 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  @apply bg-white font-sans;
 }
