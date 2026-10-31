@@ -80,3 +80,29 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 #### Changed
 
 - `DESIGN.md` e AI log: faixas da nota reconfirmadas (50 e 80 na faixa amarela), prevalecendo sobre o exemplo de 80% em verde no Figma.
+
+### `build: enforce lighthouse minimum scores`
+
+#### Changed
+
+- `scripts/lighthouse.js` gera relatórios HTML e JSON (`reports/lighthouse.report.*`), falha abaixo das notas mínimas (performance 90, acessibilidade 95, boas práticas 90, SEO 90) e chama o CLI sem shell.
+
+#### Added
+
+- `scripts/lighthouse.test.js` com as regras de nota mínima.
+
+### `ci: add github actions pipeline`
+
+#### Added
+
+- `.github/workflows/ci.yml`: commits e versionamento → qualidade, segurança (pnpm audit, Dependency Review) e CodeQL → testes → build → e2e e Lighthouse.
+- `.github/actions/setup`: ação composta com Node 24, pnpm e `pnpm install --frozen-lockfile`.
+- `package.json`: script `typecheck`, `packageManager` (pnpm 10.34.6) e `engines` (Node 22.12+).
+
+### `docs: document ci pipeline`
+
+#### Changed
+
+- `ARQUITETURA-E-FERRAMENTAS.md`: seção de integração contínua, estágios, decisões e novos comandos.
+- README: seção de integração contínua e pré-requisitos.
+- AI log: registro desta alteração.
