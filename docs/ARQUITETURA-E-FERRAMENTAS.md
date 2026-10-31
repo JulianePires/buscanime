@@ -5,6 +5,9 @@
 O projeto segue uma arquitetura de frontend orientada a componentes:
 
 ```text
+.github/
+├── actions/setup/       # Ação composta: Node, pnpm e dependências
+└── workflows/ci.yml     # Pipeline de CI
 src/
 ├── App.tsx              # Composição da página (cabeçalho, navegação e área principal)
 ├── App.test.tsx         # Testes de comportamento da página (UC01)
@@ -107,16 +110,46 @@ Os finais de linha são normalizados para LF pelo `.gitattributes`, evitando div
 
 ## Comandos
 
-| Comando              | Finalidade                                                  |
-| -------------------- | ----------------------------------------------------------- |
-| `pnpm dev`           | Inicia o servidor de desenvolvimento.                       |
-| `pnpm validate`      | Executa formatação, lint, testes unitários e build.         |
-| `pnpm format`        | Formata os arquivos com o Biome.                            |
-| `pnpm test:watch`    | Executa os testes unitários em modo observação (ciclo TDD). |
-| `pnpm test:coverage` | Gera cobertura dos testes unitários.                        |
-| `pnpm test:e2e`      | Executa os fluxos no navegador sobre o preview.             |
-| `pnpm lighthouse`    | Audita um preview já em execução.                           |
-| `pnpm lighthouse:ci` | Sobe o preview, audita e gera `reports/lighthouse.html`.    |
-| `pnpm version:bump`  | Calcula e grava a versão (`--dry-run` só mostra).           |
+| Comando              | Finalidade                                                   |
+| -------------------- | ------------------------------------------------------------ |
+| `pnpm dev`           | Inicia o servidor de desenvolvimento.                        |
+| `pnpm validate`      | Executa formatação, lint, testes unitários e build.          |
+| `pnpm format`        | Formata os arquivos com o Biome.                             |
+| `pnpm test:watch`    | Executa os testes unitários em modo observação (ciclo TDD).  |
+| `pnpm test:coverage` | Gera cobertura dos testes unitários.                         |
+| `pnpm test:e2e`      | Executa os fluxos no navegador sobre o preview.              |
+| `pnpm typecheck`     | Verifica os tipos com o TypeScript.                          |
+| `pnpm lighthouse`    | Audita um preview já em execução e aplica as notas mínimas.  |
+| `pnpm lighthouse:ci` | Sobe o preview, audita e gera `reports/lighthouse.report.*`. |
+| `pnpm version:bump`  | Calcula e grava a versão (`--dry-run` só mostra).            |
 
-O Lighthouse usa o Chrome indicado em `CHROME_PATH` ou, na falta dele, o Chromium instalado pelo Playwright.
+O Lighthouse usa o Chrome indicado em `CHROME_PATH` ou, na falta dele, o Chromium instalado pelo Playwright. Ele gera relatórios HTML e JSON e falha se alguma categoria ficar abaixo do mínimo definido em `scripts/lighthouse.js`: performance 90, acessibilidade 95 (RNF01), boas práticas 90 e SEO 90. As regras de nota têm testes em `scripts/lighthouse.test.js`.
+
+## Integração contínua (GitHub Actions)
+
+O workflow `.github/workflows/ci.yml` roda em PRs para a `main` (abertura, novos commits e edição do título) e em push na `main`. Os estágios vão do mais barato ao mais caro, e cada um só roda se os anteriores passaram:
+
+```text
+1. commits ──┬─> 2. quality ──┬─> 3. test ─> 4. build ─┬─> 5. e2e
+             ├─> 2. security ─┤                        └─> 5. lighthouse
+             └─> 2. codeql ───┘
+```
+
+| Estágio          | Verificações                                                                                                                                                                                                                                                         | Artefato            |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 1 · Commits (PR) | Commitlint nos commits da branch e no título do PR (que vira o commit do squash); máximo de 30 arquivos por commit (`check-commit-size.js --range`); versão do `package.json` e tipo do título compatíveis com o bump (`bump-versions.js --check` e `--check-title`) | —                   |
+| 2 · Qualidade    | Formatação (Biome), lint e code smells (ESLint + SonarJS), tipos (`tsc`)                                                                                                                                                                                             | —                   |
+| 2 · Segurança    | `pnpm audit` (falha em severidade alta) e Dependency Review nas dependências novas do PR                                                                                                                                                                             | —                   |
+| 2 · CodeQL       | Análise estática de segurança de JavaScript/TypeScript e dos workflows (`security-extended`)                                                                                                                                                                         | Alertas no GitHub   |
+| 3 · Testes       | Vitest com cobertura                                                                                                                                                                                                                                                 | `coverage`          |
+| 4 · Build        | `tsc -b` + `vite build`                                                                                                                                                                                                                                              | `dist`              |
+| 5 · E2E          | Playwright (Chromium) sobre o `dist` do estágio 4                                                                                                                                                                                                                    | `playwright-report` |
+| 5 · Lighthouse   | Auditoria do `dist` com notas mínimas                                                                                                                                                                                                                                | `lighthouse`        |
+
+Decisões do pipeline:
+
+- **Ordem por custo:** convenções e versionamento barram o pipeline antes de instalar navegadores; qualidade e segurança rodam em paralelo; e2e e Lighthouse reaproveitam o mesmo `dist`, garantindo que auditam o artefato testado.
+- **Em push na `main`**, o estágio 1 é pulado (o squash já foi validado no PR) e o pipeline começa no estágio 2.
+- **Segurança da própria pipeline:** Actions de terceiros fixadas por SHA de commit, permissões mínimas (`contents: read`, `security-events: write` só no CodeQL) e título do PR passado por variável de ambiente, nunca interpolado no script.
+- **Reprodutibilidade:** pnpm na versão do campo `packageManager`, `pnpm install --frozen-lockfile` e Node 24 (LTS); a instalação fica na ação composta `.github/actions/setup`.
+- **Concorrência:** um novo push no mesmo PR cancela a execução anterior.

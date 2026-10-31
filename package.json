@@ -3,9 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.34.6",
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
     "lint": "eslint .",
     "format": "biome format --write .",
     "format:check": "biome ci .",

@@ -14,6 +14,7 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 - **Playwright:** validação da experiência no navegador.
 - **Commitlint + Husky + lint-staged:** padronização de mensagens e checagem dos arquivos antes do commit.
 - **Lighthouse:** auditoria de performance, acessibilidade, boas práticas e SEO (executado com o Chromium do Playwright).
+- **GitHub Actions + CodeQL + Dependency Review:** pipeline de CI em estágios e análise de segurança no GitHub.
 - **Figma MCP:** leitura da estrutura do frame e dos tokens (cores e tipografia) a partir da cópia acessível do arquivo do desafio; exportação dos assets (`exportAsync` em SVG com texto em contorno), dos renders por seção (`get_screenshot`) e do código de referência (`get_design_context`) para a base de contexto local.
 
 ## Organização do trabalho
@@ -33,6 +34,7 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 13. Adaptar o script de versão para pacote único em TDD e versionar o trabalho em uma branch própria.
 14. Exportar os assets do Figma para `public/` e montar a base de contexto de design (`docs/design-context/`) para retrieval.
 15. Registrar a decisão de RAG no ADR-001 e escrever o plano de implementação com um prompt documentado por caso de uso.
+16. Montar o CI no GitHub Actions em estágios por custo (commits e versão → qualidade e segurança → testes → build → e2e e Lighthouse), com notas mínimas do Lighthouse definidas em TDD.
 
 ## Verificação do trabalho
 
@@ -43,7 +45,9 @@ O comando `pnpm validate` concentra a validação local:
 - `pnpm test`: executa os testes unitários.
 - `pnpm build`: confirma a compilação TypeScript e o build de produção.
 - `pnpm test:e2e`: valida a página compilada no Chromium.
-- `pnpm lighthouse:ci`: gera o relatório em `reports/lighthouse.html`.
+- `pnpm lighthouse:ci`: gera `reports/lighthouse.report.html` e `.json` e falha abaixo das notas mínimas.
+
+No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em PRs e na `main`, somando commits, versionamento e segurança.
 
 Última verificação (30/10/2026): `pnpm validate` verde (Biome, ESLint, 2 testes Vitest, build), `pnpm test:e2e` com 1 teste aprovado e Lighthouse com Performance 100, Acessibilidade 100, Boas práticas 100 e SEO 91.
 
@@ -64,6 +68,8 @@ O comando `pnpm validate` concentra a validação local:
 - `index.html` estava em inglês e com título institucional; ajustado para `pt-BR` e para a busca de animes.
 - `scripts/bump-versions.js` dependia de `pnpm-workspace.yaml` e lançava erro sem a `main`; adaptado para o `package.json` da raiz, com aviso (sem erro) quando não há base de comparação.
 - `$schema` do Biome alinhado à versão instalada do CLI (2.6.2) e override para permitir módulos Node nos arquivos de configuração.
+- O Lighthouse só gerava o relatório, sem reprovar nada; passou a falhar abaixo das notas mínimas, condição para ter valor no CI.
+- `scripts/lighthouse.js` chamava o CLI com `shell: true` (aviso DEP0190 do Node, argumentos sem escape); passou a executar o CLI direto pelo Node.
 
 ## Decisões
 
@@ -91,6 +97,10 @@ O comando `pnpm validate` concentra a validação local:
 - **TanStack Query, sem shadcn e sem React Hook Form:** critério "a dependência entra quando apaga mais código do que traz". O Query substitui cache de promises (exigido pelo `use`), acúmulo de páginas, abort e retry; o AniList usa `POST`, então o cache HTTP do navegador não ajuda. Filtros seguem num reducer puro. Componentes ficam sobre elementos nativos (`<dialog>`, `<select>`) e a busca usa input não controlado com `FormData` no `onSubmit` (o `<form action>` do React 19 resetaria o campo). Detalhes no [ADR-002](adr/ADR-002-dependencias-de-dados-ui-e-formularios.md).
 - **Assets em SVG exportados do nó:** logo e ícone saíram do próprio Figma (`exportAsync`, texto em contorno), sem redesenho; o logo em SVG dispensa a fonte para manter a fidelidade.
 - **Capas fora do repositório:** as imagens dos cards são arte de terceiros e vêm do AniList em tempo de execução; aparecem apenas nos renders de referência.
+- **CI em estágios por custo:** convenções de commit, tamanho e versão barram o pipeline antes de qualquer instalação de navegador; qualidade, `pnpm audit`/Dependency Review e CodeQL rodam em paralelo; e2e e Lighthouse usam o mesmo `dist` do build.
+- **Notas mínimas do Lighthouse:** performance 90, acessibilidade 95 (RNF01), boas práticas 90 e SEO 90, abaixo das notas atuais (100/100/100/91) para tolerar a variação dos runners.
+- **Segurança da pipeline:** Actions fixadas por SHA, permissões mínimas e título do PR em variável de ambiente (sem interpolação no shell).
+- **`packageManager` e `engines`:** fixam pnpm 10.34.6 e Node 22.12+ para o CI e o ambiente local usarem as mesmas versões.
 - **Prompts por caso de uso:** cada UC tem um prompt em `docs/prompts/` com retrieval obrigatório, restrições, cenários BDD, plano TDD, valores de design, arquivos, verificação e formato de saída.
 
 ## Ajustes da IA
@@ -109,9 +119,18 @@ O comando `pnpm validate` concentra a validação local:
 
 - SEO do Lighthouse em 91: avaliar os itens apontados no relatório.
 - Confirmar as decisões em aberto do plano: contraste do "Ver mais" e do chip da nota e o seletor de itens por página (RF07).
-- Publicar a `main` e a branch no `origin` para abrir o PR.
+- Ativar no GitHub a proteção da `main` exigindo os checks do CI antes do merge.
+- Avaliar um mínimo de cobertura no Vitest quando os UCs com lógica de domínio forem implementados.
 
 ## Registro de alterações
+
+### Integração contínua no GitHub Actions
+
+- **Escopo:** `.github/workflows/ci.yml`, ação composta `.github/actions/setup`, notas mínimas em `scripts/lighthouse.js` (com testes), scripts `typecheck`, `packageManager` e `engines` no `package.json`, documentação.
+- **Abordagem:** TDD nas regras de nota do Lighthouse (testes antes da implementação); SDD com o pipeline especificado em `ARQUITETURA-E-FERRAMENTAS.md`.
+- **Verificação:** YAML validado (estrutura, `needs` e Actions fixadas por SHA); localmente, `format:check`, `lint`, `typecheck`, `test:coverage` (24 testes), `build`, `test:e2e`, `lighthouse:ci`, `pnpm audit` e os comandos do estágio 1 sobre os commits da branch.
+- **Commits:** `build: enforce lighthouse minimum scores`, `ci: add github actions pipeline`, `docs: document ci pipeline`.
+- **PR sugerido:** `ci: add github actions pipeline`.
 
 ### Assets do Figma, base de contexto (RAG) e plano de implementação
 

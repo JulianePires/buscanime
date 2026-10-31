@@ -63,6 +63,12 @@ React 19 + TypeScript + Vite, Tailwind CSS 4, ESLint + SonarJS (code smells), Bi
 
 Detalhes em [docs/ARQUITETURA-E-FERRAMENTAS.md](docs/ARQUITETURA-E-FERRAMENTAS.md).
 
+## Integração contínua
+
+GitHub Actions em PRs e na `main`, em estágios: commits e versionamento → qualidade, segurança (pnpm audit, Dependency Review e CodeQL) → testes → build → e2e e Lighthouse com notas mínimas.
+
+Detalhes em [docs/ARQUITETURA-E-FERRAMENTAS.md](docs/ARQUITETURA-E-FERRAMENTAS.md#integração-contínua-github-actions).
+
 ## Histórico e trabalho com IA
 
 - [docs/CHANGELOG.md](docs/CHANGELOG.md): mudanças registradas por commit.
@@ -71,7 +77,7 @@ Detalhes em [docs/ARQUITETURA-E-FERRAMENTAS.md](docs/ARQUITETURA-E-FERRAMENTAS.m
 
 ## Desenvolvimento
 
-Pré-requisitos: Node.js 22+ e pnpm.
+Pré-requisitos: Node.js 22.12+ e pnpm 10 (versão fixada em `packageManager`; `corepack enable` a ativa).
 
 ```bash
 pnpm install
@@ -79,7 +85,7 @@ pnpm exec playwright install chromium   # navegador do e2e e do Lighthouse
 pnpm dev                                # http://localhost:5173
 pnpm validate                           # formato, lint, testes unitários e build
 pnpm test:e2e                           # fluxos no navegador
-pnpm lighthouse:ci                      # gera reports/lighthouse.html
+pnpm lighthouse:ci                      # gera reports/lighthouse.report.html e aplica notas mínimas
 ```
 
 Mensagens de commit seguem [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), validadas pelo Commitlint (ex.: `feat: add anime filters`).
