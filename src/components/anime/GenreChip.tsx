@@ -4,7 +4,7 @@ interface GenreChipProps {
 
 export function GenreChip({ genre }: GenreChipProps) {
   return (
-    <li className="rounded-control bg-primary-light-1 px-2 py-0.75 text-xs/[normal] text-gray-light-2">
+    <li className="cursor-default rounded-control bg-primary-light-1 px-2 py-0.75 text-xs/[normal] text-gray-light-2">
       {genre}
     </li>
   );

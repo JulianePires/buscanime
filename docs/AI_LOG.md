@@ -109,6 +109,7 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - **Segurança da pipeline:** Actions fixadas por SHA, permissões mínimas e título do PR em variável de ambiente (sem interpolação no shell).
 - **`packageManager` e `engines`:** fixam pnpm 10.34.6 e Node 22.12+ para o CI e o ambiente local usarem as mesmas versões.
 - **Prompts por caso de uso:** cada UC tem um prompt em `docs/prompts/` com retrieval obrigatório, restrições, cenários BDD, plano TDD, valores de design, arquivos, verificação e formato de saída.
+- **Preconnect do GraphQL no `index.html`, não no `preconnect()` do React 19:** testado em 31/10/2026 com quatro builds (sem preconnect; só `index.html`; `index.html` + `preconnect()` no `App`; só `preconnect()`), contra o AniList real. No trace do Lighthouse, o `<link rel="preconnect" crossorigin>` do HTML encurtou o preflight CORS de ~163 ms para ~65 ms (a conexão já estava aberta) e a resposta chegou ~50 ms antes. O `preconnect()` sozinho reduziu pouco (~133 ms): numa SPA ele só roda no render, junto com a própria requisição, e sem `crossOrigin` cai no pool de conexões errado para o fetch CORS anônimo. Somado ao link do HTML, não muda nada: o React encontra o link existente e não insere outro. Nenhuma variante tirou o LCP (3,6–3,7 s) nem a nota de performance (81–90) da faixa de ruído; o gargalo do LCP segue sendo a cadeia HTML → JS → GraphQL → capa. O `preconnect()` do React só faria diferença com SSR, em que entra no `<head>` do HTML enviado.
 
 ## Ajustes da IA
 
@@ -216,3 +217,7 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - Removi o excesso de conteúdo da página de exemplo porque ela será substituida em breve
 - Modifiquei os Requisitos Funcionais, Requisitos Não Funcionais e Casos de Uso para os que tinha criado baseado no desafio
 - Corrigi detalhes de layout para corresponder ao frame do figma (peso e cor da fonte - o Claude tinha ajustado para seguir regras de contraste)
+- Adicionei efeitos de transição
+  nos cards de anime e corrigi os cursores nos seus elementos
+- Alterei a decisão de utilizar o Reqact Query para o Apollo Client por questões de compatibilidade, excesso de configurações e pela tipagem integrada
+- Testei o `preconnect()` do React 19 no `App` para a queda de performance na requisição ao AniList e mantive apenas o preconnect do `index.html`: o do React não trouxe ganho medível (ver "Decisões")
