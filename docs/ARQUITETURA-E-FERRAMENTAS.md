@@ -68,7 +68,6 @@ Escolhido pelas novas funcionalidades, que atendem diretamente aos casos de uso:
 ### React Compiler
 
 Escolhido para otimizar a renderização sem memoização manual:
-
 - Memoiza automaticamente componentes, valores derivados e callbacks em tempo de build, dispensando `useMemo`, `useCallback` e `React.memo` escritos à mão.
 - Reduz re-renderizações da listagem ao filtrar, buscar e carregar novas páginas pelo "Ver mais" (UC02, UC04 a UC06, RNF02).
 - Mantém o código mais simples e legível, alinhado às regras de code smells.
@@ -164,7 +163,6 @@ O workflow `.github/workflows/ci.yml` roda em PRs para a `main` (abertura, novos
 | 5 · Lighthouse   | Auditoria do `dist` com notas mínimas                                                                                                                                                                                                                                | `lighthouse`        |
 
 Decisões do pipeline:
-
 - **Ordem por custo:** convenções e versionamento barram o pipeline antes de instalar navegadores; qualidade e segurança rodam em paralelo; e2e e Lighthouse reaproveitam o mesmo `dist`, garantindo que auditam o artefato testado.
 - **Em push na `main`**, o estágio 1 é pulado (o squash já foi validado no PR) e o pipeline começa no estágio 2.
 - **Segurança da própria pipeline:** Actions de terceiros fixadas por SHA de commit, permissões mínimas (`contents: read`, `security-events: write` só no CodeQL) e título do PR passado por variável de ambiente, nunca interpolado no script.

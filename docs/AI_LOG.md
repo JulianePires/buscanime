@@ -42,7 +42,6 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 ## Verificação do trabalho
 
 O comando `pnpm validate` concentra a validação local:
-
 - `pnpm format:check`: garante que o Biome não detecta divergências.
 - `pnpm lint`: executa ESLint e regras de code smells.
 - `pnpm test`: executa os testes unitários.
