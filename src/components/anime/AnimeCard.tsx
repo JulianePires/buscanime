@@ -11,16 +11,22 @@ interface AnimeCardProps {
   anime: Anime;
   /** Capa candidata a LCP: sem lazy e com fetchpriority alto (RNF02). */
   priority?: boolean;
+  /** Abre o detalhe (UC03); recebe o botão acionado, para onde o foco volta ao fechar. */
+  onSelect: (trigger: HTMLButtonElement) => void;
 }
 
-/** Card 317 × 270 do Figma (specs/card.md). O botão que abre o detalhe chega no UC03. */
-export function AnimeCard({ anime, priority = false }: AnimeCardProps) {
+/**
+ * Card 317 × 270 do Figma (specs/card.md). Um botão transparente cobre o card inteiro e abre o
+ * detalhe; o nome dele vem do título (aria-labelledby). O anel de foco fica no article (o
+ * article não recebe foco, por isso `has-[:focus-visible]`): o overflow-hidden cortaria o do botão.
+ */
+export function AnimeCard({ anime, priority = false, onSelect }: AnimeCardProps) {
   const titleId = useId();
 
   return (
     <article
       aria-labelledby={titleId}
-      className="relative aspect-317/270 overflow-hidden rounded-card bg-primary"
+      className="relative aspect-317/270 overflow-hidden rounded-card bg-primary hover:cursor-pointer hover:brightness-80 has-focus-visible:ring-2 has-focus-visible:ring-primary-light-1 has-focus-visible:ring-offset-2 transform transition-all duration-150 hover:scale-[1.01]"
       // Cor média da capa (AniList) enquanto a imagem carrega
       style={{ backgroundColor: anime.coverColor ?? undefined }}
     >
@@ -50,6 +56,12 @@ export function AnimeCard({ anime, priority = false }: AnimeCardProps) {
         )}
       </div>
       <ScoreBadge score={anime.averageScore} className="absolute right-2 bottom-2" />
+      <button
+        type="button"
+        aria-labelledby={titleId}
+        onClick={(event) => onSelect(event.currentTarget)}
+        className="absolute inset-0 cursor-pointer focus-visible:outline-none"
+      />
     </article>
   );
 }

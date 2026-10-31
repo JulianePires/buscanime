@@ -1,4 +1,10 @@
-import { type Anime, type AnimePage, type CatalogFilters, isAnimeFormat } from "../../domain/anime";
+import {
+  type Anime,
+  type AnimePage,
+  type CatalogFilters,
+  isAnimeFormat,
+  isAnimeStatus,
+} from "../../domain/anime";
 import type { AnimePageQuery, AnimePageQueryVariables } from "./queries/page.graphql.generated";
 
 // Anti-Corruption Layer: só este arquivo conhece os tipos gerados pelo Codegen.
@@ -8,8 +14,43 @@ type Media = NonNullable<NonNullable<NonNullable<AnimePageQuery["Page"]>["media"
 const MAX_GENRES = 3;
 const UNTITLED = "Sem título";
 
+/** Entidades que o AniList deixa na sinopse mesmo com `asHtml: false`. */
+const HTML_ENTITIES: Record<string, string> = {
+  "&amp;": "&",
+  "&quot;": '"',
+  "&#039;": "'",
+  "&#39;": "'",
+  "&lt;": "<",
+  "&gt;": ">",
+  "&nbsp;": " ",
+};
+
 function toTitle(title: Media["title"]) {
   return title?.romaji ?? title?.english ?? UNTITLED;
+}
+
+function toEnglishTitle(title: Media["title"]) {
+  const english = title?.english;
+  return english && english !== toTitle(title) ? english : null;
+}
+
+/**
+ * Sinopse como texto puro: a UI a renderiza como texto (sem dangerouslySetInnerHTML), então
+ * `<br>` vira quebra de linha, as demais tags (`<i>`, `<b>`) saem e as entidades são decodificadas.
+ */
+function toDescription(description: Media["description"]) {
+  const text = (description ?? "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    // Sem "<" na classe: cada tentativa para no próximo "<", então a varredura fica linear
+    .replace(/<[^<>]*>/g, "")
+    .replace(/&(?:amp|quot|#0?39|lt|gt|nbsp);/g, (entity) => HTML_ENTITIES[entity])
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return text || null;
+}
+
+function toStatus(status: Media["status"]) {
+  return status && isAnimeStatus(status) ? status : null;
 }
 
 function toGenres(genres: Media["genres"]) {
@@ -24,11 +65,17 @@ export function toAnime(media: Media): Anime {
   return {
     id: media.id,
     title: toTitle(media.title),
+    englishTitle: toEnglishTitle(media.title),
     coverUrl: media.coverImage?.extraLarge ?? null,
     coverColor: media.coverImage?.color ?? null,
     genres: toGenres(media.genres),
     averageScore: media.averageScore,
     format: toFormat(media.format),
+    description: toDescription(media.description),
+    episodes: media.episodes,
+    seasonYear: media.seasonYear,
+    status: toStatus(media.status),
+    siteUrl: media.siteUrl,
   };
 }
 

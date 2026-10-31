@@ -1,7 +1,7 @@
 import { gql, type TypedDocumentNode } from "@apollo/client";
 import type { AnimePageQuery, AnimePageQueryVariables } from "./page.graphql.generated";
 
-// Campos do detalhe (UC03) entram no próprio UC, reaproveitando o Media normalizado no cache.
+// A página já traz os campos do detalhe (UC03): abrir o modal lê o Media normalizado, sem rede.
 export const ANIME_PAGE: TypedDocumentNode<AnimePageQuery, AnimePageQueryVariables> = gql`
   query AnimePage(
     $page: Int!
@@ -28,6 +28,11 @@ export const ANIME_PAGE: TypedDocumentNode<AnimePageQuery, AnimePageQueryVariabl
         genres
         averageScore
         format
+        description(asHtml: false)
+        episodes
+        seasonYear
+        status
+        siteUrl
       }
     }
   }

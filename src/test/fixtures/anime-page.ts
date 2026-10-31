@@ -17,6 +17,11 @@ export function buildMedia(id: number, overrides: Partial<MediaData> = {}): Medi
     genres: ["Action", "Adventure"],
     averageScore: 80,
     format: "TV",
+    description: `Sinopse do anime ${id}.`,
+    episodes: 12,
+    seasonYear: 2023,
+    status: "FINISHED",
+    siteUrl: `https://anilist.co/anime/${id}`,
     ...overrides,
   };
 }

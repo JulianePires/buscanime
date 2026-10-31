@@ -1,24 +1,25 @@
-import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import type { Anime } from "../../domain/anime";
+import { zom100 } from "../../test/fixtures/anime";
 import { AnimeCard } from "./AnimeCard";
 
-const zom100: Anime = {
-  id: 159831,
-  title: "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto",
-  coverUrl: "https://img.anili.st/media/159831.jpg",
-  coverColor: "#e4a15d",
-  genres: ["Action", "Comedy", "Horror"],
-  averageScore: 80,
-  format: "TV",
-};
-
-function renderCard(anime: Anime = zom100, priority?: boolean) {
-  render(<AnimeCard anime={anime} priority={priority} />);
+function renderCard(anime: Anime = zom100, priority?: boolean, onSelect = vi.fn()) {
+  render(<AnimeCard anime={anime} priority={priority} onSelect={onSelect} />);
   return screen.getByRole("article", { name: anime.title });
 }
 
 describe("AnimeCard", () => {
+  it("abre o detalhe por um botão com o nome do anime, informando qual botão foi acionado", () => {
+    const onSelect = vi.fn();
+    const card = renderCard(zom100, false, onSelect);
+
+    const button = within(card).getByRole("button", { name: zom100.title });
+    fireEvent.click(button);
+
+    expect(onSelect).toHaveBeenCalledExactlyOnceWith(button);
+  });
+
   it("com prioridade, a capa (candidata a LCP) carrega já e com fetchpriority alto", () => {
     const card = renderCard(zom100, true);
 

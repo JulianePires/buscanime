@@ -2,16 +2,18 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import figmaCards from "../../../docs/design-context/fixtures/figma-cards.json";
 import type { Anime } from "../../domain/anime";
+import { zom100 } from "../../test/fixtures/anime";
 import { AnimeGrid } from "./AnimeGrid";
 
 const animes: Anime[] = figmaCards.cards.map((card, index) => ({
+  ...zom100,
   id: index + 1,
   title: card.title,
+  englishTitle: null,
   coverUrl: `https://img.anili.st/media/${index + 1}.jpg`,
   coverColor: null,
   genres: card.genres,
   averageScore: card.averageScore,
-  format: "TV",
 }));
 
 describe("AnimeGrid", () => {

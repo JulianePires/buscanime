@@ -7,20 +7,34 @@ describe("toAnime (tipo gerado → domínio)", () => {
     expect(toAnime(buildMedia(1))).toEqual({
       id: 1,
       title: "Anime 1",
+      englishTitle: "Anime 1 (EN)",
       coverUrl: "https://img.anili.st/media/1.jpg",
       coverColor: "#6324c6",
       genres: ["Action", "Adventure"],
       averageScore: 80,
       format: "TV",
+      description: "Sinopse do anime 1.",
+      episodes: 12,
+      seasonYear: 2023,
+      status: "FINISHED",
+      siteUrl: "https://anilist.co/anime/1",
     });
   });
 
-  it("usa o título em inglês quando não há romaji", () => {
+  it("usa o título em inglês quando não há romaji, sem repeti-lo como título em inglês", () => {
     const media = buildMedia(1, {
       title: { __typename: "MediaTitle", romaji: null, english: "Attack on Titan" },
     });
 
-    expect(toAnime(media).title).toBe("Attack on Titan");
+    expect(toAnime(media)).toMatchObject({ title: "Attack on Titan", englishTitle: null });
+  });
+
+  it("não repete o título em inglês quando é igual ao romaji", () => {
+    const media = buildMedia(1, {
+      title: { __typename: "MediaTitle", romaji: "Naruto", english: "Naruto" },
+    });
+
+    expect(toAnime(media).englishTitle).toBeNull();
   });
 
   it("usa um título padrão quando o AniList não envia nenhum", () => {
@@ -49,6 +63,50 @@ describe("toAnime (tipo gerado → domínio)", () => {
 
   it("descarta formatos que não são de anime", () => {
     expect(toAnime(buildMedia(1, { format: "MANGA" })).format).toBeNull();
+  });
+});
+
+describe("toAnime - campos do detalhe (UC03)", () => {
+  it("tira as tags HTML da sinopse e mantém as quebras de linha como texto", () => {
+    const media = buildMedia(1, {
+      description: "Akira <i>sobrevive</i> ao apocalipse.<br><br>\n(Fonte: <b>Crunchyroll</b>)",
+    });
+
+    expect(toAnime(media).description).toBe(
+      "Akira sobrevive ao apocalipse.\n\n(Fonte: Crunchyroll)",
+    );
+  });
+
+  it("decodifica as entidades HTML que o AniList envia na sinopse", () => {
+    const media = buildMedia(1, {
+      description: "Tom &amp; Jerry: &quot;caça&quot; &#039;eterna&#039;",
+    });
+
+    expect(toAnime(media).description).toBe(`Tom & Jerry: "caça" 'eterna'`);
+  });
+
+  it("sinopse só com tags ou espaços vira nula", () => {
+    expect(toAnime(buildMedia(1, { description: " <br> " })).description).toBeNull();
+  });
+
+  it("trata sinopse, episódios, ano, situação e link ausentes como nulos", () => {
+    const anime = toAnime(
+      buildMedia(1, {
+        description: null,
+        episodes: null,
+        seasonYear: null,
+        status: null,
+        siteUrl: null,
+      }),
+    );
+
+    expect(anime).toMatchObject({
+      description: null,
+      episodes: null,
+      seasonYear: null,
+      status: null,
+      siteUrl: null,
+    });
   });
 });
 
