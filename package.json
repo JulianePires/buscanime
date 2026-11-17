@@ -27,6 +27,7 @@
     "test:e2e:ui": "playwright test --ui",
     "lighthouse": "node scripts/lighthouse.js",
     "lighthouse:ci": "start-server-and-test preview http://localhost:4173 lighthouse",
+    "audit:check": "pnpm audit --json | node scripts/check-pnpm-audit.mjs",
     "prepare": "husky",
     "preview": "vite preview",
     "prevalidate": "pnpm codegen",
