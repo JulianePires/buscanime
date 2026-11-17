@@ -1,14 +1,23 @@
-import { useRef, useState } from "react";
+import { type ComponentType, useRef, useState } from "react";
 import type { Anime } from "../../domain/anime";
 import { AnimeCard } from "./AnimeCard";
-import { AnimeDetailDialog } from "./AnimeDetailDialog";
 import { ANIME_GRID_CLASS_NAME } from "./grid-layout";
+
+export interface AnimeDetailSlotProps {
+  anime: Anime;
+  onClose: () => void;
+}
 
 interface AnimeGridProps {
   animes: Anime[];
   busy?: boolean;
   /** Índice do card que recebe o foco ao montar: o primeiro novo depois do "Ver mais". */
   focusIndex?: number;
+  /**
+   * Modal do anime selecionado. Vem de fora porque o detalhe tem consulta própria (UC08), e
+   * componentes de apresentação não importam de `features`.
+   */
+  detail: ComponentType<AnimeDetailSlotProps>;
 }
 
 // Fora do componente para ter identidade estável: só roda quando o card alvo monta
@@ -18,7 +27,7 @@ const focusOnMount = (button: HTMLButtonElement | null) => button?.focus();
  * Só a primeira capa é prioritária: priorizar a linha inteira fez as capas disputarem banda no
  * celular. O foco volta pelo ref porque nem todo navegador foca o botão no clique.
  */
-export function AnimeGrid({ animes, busy = false, focusIndex }: AnimeGridProps) {
+export function AnimeGrid({ animes, busy = false, focusIndex, detail: Detail }: AnimeGridProps) {
   const [selected, setSelected] = useState<Anime | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
@@ -50,7 +59,7 @@ export function AnimeGrid({ animes, busy = false, focusIndex }: AnimeGridProps) 
           </li>
         ))}
       </ul>
-      {selected && <AnimeDetailDialog anime={selected} onClose={closeDetail} />}
+      {selected && <Detail anime={selected} onClose={closeDetail} />}
     </>
   );
 }

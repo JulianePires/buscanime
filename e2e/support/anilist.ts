@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import figmaCards from "../../docs/design-context/fixtures/figma-cards.json" with { type: "json" };
-import { buildMedia, buildPageData } from "../../src/test/fixtures/anime-page";
+import { buildDetailData, buildMedia, buildPageData } from "../../src/test/fixtures/anime-page";
 
 // PNG 1 × 1 transparente: as capas não saem para a rede
 const COVER = Buffer.from(
@@ -28,8 +28,17 @@ function nextPage(currentPage: number) {
   });
 }
 
+/** Detalhe (UC08) com o título do card do Figma, para o modal bater com o card aberto. */
+function detailData(id: number) {
+  const card = figmaCards.cards[id - 1];
+  return buildDetailData(id, {
+    title: { __typename: "MediaTitle", romaji: card?.title ?? `Anime ${id}`, english: null },
+  });
+}
+
 /**
- * Mocka a API e as capas; devolve o contador e as variáveis das requisições ao GraphQL. A
+ * Mocka a API e as capas. `calls`, `variables`, `contentTypes` e `pageQueries` contam só a
+ * listagem (AnimePage); `detailIds` registra as consultas do detalhe (AnimeDetail, UC08). A
  * primeira página traz os cards do Figma; com `pages` > 1 o "Ver mais" encontra as seguintes.
  */
 export async function mockAniList(page: Page, { pages = 1 } = {}) {
@@ -37,13 +46,20 @@ export async function mockAniList(page: Page, { pages = 1 } = {}) {
     calls: 0,
     variables: [] as Record<string, unknown>[],
     contentTypes: [] as string[],
+    pageQueries: [] as string[],
+    detailIds: [] as number[],
   };
   await page.route("https://graphql.anilist.co/**", (route) => {
-    api.calls += 1;
     // Corpo em formulário: `variables` chega como texto JSON
     const form = new URLSearchParams(route.request().postData() ?? "");
     const variables = JSON.parse(form.get("variables") ?? "{}");
+    if (form.get("operationName") === "AnimeDetail") {
+      api.detailIds.push(variables.id);
+      return route.fulfill({ json: { data: detailData(variables.id) } });
+    }
+    api.calls += 1;
     api.variables.push(variables);
+    api.pageQueries.push(form.get("query") ?? "");
     api.contentTypes.push(route.request().headers()["content-type"] ?? "");
     const current: number = variables.page ?? 1;
     const data = current === 1 ? figmaPage() : nextPage(current);

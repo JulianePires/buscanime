@@ -42,6 +42,7 @@ Registro do trabalho assistido por IA para a fundação e evolução da aplicaç
 19. Implementar o UC05 em TDD: busca por texto disparada no submit ou após o debounce da digitação, combinada com os formatos, e lista vazia com o termo pesquisado.
 20. Implementar o UC06 em TDD: "Ver mais" acumulando páginas com foco no primeiro card novo e erro da página seguinte sem derrubar a lista; o seletor de itens por página foi removido na revisão por não constar no Figma.
 21. Medir o carregamento no Lighthouse com throttling real e encurtar a cadeia do LCP: requisição simples de CORS (sem preflight) e primeira página pedida pelo `index.html` antes do bundle, com a capa pré-carregada.
+22. Registrar no ADR-004 a separação entre a consulta da listagem e a do modal e implementar o UC08 em TDD: consultas, mappers, facade `useAnimeDetail`, modal com carregamento e erro próprios, integração e e2e contando as consultas de cada operação.
 
 ## Verificação do trabalho
 
@@ -80,6 +81,7 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
 - O "Tentar novamente" do Error Boundary não refazia a requisição: o Apollo devolvia a referência com erro guardada no suspense cache. A nova tentativa troca o `queryKey`.
 - Componentes suspensos não voltavam a renderizar nos testes: no React 19, o `act` síncrono do `render` não agenda a retomada. `renderWithCatalog` e `clickAndWait` passaram a usar `act` assíncrono.
 - O `near-operation-file-preset` trouxe `@graphql-tools/utils` 11 com duas vulnerabilidades _high_, que reprovariam o CI; um `pnpm.overrides` fixa a versão corrigida.
+- Com `scrollbar-gutter: stable` sempre no `html` (UC07), o Chromium do Playwright, de barras ocultas, reservava 15 px fantasmas: a 1366 px o conteúdo saía das medidas do Figma e 7 e2e de largura falhavam. A calha passou a ser reservada só em `html:has(dialog:modal)`, onde substitui a barra que some.
 
 ## Decisões
 
@@ -95,6 +97,16 @@ No GitHub, o workflow `.github/workflows/ci.yml` repete essas verificações em 
   - O script fica depois do `<meta name="viewport">`: antes dele o celular mede 980 px e o pedido saía com outro tamanho (coberto por e2e com `isMobile`).
   - Capas todas com prioridade alta não mudaram o LCP (dentro do ruído); ficou só a primeira.
   - A nota simulada varia de 81 a 91 pelo TBT do bundle, que depende da CPU da máquina.
+- **Consulta própria para o detalhe (17/11/2026, UC08, [ADR-004](adr/ADR-004-consulta-propria-para-o-detalhe.md)):** a `ANIME_PAGE` trazia a sinopse e os demais campos do modal para todos os cards. Medido contra o AniList real com o mesmo corpo em formulário que a página envia (primeira página, 12 itens, `POPULARITY_DESC`, 2 requisições por variante):
+
+  | Consulta                        | Resposta     | Com gzip    | Tempo       |
+  | ------------------------------- | ------------ | ----------- | ----------- |
+  | `AnimePage` antes (com detalhe) | 14.884 bytes | 5.833 bytes | 0,44–0,68 s |
+  | `AnimePage` depois (só o card)  | 3.661 bytes  | 984 bytes   | 0,32–0,33 s |
+  | `AnimeDetail` (1 anime)         | 1.295 bytes  | 790 bytes   | 0,35–0,82 s |
+  - O tempo é de uma máquina só e oscila; o tamanho é estável. O LCP com throttling real ainda não foi medido depois da mudança.
+  - O modal abre com os dados do card e só o corpo espera a `AnimeDetail`; reabrir o mesmo anime não vai à rede (teste de integração e e2e contam as consultas).
+  - `englishTitle` ficou no resumo do card (a listagem já traz `title.english`), e o `AnimeGrid` recebe o detalhe como componente (`detail`), não como render prop: a regra `react-hooks/refs` reprova chamar no render uma função que recebe o `closeDetail`, que lê um ref.
 - **Paginação por "Ver mais":** definida como padrão na revisão, seguindo o design; RF06, UC06, README e arquitetura deixaram de citar scroll infinito.
 - **Faixas da nota:** definidas na revisão: abaixo de 50 vermelho (`Feedback/Danger`), de 50 a 80 amarelo (`Feedback/Warning`), acima de 80 verde (`Feedback/Success`). Especificadas em BDD no UC02.
 - **AniList como fonte de dados:** confirmada na revisão; formatos via `MediaFormat` e nota via `averageScore`.

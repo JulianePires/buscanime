@@ -2,6 +2,8 @@ import { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
+  /** O que não carregou: a listagem (padrão) ou o detalhe do modal (UC08). */
+  message?: string;
   /** Chamado antes de remontar os filhos. */
   onReset?: () => void;
   onError?: (error: unknown, info: ErrorInfo) => void;
@@ -31,7 +33,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (!this.state.hasError) return this.props.children;
     return (
       <div role="alert" className="flex flex-col items-center gap-4 py-12 text-center text-primary">
-        <p>Não foi possível carregar os animes.</p>
+        <p>{this.props.message ?? "Não foi possível carregar os animes."}</p>
         <button
           type="button"
           onClick={this.reset}

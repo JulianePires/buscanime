@@ -1,7 +1,11 @@
+import type { AnimeDetailQuery } from "../../services/anilist/queries/detail.graphql.generated";
 import type { AnimePageQuery } from "../../services/anilist/queries/page.graphql.generated";
 
 type PageData = NonNullable<AnimePageQuery["Page"]>;
+/** Media da listagem: só os campos do card (ADR-004). */
 export type MediaData = NonNullable<NonNullable<PageData["media"]>[number]>;
+/** Media do detalhe: os campos do card e os que só o modal mostra. */
+export type DetailMediaData = NonNullable<AnimeDetailQuery["Media"]>;
 
 /** Media no formato da resposta do AniList (com __typename, como o Apollo grava no cache). */
 export function buildMedia(id: number, overrides: Partial<MediaData> = {}): MediaData {
@@ -16,6 +20,16 @@ export function buildMedia(id: number, overrides: Partial<MediaData> = {}): Medi
     },
     genres: ["Action", "Adventure"],
     averageScore: 80,
+    ...overrides,
+  };
+}
+
+export function buildDetailMedia(
+  id: number,
+  overrides: Partial<DetailMediaData> = {},
+): DetailMediaData {
+  return {
+    ...buildMedia(id),
     format: "TV",
     description: `Sinopse do anime ${id}.`,
     episodes: 12,
@@ -24,6 +38,14 @@ export function buildMedia(id: number, overrides: Partial<MediaData> = {}): Medi
     siteUrl: `https://anilist.co/anime/${id}`,
     ...overrides,
   };
+}
+
+/** Resposta `data` da operação AnimeDetail. */
+export function buildDetailData(
+  id: number,
+  overrides: Partial<DetailMediaData> = {},
+): AnimeDetailQuery {
+  return { Media: buildDetailMedia(id, overrides) };
 }
 
 interface PageOptions {

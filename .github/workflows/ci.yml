@@ -90,7 +90,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Vulnerabilidades conhecidas (pnpm audit)
-        run: pnpm audit --audit-level high
+        run: pnpm audit:check
 
       - name: Dependências novas no PR (Dependency Review)
         if: github.event_name == 'pull_request'

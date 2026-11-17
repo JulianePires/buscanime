@@ -1,18 +1,19 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { Anime } from "../../domain/anime";
-import { zom100 } from "../../test/fixtures/anime";
+import { zom100Card } from "../../test/fixtures/anime";
 import { AnimeDetailDialog } from "./AnimeDetailDialog";
 
-function renderDialog(anime: Anime = zom100) {
-  const onClose = vi.fn();
-  render(<AnimeDetailDialog anime={anime} onClose={onClose} />);
-  return { dialog: screen.getByRole("dialog", { name: anime.title }), onClose };
-}
+const BODY = "Corpo vindo da consulta do detalhe";
 
-/** Valor (dd) de um termo (dt) da lista de dados. */
-function detail(dialog: HTMLElement, term: string) {
-  return within(dialog).getByText(term, { selector: "dt" }).nextElementSibling;
+function renderDialog(anime: Anime = zom100Card) {
+  const onClose = vi.fn();
+  render(
+    <AnimeDetailDialog anime={anime} onClose={onClose}>
+      <p>{BODY}</p>
+    </AnimeDetailDialog>,
+  );
+  return { dialog: screen.getByRole("dialog", { name: anime.title }), onClose };
 }
 
 describe("AnimeDetailDialog", () => {
@@ -20,22 +21,22 @@ describe("AnimeDetailDialog", () => {
     const { dialog } = renderDialog();
 
     expect(dialog).toHaveAttribute("open");
-    expect(within(dialog).getByRole("heading", { level: 2 })).toHaveTextContent(zom100.title);
+    expect(within(dialog).getByRole("heading", { level: 2 })).toHaveTextContent(zom100Card.title);
   });
 
-  it("mostra o título em inglês, a capa decorativa e os gêneros", () => {
+  it("mostra o título em inglês, a capa decorativa e os gêneros só com o resumo do card", () => {
     const { dialog } = renderDialog();
 
     expect(within(dialog).getByText("Zom 100: Bucket List of the Dead")).toBeInTheDocument();
     const cover = within(dialog).getByRole("presentation");
-    expect(cover).toHaveAttribute("src", zom100.coverUrl);
+    expect(cover).toHaveAttribute("src", zom100Card.coverUrl);
     expect(cover).toHaveAttribute("alt", "");
     const genres = within(dialog).getByRole("list", { name: "Gêneros" });
     expect(
       within(genres)
         .getAllByRole("listitem")
         .map((chip) => chip.textContent),
-    ).toEqual(zom100.genres);
+    ).toEqual(zom100Card.genres);
   });
 
   it("mostra a nota com o tom da regra de negócio", () => {
@@ -45,53 +46,25 @@ describe("AnimeDetailDialog", () => {
     expect(badge).toHaveAttribute("data-tone", "warning");
   });
 
-  it("mostra formato legível, episódios, ano e situação", () => {
-    const { dialog } = renderDialog({ ...zom100, format: "TV_SHORT" });
-
-    expect(detail(dialog, "Formato")).toHaveTextContent("TV Short");
-    expect(detail(dialog, "Episódios")).toHaveTextContent("12");
-    expect(detail(dialog, "Ano")).toHaveTextContent("2023");
-    expect(detail(dialog, "Situação")).toHaveTextContent("Finalizado");
-  });
-
-  it("mostra a sinopse como texto, preservando os parágrafos", () => {
+  it("renderiza o corpo recebido (UC08: o que depende da consulta do detalhe)", () => {
     const { dialog } = renderDialog();
 
-    const synopsis = within(dialog).getByText(/^Akira passou anos/);
-    expect(synopsis.textContent).toBe(zom100.description);
-    expect(synopsis).toHaveClass("whitespace-pre-line");
-  });
-
-  it("leva à página do anime no AniList em nova aba", () => {
-    const { dialog } = renderDialog();
-
-    const link = within(dialog).getByRole("link", { name: /Ver no AniList/ });
-    expect(link).toHaveAttribute("href", zom100.siteUrl);
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAttribute("rel", "noreferrer");
+    expect(within(dialog).getByText(BODY)).toBeInTheDocument();
   });
 
   it("omite o que o AniList não informou", () => {
     const { dialog } = renderDialog({
-      ...zom100,
+      ...zom100Card,
       englishTitle: null,
       coverUrl: null,
       genres: [],
       averageScore: null,
-      format: null,
-      episodes: null,
-      seasonYear: null,
-      status: null,
-      description: null,
-      siteUrl: null,
     });
 
+    expect(within(dialog).queryByText(zom100Card.englishTitle ?? "")).not.toBeInTheDocument();
     expect(within(dialog).queryByRole("presentation")).not.toBeInTheDocument();
     expect(within(dialog).queryByRole("list")).not.toBeInTheDocument();
     expect(within(dialog).queryByText(/%$/)).not.toBeInTheDocument();
-    expect(dialog.querySelector("dl")).not.toBeInTheDocument();
-    expect(within(dialog).queryByRole("heading", { name: "Sinopse" })).not.toBeInTheDocument();
-    expect(within(dialog).queryByRole("link")).not.toBeInTheDocument();
   });
 
   it('"Fechar" fecha o diálogo e avisa quem o abriu', () => {
@@ -110,5 +83,37 @@ describe("AnimeDetailDialog", () => {
 
     expect(dialog).not.toHaveAttribute("open");
     expect(onClose).toHaveBeenCalledOnce();
+  });
+});
+describe("AnimeDetailDialog - UC07 clique no overlay", () => {
+  it("clique no overlay (o próprio <dialog>) fecha e avisa quem o abriu", () => {
+    const { dialog, onClose } = renderDialog();
+
+    fireEvent.pointerDown(dialog);
+    fireEvent.click(dialog);
+
+    expect(dialog).not.toHaveAttribute("open");
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("clique dentro do conteúdo não fecha", () => {
+    const { dialog, onClose } = renderDialog();
+    const title = within(dialog).getByRole("heading", { level: 2 });
+
+    fireEvent.pointerDown(title);
+    fireEvent.click(title);
+
+    expect(dialog).toHaveAttribute("open");
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("arrastar do conteúdo até o overlay (seleção de texto) não fecha", () => {
+    const { dialog, onClose } = renderDialog();
+
+    fireEvent.pointerDown(within(dialog).getByText(BODY));
+    fireEvent.click(dialog);
+
+    expect(dialog).toHaveAttribute("open");
+    expect(onClose).not.toHaveBeenCalled();
   });
 });

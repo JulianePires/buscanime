@@ -1,15 +1,19 @@
 import {
   type Anime,
+  type AnimeDetail,
   type AnimePage,
   type CatalogFilters,
   isAnimeFormat,
   isAnimeStatus,
 } from "../../domain/anime";
+import type { AnimeDetailQuery } from "./queries/detail.graphql.generated";
 import type { AnimePageQuery, AnimePageQueryVariables } from "./queries/page.graphql.generated";
 
 // Só este arquivo conhece os tipos gerados pelo Codegen.
 
+/** Media da listagem: só os campos do card. O do detalhe também serve, por ter todos eles. */
 type Media = NonNullable<NonNullable<NonNullable<AnimePageQuery["Page"]>["media"]>[number]>;
+type DetailMedia = NonNullable<AnimeDetailQuery["Media"]>;
 
 const MAX_GENRES = 3;
 const UNTITLED = "Sem título";
@@ -35,7 +39,7 @@ function toEnglishTitle(title: Media["title"]) {
 }
 
 /** Texto puro: a UI renderiza a sinopse sem dangerouslySetInnerHTML. */
-function toDescription(description: Media["description"]) {
+function toDescription(description: DetailMedia["description"]) {
   let text = description ?? "";
   let previous: string;
   do {
@@ -52,7 +56,7 @@ function toDescription(description: Media["description"]) {
   return text || null;
 }
 
-function toStatus(status: Media["status"]) {
+function toStatus(status: DetailMedia["status"]) {
   return status && isAnimeStatus(status) ? status : null;
 }
 
@@ -60,7 +64,7 @@ function toGenres(genres: Media["genres"]) {
   return (genres ?? []).filter((genre): genre is string => genre !== null).slice(0, MAX_GENRES);
 }
 
-function toFormat(format: Media["format"]) {
+function toFormat(format: DetailMedia["format"]) {
   return format && isAnimeFormat(format) ? format : null;
 }
 
@@ -73,6 +77,15 @@ export function toAnime(media: Media): Anime {
     coverColor: media.coverImage?.color ?? null,
     genres: toGenres(media.genres),
     averageScore: media.averageScore,
+  };
+}
+
+/** `null` quando o AniList não encontra o id. */
+export function toAnimeDetail(data: AnimeDetailQuery): AnimeDetail | null {
+  const media = data.Media;
+  if (!media) return null;
+  return {
+    ...toAnime(media),
     format: toFormat(media.format),
     description: toDescription(media.description),
     episodes: media.episodes,

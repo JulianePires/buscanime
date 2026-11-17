@@ -1,7 +1,7 @@
-import type { Anime } from "../../domain/anime";
+import type { Anime, AnimeDetail } from "../../domain/anime";
 
 /** Primeiro card do Figma (nota 80, a divergência da regra), já no formato do domínio. */
-export const zom100: Anime = {
+export const zom100Card: Anime = {
   id: 159831,
   title: "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto",
   englishTitle: "Zom 100: Bucket List of the Dead",
@@ -9,6 +9,11 @@ export const zom100: Anime = {
   coverColor: "#e4a15d",
   genres: ["Action", "Comedy", "Horror"],
   averageScore: 80,
+};
+
+/** O mesmo anime com os campos que só a consulta do detalhe traz (UC08). */
+export const zom100: AnimeDetail = {
+  ...zom100Card,
   format: "TV",
   description:
     "Akira passou anos explorado em uma empresa abusiva.\n\nQuando o apocalipse zumbi chega, ele decide viver.",

@@ -13,10 +13,11 @@ function App() {
   const { selectedFilters, toggleFormat, clearFormats, search } = useCatalogFilters();
 
   return (
-    <div className="flex flex-col gap-section">
+    // Sticky footer (UC07): com conteúdo curto o main cresce e o rodapé encosta no fim da janela
+    <div className="flex min-h-dvh flex-col gap-section">
       <SiteHeader />
       {/* O limite de 1316 px vale para o conteúdo; o gutter fica por fora (layout.md) */}
-      <main className="mx-auto flex w-full max-w-[calc(var(--container-content)+2*var(--spacing-gutter))] flex-col gap-section px-4 sm:px-gutter">
+      <main className="mx-auto flex w-full max-w-[calc(var(--container-content)+2*var(--spacing-gutter))] flex-1 flex-col gap-section px-4 sm:px-gutter">
         <h1 className="sr-only">Busca de animes</h1>
         {/* Fora do Suspense: os filtros continuam visíveis enquanto a lista carrega */}
         <FormatFilter

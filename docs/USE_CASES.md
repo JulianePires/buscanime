@@ -2,14 +2,16 @@
 
 ## Casos de uso
 
-| Código | Ator      | Objetivo                               |
-| ------ | --------- | -------------------------------------- |
-| UC01   | Visitante | Visualizar estrutura da página.        |
-| UC02   | Visitante | Visualizar listagem de animes.         |
-| UC03   | Visitante | Visualizar detalhe do anime listado.   |
-| UC04   | Visitante | Filtrar lista por um ou mais formatos. |
-| UC05   | Visitante | Filtrar lista por busca de texto.      |
-| UC06   | Visitante | Carregar mais animes pelo "Ver mais".  |
+| Código | Ator      | Objetivo                                 |
+| ------ | --------- | ---------------------------------------- |
+| UC01   | Visitante | Visualizar estrutura da página.          |
+| UC02   | Visitante | Visualizar listagem de animes.           |
+| UC03   | Visitante | Visualizar detalhe do anime listado.     |
+| UC04   | Visitante | Filtrar lista por um ou mais formatos.   |
+| UC05   | Visitante | Filtrar lista por busca de texto.        |
+| UC06   | Visitante | Carregar mais animes pelo "Ver mais".    |
+| UC07   | Visitante | Usar a página com layout estável.        |
+| UC08   | Visitante | Carregar o detalhe do anime sob demanda. |
 
 ## Critérios BDD
 
@@ -71,6 +73,72 @@ Então o sistema deve carregar a próxima página sem recarregar a tela
 E deve manter os animes já exibidos
 ```
 
+### UC07 — Usar a página com layout estável
+
+```gherkin
+Dado que o conteúdo da página é menor que a altura da janela
+Quando a página for exibida
+Então o rodapé deve ficar encostado no final da janela
+```
+
+```gherkin
+Dado que o conteúdo da página é maior que a altura da janela
+Quando o visitante rolar até o fim
+Então o rodapé deve aparecer depois do conteúdo, sem sobrepô-lo
+```
+
+```gherkin
+Dado que o modal de detalhe está aberto
+Quando o visitante clicar no overlay, fora do conteúdo do modal
+Então o modal deve fechar
+E o foco deve voltar para o card selecionado
+```
+
+```gherkin
+Dado que o modal de detalhe está aberto
+Quando o visitante clicar dentro do conteúdo do modal
+Então o modal deve continuar aberto
+```
+
+```gherkin
+Dado que o modal de detalhe está aberto
+Quando o visitante tentar rolar a página
+Então a página de fundo não deve rolar
+E ao fechar o modal a rolagem deve voltar a funcionar na mesma posição
+```
+
+### UC08 — Carregar o detalhe do anime sob demanda
+
+Decisão de arquitetura no [ADR-004](adr/ADR-004-consulta-propria-para-o-detalhe.md): a consulta do modal é separada da consulta da listagem.
+
+```gherkin
+Dado que a listagem de animes foi carregada
+Quando a consulta da listagem for enviada
+Então ela deve pedir apenas os campos exibidos no card
+```
+
+```gherkin
+Dado que a listagem contém um anime
+Quando o visitante abrir o detalhe desse anime
+Então o modal deve abrir imediatamente com o título, a capa, os gêneros e a nota do card
+E os dados complementares devem ser buscados em uma consulta própria pelo id do anime
+E um estado de carregamento deve ocupar o lugar dos dados complementares até a resposta chegar
+```
+
+```gherkin
+Dado que o detalhe de um anime já foi aberto
+Quando o visitante fechar e abrir de novo o detalhe do mesmo anime
+Então os dados complementares devem aparecer sem nova consulta
+```
+
+```gherkin
+Dado que a consulta do detalhe falhou
+Quando o modal for exibido
+Então deve mostrar uma mensagem de erro com a opção "Tentar novamente" dentro do modal
+E a listagem deve continuar visível e inalterada
+E ao acionar "Tentar novamente" a consulta do detalhe deve ser refeita
+```
+
 ## Estratégia TDD
 
 Cada caso de uso deve ser implementado em ciclos Red, Green e Refactor:
@@ -82,11 +150,13 @@ Cada caso de uso deve ser implementado em ciclos Red, Green e Refactor:
 
 Mapeamento inicial:
 
-| Caso | Teste unitário/integrado                                    | Teste e2e            |
-| ---- | ----------------------------------------------------------- | -------------------- |
-| UC01 | Renderização da estrutura e títulos                         | Abertura da página   |
-| UC02 | Renderização de itens, estado vazio e cor da nota por faixa | Listagem visível     |
-| UC03 | Seleção e conteúdo do detalhe                               | Abertura do detalhe  |
-| UC04 | Estado dos formatos selecionados                            | Resultado filtrado   |
-| UC05 | Entrada de busca e resultados                               | Busca por texto      |
-| UC06 | Botão "Ver mais" e carregamento                             | Clique e novos itens |
+| Caso | Teste unitário/integrado                                     | Teste e2e                |
+| ---- | ------------------------------------------------------------ | ------------------------ |
+| UC01 | Renderização da estrutura e títulos                          | Abertura da página       |
+| UC02 | Renderização de itens, estado vazio e cor da nota por faixa  | Listagem visível         |
+| UC03 | Seleção e conteúdo do detalhe                                | Abertura do detalhe      |
+| UC04 | Estado dos formatos selecionados                             | Resultado filtrado       |
+| UC05 | Entrada de busca e resultados                                | Busca por texto          |
+| UC06 | Botão "Ver mais" e carregamento                              | Clique e novos itens     |
+| UC07 | Clique no overlay e dentro do modal                          | Rodapé, overlay e scroll |
+| UC08 | Campos das consultas, facade, carregamento e erro do detalhe | Requisições do detalhe   |

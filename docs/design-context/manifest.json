@@ -57,14 +57,14 @@
     {
       "id": "footer",
       "figmaNode": "3398:729",
-      "useCases": ["UC01"],
+      "useCases": ["UC01", "UC07"],
       "spec": "docs/design-context/specs/footer.md",
       "reference": "docs/design-context/references/footer.png",
       "assets": ["public/brand/logo.svg"]
     }
   ],
   "notInDesign": [
-    { "id": "detalhe", "useCases": ["UC03"], "note": "Modal de detalhe não existe no Figma; derivar dos tokens e do card." },
+    { "id": "detalhe", "useCases": ["UC03", "UC08"], "note": "Modal de detalhe não existe no Figma; derivar dos tokens e do card." },
     { "id": "estados", "useCases": ["UC02"], "note": "Carregando, vazio e erro (RNF06) não existem no Figma." },
     { "id": "mobile", "useCases": ["UC01", "UC02"], "note": "Figma só tem desktop (RF08)." }
   ]

@@ -10,7 +10,7 @@ O projeto segue uma arquitetura de frontend orientada a componentes:
 └── workflows/ci.yml     # Pipeline de CI
 src/
 ├── App.tsx              # Composição da página (cabeçalho, navegação e área principal)
-├── App*.test.tsx        # Integração da página: UC01 a UC04 e UC06 (UC05 em App.search)
+├── App*.test.tsx        # Integração da página: UC01 a UC04 e UC06 (UC05 em App.search, UC08 em App.detail)
 ├── index.css            # Tokens globais e importação do Tailwind
 ├── main.tsx             # Bootstrap: cria o ApolloClient e o injeta no CatalogProvider
 ├── domain/              # Tipos e regras puras (Anime, formatos, nota, tamanho da página)
@@ -81,7 +81,8 @@ O desenvolvimento assistido por IA recupera o design de `docs/design-context/` e
 
 - **Única camada de dados remotos:** Apollo Client 4 com cache normalizado (`Media:<id>`). As páginas do "Ver mais" se acumulam pelas `typePolicies` de `cache.ts`, e voltar a uma combinação de filtros já vista não faz requisição. Substitui o TanStack Query do ADR-002 ([ADR-003](adr/ADR-003-apollo-client-como-camada-de-dados.md)).
 - **Tipos gerados:** `pnpm codegen` gera os tipos das operações a partir de `src/services/anilist/schema.graphql`, que é versionado. Os `*.generated.ts` ficam fora do Git e são ignorados pelo ESLint e pelo Biome. O schema só muda com `pnpm codegen:schema`, que acessa a rede.
-- **Fronteira:** os componentes usam a facade `useCatalog()` e tipos do domínio. Importar `@apollo/client*` fora de `src/services` e `src/features` é erro de lint (`no-restricted-imports`), e um teste garante a regra.
+- **Consultas separadas:** a listagem (`AnimePage`) pede só os campos do card, e o modal faz a própria consulta por id (`AnimeDetail`), por trás da facade `useAnimeDetail`. O modal abre na hora com os dados do card; só o restante espera a resposta, com carregamento e erro próprios. Reabrir o mesmo anime vem do cache ([ADR-004](adr/ADR-004-consulta-propria-para-o-detalhe.md), UC08).
+- **Fronteira:** os componentes usam as facades `useCatalog()` e `useAnimeDetail()` e tipos do domínio. Importar `@apollo/client*` fora de `src/services` e `src/features` é erro de lint (`no-restricted-imports`), e um teste garante a regra.
 - **Erros:** não há reenvio automático (nem em HTTP 429). Falha na primeira página vai ao `ErrorBoundary` ("Tentar novamente" via `useCatalogRetry()`); falha no "Ver mais" vira `loadMoreError` e mantém as páginas carregadas. A próxima página usa `client.query`, porque a falha do `fetchMore` do `useSuspenseQuery` derrubaria a lista.
 - **Tamanho da página:** segue a largura da tela (3, 6, 9 ou 12 itens; `src/domain/page-size.ts`). O `CatalogProvider` começa pela largura atual e acompanha as faixas por `matchMedia`; voltar a uma faixa já vista vem do cache.
 - **Transporte:** as consultas vão em campos de formulário (`application/x-www-form-urlencoded`), que o AniList aceita: é uma requisição simples de CORS, sem o `OPTIONS` antes. Os testes de integração mantêm o JSON, que o MSW lê.

@@ -3,6 +3,7 @@ import { AnimeGrid } from "../../components/anime/AnimeGrid";
 import { EmptyState } from "../../components/feedback/EmptyState";
 import { LoadMoreButton } from "../../components/pagination/LoadMoreButton";
 import type { CatalogFilters } from "../../domain/anime";
+import { AnimeDetail } from "../anime-detail/AnimeDetail";
 import { useCatalog } from "./use-catalog";
 
 export function CatalogResults() {
@@ -21,7 +22,7 @@ export function CatalogResults() {
 
   return (
     <>
-      <AnimeGrid animes={animes} busy={isFiltering} focusIndex={focusIndex} />
+      <AnimeGrid animes={animes} busy={isFiltering} focusIndex={focusIndex} detail={AnimeDetail} />
       <LoadMoreButton
         hasNextPage={hasNextPage}
         loading={isLoadingMore}
