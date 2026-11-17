@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildMedia, buildPageData } from "../../test/fixtures/anime-page";
-import { toAnime, toAnimePage, toAnimePageVariables } from "./mappers";
+import { buildDetailData, buildMedia, buildPageData } from "../../test/fixtures/anime-page";
+import { toAnime, toAnimeDetail, toAnimePage, toAnimePageVariables } from "./mappers";
 
-describe("toAnime (tipo gerado → domínio)", () => {
-  it("converte o Media completo", () => {
-    expect(toAnime(buildMedia(1))).toEqual({
+describe("toAnime (tipo gerado → resumo do card)", () => {
+  it("converte o Media da listagem só com os campos do card", () => {
+    expect(toAnime(buildMedia(1))).toStrictEqual({
       id: 1,
       title: "Anime 1",
       englishTitle: "Anime 1 (EN)",
@@ -12,12 +12,6 @@ describe("toAnime (tipo gerado → domínio)", () => {
       coverColor: "#6324c6",
       genres: ["Action", "Adventure"],
       averageScore: 80,
-      format: "TV",
-      description: "Sinopse do anime 1.",
-      episodes: 12,
-      seasonYear: 2023,
-      status: "FINISHED",
-      siteUrl: "https://anilist.co/anime/1",
     });
   });
 
@@ -47,51 +41,71 @@ describe("toAnime (tipo gerado → domínio)", () => {
     expect(toAnime(media).genres).toEqual(["Action", "Drama", "Fantasy"]);
   });
 
-  it("mantém averageScore nulo e trata capa, gêneros e formato ausentes", () => {
-    const anime = toAnime(
-      buildMedia(1, { averageScore: null, coverImage: null, genres: null, format: null }),
-    );
+  it("mantém averageScore nulo e trata capa e gêneros ausentes", () => {
+    const anime = toAnime(buildMedia(1, { averageScore: null, coverImage: null, genres: null }));
 
     expect(anime).toMatchObject({
       averageScore: null,
       coverUrl: null,
       coverColor: null,
       genres: [],
-      format: null,
     });
-  });
-
-  it("descarta formatos que não são de anime", () => {
-    expect(toAnime(buildMedia(1, { format: "MANGA" })).format).toBeNull();
   });
 });
 
-describe("toAnime - campos do detalhe (UC03)", () => {
+describe("toAnimeDetail (consulta do detalhe → domínio, UC08)", () => {
+  it("converte o Media do detalhe: o resumo do card mais os campos do modal", () => {
+    expect(toAnimeDetail(buildDetailData(1))).toStrictEqual({
+      id: 1,
+      title: "Anime 1",
+      englishTitle: "Anime 1 (EN)",
+      coverUrl: "https://img.anili.st/media/1.jpg",
+      coverColor: "#6324c6",
+      genres: ["Action", "Adventure"],
+      averageScore: 80,
+      format: "TV",
+      description: "Sinopse do anime 1.",
+      episodes: 12,
+      seasonYear: 2023,
+      status: "FINISHED",
+      siteUrl: "https://anilist.co/anime/1",
+    });
+  });
+
+  it("devolve null quando o AniList não encontra o anime", () => {
+    expect(toAnimeDetail({ Media: null })).toBeNull();
+  });
+
+  it("descarta formatos que não são de anime", () => {
+    expect(toAnimeDetail(buildDetailData(1, { format: "MANGA" }))?.format).toBeNull();
+  });
+
   it("tira as tags HTML da sinopse e mantém as quebras de linha como texto", () => {
-    const media = buildMedia(1, {
+    const data = buildDetailData(1, {
       description: "Akira <i>sobrevive</i> ao apocalipse.<br><br>\n(Fonte: <b>Crunchyroll</b>)",
     });
 
-    expect(toAnime(media).description).toBe(
+    expect(toAnimeDetail(data)?.description).toBe(
       "Akira sobrevive ao apocalipse.\n\n(Fonte: Crunchyroll)",
     );
   });
 
   it("decodifica as entidades HTML que o AniList envia na sinopse", () => {
-    const media = buildMedia(1, {
+    const data = buildDetailData(1, {
       description: "Tom &amp; Jerry: &quot;caça&quot; &#039;eterna&#039;",
     });
 
-    expect(toAnime(media).description).toBe(`Tom & Jerry: "caça" 'eterna'`);
+    expect(toAnimeDetail(data)?.description).toBe(`Tom & Jerry: "caça" 'eterna'`);
   });
 
   it("sinopse só com tags ou espaços vira nula", () => {
-    expect(toAnime(buildMedia(1, { description: " <br> " })).description).toBeNull();
+    expect(toAnimeDetail(buildDetailData(1, { description: " <br> " }))?.description).toBeNull();
   });
 
-  it("trata sinopse, episódios, ano, situação e link ausentes como nulos", () => {
-    const anime = toAnime(
-      buildMedia(1, {
+  it("trata formato, sinopse, episódios, ano, situação e link ausentes como nulos", () => {
+    const detail = toAnimeDetail(
+      buildDetailData(1, {
+        format: null,
         description: null,
         episodes: null,
         seasonYear: null,
@@ -100,7 +114,8 @@ describe("toAnime - campos do detalhe (UC03)", () => {
       }),
     );
 
-    expect(anime).toMatchObject({
+    expect(detail).toMatchObject({
+      format: null,
       description: null,
       episodes: null,
       seasonYear: null,

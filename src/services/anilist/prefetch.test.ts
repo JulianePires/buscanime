@@ -39,6 +39,11 @@ describe("animePagePrefetchConfig (gerado no build)", () => {
     expect(config.query).toContain("__typename");
     expect(config.variables).toEqual({ page: 1, perPage: 12, sort: ["POPULARITY_DESC"] });
   });
+
+  it("pede só os campos do card: a sinopse fica para a consulta do detalhe (UC08)", () => {
+    expect(config.query).not.toContain("description");
+    expect(config.query).not.toContain("siteUrl");
+  });
 });
 
 describe("animePagePrefetchScript (inline no index.html)", () => {

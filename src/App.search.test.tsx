@@ -35,7 +35,6 @@ function searchAwareApi() {
       ).map((item) =>
         buildMedia(item.id, {
           title: { __typename: "MediaTitle", romaji: item.title, english: null },
-          format: item.format,
         }),
       );
       return HttpResponse.json({ data: page });

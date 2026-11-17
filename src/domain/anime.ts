@@ -14,6 +14,7 @@ export const ANIME_STATUSES = [
 
 export type AnimeStatus = (typeof ANIME_STATUSES)[number];
 
+/** Resumo do card: o que a listagem traz (ADR-004). */
 export interface Anime {
   id: number;
   title: string;
@@ -23,6 +24,10 @@ export interface Anime {
   coverColor: string | null;
   genres: string[];
   averageScore: number | null;
+}
+
+/** O que só o modal mostra: vem da consulta própria do detalhe (UC08). */
+export interface AnimeDetail extends Anime {
   format: AnimeFormat | null;
   /** Texto puro, sem tags HTML; parágrafos separados por linha em branco. */
   description: string | null;

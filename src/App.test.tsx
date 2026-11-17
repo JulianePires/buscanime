@@ -162,7 +162,7 @@ describe("UC04 - Filtrar lista por um ou mais formatos", () => {
         await delay(delayMs);
         const page = buildPageData({ ids: [] });
         page.Page!.media = CATALOG.filter((item) => !formats || formats.includes(item.format)).map(
-          (item) => buildMedia(item.id, { format: item.format }),
+          (item) => buildMedia(item.id),
         );
         return HttpResponse.json({ data: page });
       }),
@@ -245,7 +245,7 @@ describe("UC03 - Visualizar detalhe do anime listado", () => {
     document.title = PAGE_TITLE;
   });
 
-  /** Uma página com três animes; conta as requisições para provar que o detalhe vem do cache. */
+  /** Uma página com três animes; conta as requisições da listagem. */
   function countingApi() {
     const api = { calls: 0 };
     server.use(
@@ -257,10 +257,11 @@ describe("UC03 - Visualizar detalhe do anime listado", () => {
     return api;
   }
 
+  /** Assíncrono: o corpo do modal suspende enquanto a consulta do detalhe não chega (UC08). */
   async function openDetail(title: string) {
     await renderWithCatalog(<App />);
     const card = await screen.findByRole("button", { name: title });
-    fireEvent.click(card);
+    await clickAndWait(card);
     return { card, dialog: screen.getByRole("dialog", { name: title }) };
   }
 
@@ -272,11 +273,12 @@ describe("UC03 - Visualizar detalhe do anime listado", () => {
 
         expect(dialog).toHaveAttribute("open");
         expect(within(dialog).getByText("Anime 2 (EN)")).toBeInTheDocument();
-        expect(within(dialog).getByText("Sinopse do anime 2.")).toBeInTheDocument();
-        expect(within(dialog).getByText("TV Show")).toBeInTheDocument();
         expect(document.title).toBe("Anime 2 | Buscanime");
+        // Fatos e sinopse vêm da consulta própria do detalhe (UC08)
+        expect(await within(dialog).findByText("Sinopse do anime 2.")).toBeInTheDocument();
+        expect(within(dialog).getByText("TV Show")).toBeInTheDocument();
 
-        // O Media:2 já está normalizado no cache: abrir o detalhe não chama a rede
+        // Abrir o detalhe não refaz a listagem
         await act(() => delay(20));
         expect(api.calls).toBe(1);
       });
@@ -288,6 +290,11 @@ describe("UC03 - Visualizar detalhe do anime listado", () => {
       Esc: (dialog: HTMLElement) => fireEvent.keyDown(dialog, { key: "Escape" }),
       Fechar: (dialog: HTMLElement) =>
         fireEvent.click(within(dialog).getByRole("button", { name: "Fechar" })),
+      // UC07: o clique no ::backdrop chega com o próprio <dialog> como alvo
+      Overlay: (dialog: HTMLElement) => {
+        fireEvent.pointerDown(dialog);
+        fireEvent.click(dialog);
+      },
     };
 
     describe.each(Object.keys(closeWith) as (keyof typeof closeWith)[])(
