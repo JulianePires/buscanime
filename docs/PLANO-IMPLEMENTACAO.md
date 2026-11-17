@@ -19,7 +19,7 @@ Plano para implementar UC01 a UC06 com Claude Code, em ciclos SDD → BDD → TD
 ```text
 src/
 ├── domain/                     # Regras puras, sem React nem rede
-│   ├── anime.ts                # Anime, AnimeFormat, AnimePage, CatalogFilters (SETUP-01)
+│   ├── anime.ts                # Anime (card), AnimeDetail (UC08), AnimeFormat, AnimePage, CatalogFilters
 │   ├── formats.ts              # FORMAT_OPTIONS: rótulo do design ↔ AnimeFormat
 │   ├── score.ts                # scoreTone(score): "danger" | "warning" | "success"
 │   └── page-size.ts            # Itens por página pela largura da tela (UC06)
@@ -27,7 +27,8 @@ src/
 │   ├── apollo-client.ts        # createApolloClient(): ErrorLink → HttpLink, cache-first (SETUP-01)
 │   ├── cache.ts                # createCache(): typePolicies de Page, media e pageInfo (SETUP-01)
 │   ├── schema.graphql          # Schema do AniList versionado (pnpm codegen:schema)
-│   ├── queries/page.graphql.ts # ANIME_PAGE; page.graphql.generated.ts fica fora do Git
+│   ├── queries/page.graphql.ts # ANIME_PAGE, só campos do card; *.generated.ts fica fora do Git
+│   ├── queries/detail.graphql.ts # ANIME_DETAIL: Media(id:) com os campos do modal (UC08, ADR-004)
 │   ├── mappers.ts              # Tipos gerados ↔ domínio (única camada que os conhece)
 │   └── prefetch.ts             # Primeira página pedida pelo index.html, antes do JS
 ├── features/catalog/           # Estado e orquestração da listagem
@@ -36,10 +37,13 @@ src/
 │   ├── use-catalog.ts          # Facade: useSuspenseQuery e a próxima página escondidos
 │   ├── use-viewport-page-size.ts # Tamanho da página acompanha a largura (matchMedia)
 │   └── CatalogProvider.tsx     # Único ApolloProvider; client injetado por prop (DIP)
+├── features/anime-detail/      # Consulta própria do modal (UC08, ADR-004)
+│   ├── use-anime-detail.ts     # Facade: useSuspenseQuery(ANIME_DETAIL) por id, retry no queryKey
+│   └── AnimeDetail.tsx         # Diálogo + Suspense e ErrorBoundary do corpo + facade
 ├── components/                 # Apresentação (props in, eventos out)
 │   ├── layout/                 # SiteHeader, SiteFooter, Logo
 │   ├── filters/                # FormatFilter, SearchBar
-│   ├── anime/                  # AnimeCard, AnimeGrid, ScoreBadge, GenreChip, AnimeDetailDialog
+│   ├── anime/                  # AnimeCard, AnimeGrid, ScoreBadge, GenreChip, AnimeDetailDialog, AnimeDetailInfo, AnimeDetailSkeleton
 │   ├── pagination/             # LoadMoreButton
 │   └── feedback/               # ErrorBoundary (SETUP-01), LoadingState, EmptyState
 ├── test/
@@ -60,6 +64,8 @@ src/
 | Reducer (State)                 | `catalog-filters-reducer.ts` | Estado do cliente (filtros) com transições puras; testável sem renderizar.  |
 | Cache normalizado               | `cache.ts`                   | Páginas acumuladas por `typePolicies`; `Media:<id>` único (ADR-003).        |
 | Facade (custom hook)            | `use-catalog.ts`             | Esconde reducer, Apollo e transições; o lint impede importar o Apollo fora. |
+| Facade (custom hook)            | `use-anime-detail.ts`        | Consulta do modal separada da listagem; devolve só `AnimeDetail` (ADR-004). |
+| Componente injetado (slot)      | `AnimeGrid` (`detail`)       | A grade não importa de `features`; o `CatalogResults` injeta o detalhe.     |
 | Provider (Dependency Injection) | `CatalogProvider.tsx`        | Recebe o `ApolloClient` por prop: real no `main.tsx`, de teste nos testes.  |
 | Container / Presentational      | `App` + `components/`        | Componentes visuais puros, reutilizáveis e fáceis de testar.                |
 | Compound/Dialog nativo          | `AnimeDetailDialog`          | `<dialog>` com foco gerenciado pelo navegador (acessibilidade).             |
@@ -78,22 +84,24 @@ src/
 ## Sequência e dependências
 
 ```text
-UC01 ──► SETUP-01 ──► UC02 ──┬──► UC03
+UC01 ──► SETUP-01 ──► UC02 ──┬──► UC03 ──► UC07 ──► UC08
                              ├──► UC04 ──► UC05
                              └──► UC06
 ```
 
-| Ordem | UC       | Branch                     | Entrega principal                                                    | Depende de |
-| ----- | -------- | -------------------------- | -------------------------------------------------------------------- | ---------- |
-| 1     | UC01     | `feat/uc01-estrutura`      | Tokens no `@theme`, Mulish, header e footer fiéis, layout responsivo | —          |
-| 2     | SETUP-01 | `feat/setup-01-apollo`     | Apollo Client 4, Codegen, cache, facade e Error Boundary (sem telas) | UC01       |
-| 3     | UC02     | `feat/uc02-listagem`       | Nota no domínio, card, grade, estados de carregamento/vazio/erro     | SETUP-01   |
-| 4     | UC03     | `feat/uc03-detalhe`        | Modal de detalhe acessível                                           | UC02       |
-| 5     | UC04     | `feat/uc04-filtro-formato` | Filtro multiformato com `format_in`                                  | UC02       |
-| 6     | UC05     | `feat/uc05-busca-texto`    | Busca por texto combinada com os formatos                            | UC04       |
-| 7     | UC06     | `feat/uc06-ver-mais`       | "Ver mais" acumulando páginas                                        | UC02       |
+| Ordem | UC       | Branch                          | Entrega principal                                                                                  | Depende de |
+| ----- | -------- | ------------------------------- | -------------------------------------------------------------------------------------------------- | ---------- |
+| 1     | UC01     | `feat/uc01-estrutura`           | Tokens no `@theme`, Mulish, header e footer fiéis, layout responsivo                               | —          |
+| 2     | SETUP-01 | `feat/setup-01-apollo`          | Apollo Client 4, Codegen, cache, facade e Error Boundary (sem telas)                               | UC01       |
+| 3     | UC02     | `feat/uc02-listagem`            | Nota no domínio, card, grade, estados de carregamento/vazio/erro                                   | SETUP-01   |
+| 4     | UC03     | `feat/uc03-detalhe`             | Modal de detalhe acessível                                                                         | UC02       |
+| 5     | UC04     | `feat/uc04-filtro-formato`      | Filtro multiformato com `format_in`                                                                | UC02       |
+| 6     | UC05     | `feat/uc05-busca-texto`         | Busca por texto combinada com os formatos                                                          | UC04       |
+| 7     | UC06     | `feat/uc06-ver-mais`            | "Ver mais" acumulando páginas                                                                      | UC02       |
+| 8     | UC07     | `fix/adjust-application-layout` | Sticky footer, overlay fecha o modal, scroll travado com o modal                                   | UC03       |
+| 9     | UC08     | `feat/uc08-consulta-detalhe`    | Consulta do modal separada da listagem ([ADR-004](adr/ADR-004-consulta-propria-para-o-detalhe.md)) | UC03, UC07 |
 
-UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02.
+UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02. O UC08 vem depois do UC07 porque mexe no mesmo `AnimeDetailDialog`.
 
 ## Plano por caso de uso
 
@@ -120,7 +128,7 @@ UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02.
 - **Retrieval:** `specs/card.md`, `tokens.json`, `manifest.json → notInDesign.detalhe`.
 - **Red:** clicar no card abre `dialog` com título, capa, gêneros, nota, formato, episódios, ano e sinopse; Esc e botão fechar devolvem o foco ao card; `<title>` muda enquanto aberto.
 - **Green:** `AnimeDetailDialog` com `<dialog>` nativo e metadados do React 19.
-- **Refactor:** sanitizar a sinopse (pedir `description(asHtml: false)`), reaproveitar `ScoreBadge`; os campos extras entram em `ANIME_PAGE` e o detalhe lê o `Media:<id>` do cache, sem nova requisição.
+- **Refactor:** sanitizar a sinopse (pedir `description(asHtml: false)`), reaproveitar `ScoreBadge`; os campos extras entram em `ANIME_PAGE` e o detalhe lê o `Media:<id>` do cache, sem nova requisição. Revisto no UC08: o detalhe passou a ter consulta própria ([ADR-004](adr/ADR-004-consulta-propria-para-o-detalhe.md)).
 - **Qualidade:** acessibilidade (foco, Esc, nome do diálogo), segurança (sem `dangerouslySetInnerHTML`).
 - **Prompt:** [UC03](prompts/UC03-detalhe-do-anime.md).
 
@@ -151,6 +159,25 @@ UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02.
 - **Qualidade:** eficiência (sem refazer páginas já carregadas), acessibilidade (foco e anúncio), confiabilidade (erro na página seguinte não apaga as anteriores: a facade passa a expor `loadMoreError` em vez de lançar para o boundary).
 - **Prompt:** [UC06](prompts/UC06-ver-mais-e-tamanho-da-pagina.md).
 
+### UC07 — Usar a página com layout estável
+
+- **Retrieval:** `specs/layout.md`, `specs/footer.md`; decisões do modal no prompt do UC03; MDN de `<dialog>`, `closedBy` e `:modal`.
+- **Red:** clique no overlay fecha o detalhe e devolve o foco; clique ou arrasto a partir do conteúdo não fecha; no e2e, rodapé no fim da janela com conteúdo curto e página de fundo parada com o modal aberto.
+- **Green:** coluna da página com `min-h-dvh` e `main` crescendo; padding do modal num wrapper interno e `pointerdown` + `click` no `<dialog>` chamando `close()`; `html:has(dialog:modal)` com `overflow: hidden` no CSS.
+- **Refactor:** manter um único caminho de fechamento (`close()` → `onClose`) para Esc, "Fechar" e overlay.
+- **Qualidade:** usabilidade (fechamento esperado em modais), compatibilidade (`closedby` não é Baseline; `:modal` e `:has()` são), estabilidade visual (sem salto de largura ao travar o scroll).
+- **Prompt:** [UC07](prompts/UC07-layout-estavel.md).
+
+### UC08 — Carregar o detalhe do anime sob demanda
+
+- **Decisão:** a consulta do modal é separada da listagem ([ADR-004](adr/ADR-004-consulta-propria-para-o-detalhe.md)). A `ANIME_PAGE` fica só com os campos do card; a `ANIME_DETAIL` busca `Media(id:)` com todos os campos do modal quando ele abre.
+- **Retrieval:** ADR-004, ADR-003, prompts do UC03 e do UC07, `queries/page.graphql.ts`, `mappers.ts`, `prefetch.ts`, `AnimeGrid`, `AnimeDetailDialog`, `ErrorBoundary`.
+- **Red:** a `ANIME_PAGE` não pede `description` nem os demais campos do detalhe; `toAnimeDetail` mapeia o detalhe; `useAnimeDetail` envia `AnimeDetail` com o id e não repete a consulta ao reabrir; o modal mostra o cabeçalho do card na hora e o carregamento no corpo; erro no detalhe mostra "Tentar novamente" dentro do modal e mantém a listagem.
+- **Green:** `ANIME_DETAIL` + `pnpm codegen`; `AnimeDetail extends Anime` no domínio; `useAnimeDetail(id, attempt)`; `AnimeDetail` em `features/anime-detail` com `Suspense` e `ErrorBoundary` próprios; prop `detail` no `AnimeGrid` com o componente, passada pelo `CatalogResults`.
+- **Refactor:** `toDescription` usada só pelo detalhe; `AnimeDetailDialog` recebe o corpo como `children` e fica só de apresentação.
+- **Qualidade:** eficiência (resposta da listagem e da primeira página menores; reabrir vem do cache), confiabilidade (erro no detalhe não derruba a listagem), manutenibilidade (campos do detalhe evoluem sem mexer na listagem), usabilidade (o modal abre sem esperar a rede).
+- **Prompt:** [UC08](prompts/UC08-consulta-do-detalhe.md).
+
 ## Definition of Done (todos os UCs)
 
 - [ ] Cenários BDD do UC cobertos por testes com o mesmo texto do Gherkin.
@@ -164,11 +191,13 @@ UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02.
 
 ## Decisões em aberto
 
-| Tema                      | Proposta do plano                                                                                  | Precisa de confirmação |
-| ------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------- |
-| Contraste do "Ver mais"   | Branco sobre `#FFB800` tem ≈ 1,7:1; usar texto e ícone `primary` (≈ 4,6:1)                         | Sim                    |
-| Contraste do chip de nota | `#E2E5E9` sobre `#01ADA6` tem ≈ 2,2:1; avaliar texto `white` em negrito                            | Sim                    |
-| Tamanho da página (RF07)  | RF07 removido: sem seletor; o tamanho segue a largura da tela (3, 6, 9 ou 12)                      | Não (decidido)         |
-| Título exibido            | `title.romaji` (igual ao design), `english` no detalhe                                             | Não                    |
-| UI e formulário           | Sem shadcn; sem React Hook Form ([ADR-002](adr/ADR-002-dependencias-de-dados-ui-e-formularios.md)) | Não (decidido)         |
-| Dados remotos             | Apollo Client 4 + GraphQL Codegen ([ADR-003](adr/ADR-003-apollo-client-como-camada-de-dados.md))   | Não (decidido)         |
+| Tema                      | Proposta do plano                                                                                                     | Precisa de confirmação |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| Contraste do "Ver mais"   | Branco sobre `#FFB800` tem ≈ 1,7:1; usar texto e ícone `primary` (≈ 4,6:1)                                            | Sim                    |
+| Contraste do chip de nota | `#E2E5E9` sobre `#01ADA6` tem ≈ 2,2:1; avaliar texto `white` em negrito                                               | Sim                    |
+| Tamanho da página (RF07)  | RF07 removido: sem seletor; o tamanho segue a largura da tela (3, 6, 9 ou 12)                                         | Não (decidido)         |
+| Título exibido            | `title.romaji` (igual ao design), `english` no detalhe                                                                | Não                    |
+| UI e formulário           | Sem shadcn; sem React Hook Form ([ADR-002](adr/ADR-002-dependencias-de-dados-ui-e-formularios.md))                    | Não (decidido)         |
+| Dados remotos             | Apollo Client 4 + GraphQL Codegen ([ADR-003](adr/ADR-003-apollo-client-como-camada-de-dados.md))                      | Não (decidido)         |
+| Consulta do detalhe       | Separada da listagem, por id, ao abrir o modal ([ADR-004](adr/ADR-004-consulta-propria-para-o-detalhe.md))            | Não (decidido)         |
+| Pré-carregar o detalhe    | No `pointerenter`/foco do card; adiado até medir a espera ([ADR-004](adr/ADR-004-consulta-propria-para-o-detalhe.md)) | Sim                    |

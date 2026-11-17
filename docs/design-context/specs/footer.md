@@ -12,4 +12,5 @@
 
 ## Implementação
 
+- Posição: no fluxo da página (não fixo). Com conteúdo curto, encosta no fim da janela (sticky footer, UC07; ver [layout.md](layout.md)).
 - `<footer>` (contentinfo) com o logo como `img` decorativo (`alt=""`) e o nome "Buscanime" em texto acessível, mais a legenda em `<p>` (texto real, não imagem).

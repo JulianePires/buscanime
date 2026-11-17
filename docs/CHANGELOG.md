@@ -4,6 +4,18 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+### Funcionalidades
+
+- Detalhe sob demanda (UC08, ADR-004): a listagem pede só os campos do card (resposta da primeira página de 14,9 KB para 3,7 KB) e o modal busca o detalhe por id (`AnimeDetail`) quando abre. O modal aparece na hora com os dados do card, mostra "Carregando detalhes" no corpo e, se a consulta falhar, oferece "Tentar novamente" sem afetar a listagem. Reabrir o mesmo anime vem do cache.
+
+### Correções
+
+- Layout estável (UC07): o rodapé encosta no fim da janela quando o conteúdo é curto (sticky footer, sem `position: fixed`); o detalhe fecha ao clicar no overlay; a página de fundo não rola com o modal aberto (`html:has(dialog:modal)`), sem salto de largura (`scrollbar-gutter: stable` só enquanto o modal está aberto, para não tirar 15 px do conteúdo nas medidas do Figma).
+
+### Documentação
+
+- ADR-004 e UC08: a consulta do modal de detalhe passa a ser separada da listagem. A listagem pede só os campos do card, e o modal busca o restante por id quando abre, com carregamento e erro próprios.
+
 ## [1.0.0] - 2026-10-31
 
 Primeira versão estável: UC01 a UC06 implementados, camada de dados com Apollo Client e pipeline de CI. Gerado a partir dos commits da `main`.

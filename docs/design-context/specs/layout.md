@@ -17,6 +17,10 @@ Coluna centralizada com `gap` de **24 px** entre as seções, nesta ordem:
 
 Fundo da página: `white`. Abaixo do footer o frame tem área branca vazia (o footer não é fixo).
 
+**Sticky footer (UC07, não está no Figma):** a coluna da página tem no mínimo a altura da janela (`min-h-dvh`) e o `main` cresce (`flex-1`). Com conteúdo curto (carregando, vazio, erro ou janela alta), o footer encosta no fim da janela em vez de deixar a área vazia abaixo dele. Com conteúdo longo, ele segue o fluxo depois do "Ver mais". Nunca `position: fixed`.
+
+**Modal aberto (UC07):** `html:has(dialog:modal)` recebe `overflow: hidden` e reserva a calha da barra (`scrollbar-gutter: stable`) só enquanto o modal está aberto, para a largura não mudar quando o scroll trava. Fora do modal a calha não é reservada: com barras sobrepostas ou ocultas, ela tiraria 15 px do conteúdo e, a 1366 px, a área útil deixaria de ter os 1316 px do Figma.
+
 ## Grade de cards
 
 - Desktop (≥ 1316 px de conteúdo): **4 colunas** de 317 px, `column-gap` 16 px, `row-gap` 21 px.

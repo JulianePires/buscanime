@@ -1,6 +1,6 @@
 # ADR-003 — Apollo Client 4 e GraphQL Codegen como camada de dados
 
-- **Status:** aceita
+- **Status:** aceita (o detalhe lido da listagem foi alterado pelo [ADR-004](ADR-004-consulta-propria-para-o-detalhe.md))
 - **Data:** 2026-10-30
 - **Substitui:** a decisão de dados remotos do [ADR-002](ADR-002-dependencias-de-dados-ui-e-formularios.md) (TanStack Query). As decisões de componentes (sem shadcn/ui) e formulário (sem React Hook Form) do ADR-002 continuam valendo.
 - **Contexto de decisão:** revisão de 30/10/2026, antes do UC02. Prompt: [SETUP-01](../prompts/SETUP-01-apollo-client-e-codegen.md).
@@ -85,6 +85,10 @@ O núcleo da decisão continua; mudaram três peças da tabela acima.
 - **Próxima página por `client.query`, não por `fetchMore`:** quando a requisição falha, o `fetchMore` do `useSuspenseQuery` rejeita a promise que a lista lê com `use()`, com qualquer `errorPolicy`, e a lista cairia no Error Boundary. A facade pede a página com `client.query` (`network-only`); como `page` fica fora da chave do `Page`, o `merge` acumula e deduplica como antes. A facade passou a expor `loadMoreError`.
 - **Facade e estado do cliente:** `setPerPage` saiu da facade com o RF07. O tamanho da página segue a largura da tela (`src/domain/page-size.ts`), e o `CatalogProvider` despacha `setPerPage` ao cruzar uma faixa.
 - **Client e transporte:** `createApolloClient` ganhou `formEncoded` (padrão `true`): o corpo vai em campos de formulário, uma requisição simples de CORS, sem o `OPTIONS` antes. Os testes de integração usam `formEncoded: false`, porque o MSW só lê GraphQL em JSON. A primeira página é pedida por um script inline no `index.html`, gerado no build (`prefetch.ts`), e o Apollo reaproveita essa resposta. Medições no `AI_LOG.md` (Decisões).
+
+## Atualização (17/11/2026, ADR-004)
+
+A consulta do modal foi separada da listagem ([ADR-004](ADR-004-consulta-propria-para-o-detalhe.md), UC08). A `ANIME_PAGE` passa a pedir só os campos do card, e o detalhe usa a operação `AnimeDetail` (`Media(id:)`) por trás da facade `useAnimeDetail`. Com isso, deixa de valer a consequência "o UC03 lê da listagem sem nova requisição": abrir um anime pela primeira vez faz uma requisição, e reabrir vem do cache. O cache normalizado, a fronteira de lint e a regra de erros sem reenvio automático continuam como estão.
 
 ## Referências
 
