@@ -2,16 +2,17 @@
 
 ## Casos de uso
 
-| Código | Ator      | Objetivo                                 |
-| ------ | --------- | ---------------------------------------- |
-| UC01   | Visitante | Visualizar estrutura da página.          |
-| UC02   | Visitante | Visualizar listagem de animes.           |
-| UC03   | Visitante | Visualizar detalhe do anime listado.     |
-| UC04   | Visitante | Filtrar lista por um ou mais formatos.   |
-| UC05   | Visitante | Filtrar lista por busca de texto.        |
-| UC06   | Visitante | Carregar mais animes pelo "Ver mais".    |
-| UC07   | Visitante | Usar a página com layout estável.        |
-| UC08   | Visitante | Carregar o detalhe do anime sob demanda. |
+| Código | Ator      | Objetivo                                      |
+| ------ | --------- | --------------------------------------------- |
+| UC01   | Visitante | Visualizar estrutura da página.               |
+| UC02   | Visitante | Visualizar listagem de animes.                |
+| UC03   | Visitante | Visualizar detalhe do anime listado.          |
+| UC04   | Visitante | Filtrar lista por um ou mais formatos.        |
+| UC05   | Visitante | Filtrar lista por busca de texto.             |
+| UC06   | Visitante | Carregar mais animes pelo "Ver mais".         |
+| UC07   | Visitante | Usar a página com layout estável.             |
+| UC08   | Visitante | Carregar o detalhe do anime sob demanda.      |
+| UC09   | Visitante | Compartilhar e restaurar os filtros pela URL. |
 
 ## Critérios BDD
 
@@ -139,6 +140,35 @@ E a listagem deve continuar visível e inalterada
 E ao acionar "Tentar novamente" a consulta do detalhe deve ser refeita
 ```
 
+### UC09 — Compartilhar e restaurar os filtros pela URL
+
+O texto vai em `q` e cada formato em um `format` (ex.: `/?q=one+piece&format=TV&format=MOVIE`). O tamanho da página não entra na URL: depende da largura de quem abre o link. A busca por texto passa a disparar só pelo botão "Buscar" ou pelo Enter, sem debounce da digitação.
+
+```gherkin
+Dado que o visitante buscou um texto e selecionou formatos
+Quando a listagem for atualizada
+Então a URL deve conter o texto e os formatos como query params
+```
+
+```gherkin
+Dado um link com texto e formatos nos query params
+Quando o visitante abrir o link
+Então os filtros devem vir preenchidos e a listagem já filtrada
+E valores desconhecidos devem ser ignorados
+```
+
+```gherkin
+Dado que o visitante mudou os filtros
+Quando usar o voltar ou o avançar do navegador
+Então os filtros, o campo de busca e a listagem daquela entrada devem voltar
+```
+
+```gherkin
+Dado que o visitante digitou um texto no campo de busca
+Quando não acionar "Buscar" nem pressionar Enter
+Então nenhuma busca deve ser feita
+```
+
 ## Estratégia TDD
 
 Cada caso de uso deve ser implementado em ciclos Red, Green e Refactor:
@@ -150,13 +180,14 @@ Cada caso de uso deve ser implementado em ciclos Red, Green e Refactor:
 
 Mapeamento inicial:
 
-| Caso | Teste unitário/integrado                                     | Teste e2e                |
-| ---- | ------------------------------------------------------------ | ------------------------ |
-| UC01 | Renderização da estrutura e títulos                          | Abertura da página       |
-| UC02 | Renderização de itens, estado vazio e cor da nota por faixa  | Listagem visível         |
-| UC03 | Seleção e conteúdo do detalhe                                | Abertura do detalhe      |
-| UC04 | Estado dos formatos selecionados                             | Resultado filtrado       |
-| UC05 | Entrada de busca e resultados                                | Busca por texto          |
-| UC06 | Botão "Ver mais" e carregamento                              | Clique e novos itens     |
-| UC07 | Clique no overlay e dentro do modal                          | Rodapé, overlay e scroll |
-| UC08 | Campos das consultas, facade, carregamento e erro do detalhe | Requisições do detalhe   |
+| Caso | Teste unitário/integrado                                     | Teste e2e                  |
+| ---- | ------------------------------------------------------------ | -------------------------- |
+| UC01 | Renderização da estrutura e títulos                          | Abertura da página         |
+| UC02 | Renderização de itens, estado vazio e cor da nota por faixa  | Listagem visível           |
+| UC03 | Seleção e conteúdo do detalhe                                | Abertura do detalhe        |
+| UC04 | Estado dos formatos selecionados                             | Resultado filtrado         |
+| UC05 | Entrada de busca e resultados                                | Busca por texto            |
+| UC06 | Botão "Ver mais" e carregamento                              | Clique e novos itens       |
+| UC07 | Clique no overlay e dentro do modal                          | Rodapé, overlay e scroll   |
+| UC08 | Campos das consultas, facade, carregamento e erro do detalhe | Requisições do detalhe     |
+| UC09 | Leitura e escrita dos query params, voltar e avançar         | Link, histórico e prefetch |
