@@ -25,7 +25,7 @@ function App() {
           onToggle={toggleFormat}
           onClear={clearFormats}
         />
-        <SearchBar defaultValue={selectedFilters.search} onSearch={search} />
+        <SearchBar term={selectedFilters.search} onSearch={search} />
         <ErrorBoundary onReset={retry}>
           <Suspense fallback={<LoadingState count={selectedFilters.perPage} />}>
             <CatalogResults />

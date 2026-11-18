@@ -35,19 +35,22 @@ test.describe("UC05 - Filtrar lista por busca de texto", () => {
     await expect(input).toHaveValue("one piece");
   });
 
-  test("busca sozinha depois de uma pausa na digitação, uma vez só", async ({ page }) => {
+  test('digitar não busca; o botão "Buscar" faz uma requisição com o texto final', async ({
+    page,
+  }) => {
     const api = await mockAniList(page);
     await page.goto("/");
     await expect(page.getByRole("list", { name: "Animes" }).getByRole("article")).toHaveCount(12);
 
-    // Teclas a cada 50 ms: mais rápido que o debounce, então só o texto final vira requisição
     await page.getByRole("searchbox", SEARCHBOX).pressSequentially("naruto", { delay: 50 });
+    // Sem debounce: sem o submit, a URL e a lista continuam as mesmas
+    await expect(page).toHaveURL(/\/$/);
+    expect(api.calls).toBe(1);
 
-    await expect.poll(() => api.variables.at(-1)?.search).toBe("naruto");
-    // Prefixos como "n" ou "nar" teriam chegado antes do texto final
-    expect(api.variables.slice(1)).toEqual([
-      expect.objectContaining({ search: "naruto", sort: ["SEARCH_MATCH"] }),
-    ]);
+    await page.getByRole("search").getByRole("button", { name: "Buscar" }).click();
+
+    await expect.poll(() => api.calls).toBe(2);
+    expect(api.variables[1]).toMatchObject({ search: "naruto", sort: ["SEARCH_MATCH"] });
   });
 
   test("segue as medidas e cores do Figma a 1366 px", async ({ page }) => {

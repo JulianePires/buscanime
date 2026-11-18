@@ -1,19 +1,17 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { SEARCH_DEBOUNCE_MS, SearchBar } from "./SearchBar";
+import { describe, expect, it, vi } from "vitest";
+import { SearchBar } from "./SearchBar";
 
-function renderSearchBar(defaultValue?: string) {
+function renderSearchBar(term?: string) {
   const onSearch = vi.fn<(term: string) => void>();
-  const view = render(<SearchBar defaultValue={defaultValue} onSearch={onSearch} />);
-  return { onSearch, view, input: screen.getByRole("searchbox", { name: "Buscar anime" }) };
+  const view = render(<SearchBar term={term} onSearch={onSearch} />);
+  const rerender = (next?: string) => view.rerender(<SearchBar term={next} onSearch={onSearch} />);
+  return { onSearch, rerender, input: screen.getByRole("searchbox", { name: "Buscar anime" }) };
 }
 
 const type = (input: HTMLElement, value: string) => fireEvent.change(input, { target: { value } });
 
 describe("SearchBar (specs/busca.md)", () => {
-  beforeEach(() => vi.useFakeTimers());
-  afterEach(() => vi.useRealTimers());
-
   it('fica num form role="search" com o campo rotulado "Buscar anime" e o placeholder do design', () => {
     const { input } = renderSearchBar();
 
@@ -23,15 +21,22 @@ describe("SearchBar (specs/busca.md)", () => {
     expect(screen.getByRole("button", { name: "Buscar" })).toHaveAttribute("type", "submit");
   });
 
-  it('chama onSearch uma vez com o termo ao acionar "Buscar", sem esperar o debounce', () => {
+  it("digitar não busca: sem debounce, quem dispara a busca é o botão ou o Enter", async () => {
+    const { onSearch, input } = renderSearchBar();
+
+    type(input, "n");
+    type(input, "naruto");
+    type(input, "");
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    expect(onSearch).not.toHaveBeenCalled();
+  });
+
+  it('chama onSearch uma vez com o termo ao acionar "Buscar"', () => {
     const { onSearch, input } = renderSearchBar();
 
     type(input, "one piece");
-    expect(onSearch).not.toHaveBeenCalled();
-
     fireEvent.click(screen.getByRole("button", { name: "Buscar" }));
-    // O submit cancela a busca agendada pela digitação
-    vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
 
     expect(onSearch).toHaveBeenCalledOnce();
     expect(onSearch).toHaveBeenCalledWith("one piece");
@@ -42,7 +47,6 @@ describe("SearchBar (specs/busca.md)", () => {
 
     type(input, "naruto");
     fireEvent.submit(input);
-    vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
 
     expect(onSearch).toHaveBeenCalledOnce();
     expect(onSearch).toHaveBeenCalledWith("naruto");
@@ -58,41 +62,24 @@ describe("SearchBar (specs/busca.md)", () => {
     expect(input).toHaveValue("bleach");
   });
 
-  describe("debounce da digitação", () => {
-    it(`busca uma vez com o último texto ${SEARCH_DEBOUNCE_MS} ms depois da última tecla`, () => {
-      const { onSearch, input } = renderSearchBar();
+  describe("termo trocado por fora (voltar/avançar do navegador, UC09)", () => {
+    it("o campo passa a mostrar o novo termo, e o termo vazio limpa o campo", () => {
+      const { rerender, input } = renderSearchBar("bleach");
 
-      type(input, "n");
-      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS - 1);
-      type(input, "na");
-      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS - 1);
-      type(input, "naruto");
-      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS - 1);
-      expect(onSearch).not.toHaveBeenCalled();
+      rerender("naruto");
+      expect(input).toHaveValue("naruto");
 
-      vi.advanceTimersByTime(1);
-
-      expect(onSearch).toHaveBeenCalledOnce();
-      expect(onSearch).toHaveBeenCalledWith("naruto");
+      rerender(undefined);
+      expect(input).toHaveValue("");
     });
 
-    it("limpar o campo também busca (remove o filtro)", () => {
-      const { onSearch, input } = renderSearchBar("bleach");
+    it("o mesmo termo, só normalizado, não reescreve o que o visitante digitou", () => {
+      const { rerender, input } = renderSearchBar();
+      type(input, "  one piece ");
 
-      type(input, "");
-      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
+      rerender("one piece");
 
-      expect(onSearch).toHaveBeenCalledWith("");
-    });
-
-    it("não busca depois que o componente sai da tela", () => {
-      const { onSearch, input, view } = renderSearchBar();
-
-      type(input, "naruto");
-      view.unmount();
-      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
-
-      expect(onSearch).not.toHaveBeenCalled();
+      expect(input).toHaveValue("  one piece ");
     });
   });
 });

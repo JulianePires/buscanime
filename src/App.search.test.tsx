@@ -2,7 +2,6 @@ import { act, fireEvent, screen, waitFor, within } from "@testing-library/react"
 import { delay, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import App from "./App";
-import { SEARCH_DEBOUNCE_MS } from "./components/filters/SearchBar";
 import { clickAndWait, renderWithCatalog } from "./test/apollo";
 import { buildMedia, buildPageData } from "./test/fixtures/anime-page";
 import { anilist } from "./test/msw/handlers";
@@ -93,12 +92,16 @@ describe("UC05 - Filtrar lista por busca de texto", () => {
         expect(requests).toHaveLength(2);
       });
 
-      it("Quando só digita e pausa, Então busca uma vez com o texto final (debounce)", async () => {
+      it('Quando só digita, sem "Buscar" nem Enter, Então não faz requisição (sem debounce)', async () => {
         const requests = await renderCatalog();
         const input = screen.getByRole("searchbox", { name: "Buscar anime" });
 
         for (const value of ["n", "nar", "naruto"]) fireEvent.change(input, { target: { value } });
-        await act(() => delay(SEARCH_DEBOUNCE_MS + 50));
+        await act(() => delay(500));
+        expect(requests).toHaveLength(1);
+        expect(listed()).toHaveLength(CATALOG.length);
+
+        await clickAndWait(screen.getByRole("button", { name: "Buscar" }));
 
         await waitFor(() => expect(listed()).toEqual(["Naruto"]));
         expect(requests).toHaveLength(2);

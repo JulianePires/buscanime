@@ -75,6 +75,24 @@ describe("animePagePrefetchScript (inline no index.html)", () => {
     },
   );
 
+  it.each(["?q=naruto", "?format=TV", "?utm_source=x&format=MOVIE"])(
+    "com filtros no link (%s, UC09), não antecipa a lista sem filtros",
+    (search) => {
+      window.history.replaceState(null, "", `/${search}`);
+
+      const fetch = runInlineScript();
+
+      expect(fetch).not.toHaveBeenCalled();
+      expect(window.__ANIME_PAGE_PREFETCH__).toBeUndefined();
+    },
+  );
+
+  it("outros parâmetros (ex.: utm) não impedem a antecipação", () => {
+    window.history.replaceState(null, "", "/?utm_source=x");
+
+    expect(runInlineScript()).toHaveBeenCalledOnce();
+  });
+
   it("pré-carrega a capa do primeiro anime com prioridade alta (LCP)", async () => {
     runInlineScript();
 
