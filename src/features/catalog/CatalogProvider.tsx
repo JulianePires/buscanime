@@ -3,6 +3,7 @@ import { type ReactNode, useOptimistic, useReducer, useState, useTransition } fr
 import type { CatalogClient } from "../../services/anilist/apollo-client";
 import { CatalogContext } from "./catalog-context";
 import { catalogFiltersReducer, initialCatalogFilters } from "./catalog-filters-reducer";
+import { currentUrlFilters, useCatalogUrl } from "./use-catalog-url";
 import { currentPageSize, useViewportPageSize } from "./use-viewport-page-size";
 
 interface CatalogProviderProps {
@@ -13,6 +14,7 @@ interface CatalogProviderProps {
 export function CatalogProvider({ client, children }: CatalogProviderProps) {
   const [filters, dispatch] = useReducer(catalogFiltersReducer, initialCatalogFilters, (state) => ({
     ...state,
+    ...currentUrlFilters(),
     perPage: currentPageSize(),
   }));
   // Os controles mostram a escolha na hora; a lista troca quando a nova combinação carrega
@@ -26,6 +28,7 @@ export function CatalogProvider({ client, children }: CatalogProviderProps) {
       dispatch(action);
     });
   useViewportPageSize((perPage) => changeFilters({ type: "setPerPage", perPage }));
+  useCatalogUrl(filters, (urlFilters) => changeFilters({ type: "restore", filters: urlFilters }));
 
   const value = {
     filters,

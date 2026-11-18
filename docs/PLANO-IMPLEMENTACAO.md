@@ -22,7 +22,8 @@ src/
 │   ├── anime.ts                # Anime (card), AnimeDetail (UC08), AnimeFormat, AnimePage, CatalogFilters
 │   ├── formats.ts              # FORMAT_OPTIONS: rótulo do design ↔ AnimeFormat
 │   ├── score.ts                # scoreTone(score): "danger" | "warning" | "success"
-│   └── page-size.ts            # Itens por página pela largura da tela (UC06)
+│   ├── page-size.ts            # Itens por página pela largura da tela (UC06)
+│   └── catalog-url.ts          # Filtros ↔ query params q e format (UC09)
 ├── services/anilist/           # Adapter da API GraphQL (ADR-003)
 │   ├── apollo-client.ts        # createApolloClient(): ErrorLink → HttpLink, cache-first (SETUP-01)
 │   ├── cache.ts                # createCache(): typePolicies de Page, media e pageInfo (SETUP-01)
@@ -36,6 +37,7 @@ src/
 │   ├── catalog-context.ts      # Contexto dos filtros e da nova tentativa
 │   ├── use-catalog.ts          # Facade: useSuspenseQuery e a próxima página escondidos
 │   ├── use-viewport-page-size.ts # Tamanho da página acompanha a largura (matchMedia)
+│   ├── use-catalog-url.ts      # URL segue os filtros; popstate restaura (UC09)
 │   └── CatalogProvider.tsx     # Único ApolloProvider; client injetado por prop (DIP)
 ├── features/anime-detail/      # Consulta própria do modal (UC08, ADR-004)
 │   ├── use-anime-detail.ts     # Facade: useSuspenseQuery(ANIME_DETAIL) por id, retry no queryKey
@@ -85,7 +87,7 @@ src/
 
 ```text
 UC01 ──► SETUP-01 ──► UC02 ──┬──► UC03 ──► UC07 ──► UC08
-                             ├──► UC04 ──► UC05
+                             ├──► UC04 ──► UC05 ──► UC09
                              └──► UC06
 ```
 
@@ -100,6 +102,7 @@ UC01 ──► SETUP-01 ──► UC02 ──┬──► UC03 ──► UC07 �
 | 7     | UC06     | `feat/uc06-ver-mais`            | "Ver mais" acumulando páginas                                                                      | UC02       |
 | 8     | UC07     | `fix/adjust-application-layout` | Sticky footer, overlay fecha o modal, scroll travado com o modal                                   | UC03       |
 | 9     | UC08     | `feat/uc08-consulta-detalhe`    | Consulta do modal separada da listagem ([ADR-004](adr/ADR-004-consulta-propria-para-o-detalhe.md)) | UC03, UC07 |
+| 10    | UC09     | `feat/uc09-query-params`        | Filtros nos query params, voltar/avançar e busca só pelo submit                                    | UC04, UC05 |
 
 UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02. O UC08 vem depois do UC07 porque mexe no mesmo `AnimeDetailDialog`.
 
@@ -177,6 +180,15 @@ UC03, UC04 e UC06 podem ser feitos em paralelo depois do UC02. O UC08 vem depois
 - **Refactor:** `toDescription` usada só pelo detalhe; `AnimeDetailDialog` recebe o corpo como `children` e fica só de apresentação.
 - **Qualidade:** eficiência (resposta da listagem e da primeira página menores; reabrir vem do cache), confiabilidade (erro no detalhe não derruba a listagem), manutenibilidade (campos do detalhe evoluem sem mexer na listagem), usabilidade (o modal abre sem esperar a rede).
 - **Prompt:** [UC08](prompts/UC08-consulta-do-detalhe.md).
+
+### UC09 — Compartilhar e restaurar os filtros pela URL
+
+- **Retrieval:** UC04 e UC05 (casos e prompts), `specs/busca.md`, `CatalogProvider`, `catalog-filters-reducer.ts`, `SearchBar`, `prefetch.ts`.
+- **Red:** `q` e `format` lidos e escritos de forma pura (inválidos ignorados, outros parâmetros preservados); ação `restore` no reducer; digitar não busca; link abre filtrado com uma requisição; voltar/avançar restaura filtros e campo; prefetch não antecipa com filtros na URL.
+- **Green:** `src/domain/catalog-url.ts`; `useCatalogUrl` no `CatalogProvider` (`pushState` a cada combinação exibida, `replaceState` na correção do link aberto, `popstate` → `restore` na transição dos filtros); `SearchBar` sem debounce, com a prop `term` reescrevendo o campo quando o termo muda por fora.
+- **Refactor:** a URL depende só de `formats` e `search`, que mantêm a identidade quando só o `perPage` muda.
+- **Qualidade:** usabilidade (link compartilhável, voltar do navegador funciona, o botão "Buscar" tem função), eficiência (voltar vem do cache; link filtrado não gasta o pedido antecipado).
+- **Prompt:** [UC09](prompts/UC09-filtros-na-url.md).
 
 ## Definition of Done (todos os UCs)
 

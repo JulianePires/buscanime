@@ -9,6 +9,7 @@
 - **RF05 — Detalhes:** o usuário pode selecionar um anime listado e visualizar seus detalhes.
 - **RF06 — Paginação por "Ver mais":** o sistema deve carregar a próxima página de itens quando o usuário acionar o botão "Ver mais", ao final da listagem.
 - **RF08 — Responsividade:** o conteúdo e os controles devem funcionar em dispositivos móveis e desktop.
+- **RF09 — Filtros na URL:** o texto buscado e os formatos selecionados devem ficar nos query params, para o link poder ser compartilhado e o voltar/avançar do navegador restaurar os filtros.
 
 O RF07 (tamanho da paginação) foi removido: não consta no Figma; o tamanho da página segue a largura da tela (3 itens até 600 px, 6 até 919 px, 9 até 1219 px e 12 a partir de 1220 px, em `src/domain/page-size.ts`). A numeração foi mantida para não quebrar as referências ao RF08.
 

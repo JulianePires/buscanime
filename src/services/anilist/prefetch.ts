@@ -1,5 +1,6 @@
 import { print } from "graphql";
 import type { CatalogFilters } from "../../domain/anime";
+import { FORMAT_PARAM, SEARCH_PARAM } from "../../domain/catalog-url";
 import { PAGE_SIZE_BANDS } from "../../domain/page-size";
 import { createCache } from "./cache";
 import { toAnimePageVariables } from "./mappers";
@@ -23,6 +24,8 @@ export interface PrefetchConfig {
   /** `perPage` é trocado pelo da faixa de largura. */
   variables: Record<string, unknown>;
   bands: readonly { minWidth: number; perPage: number }[];
+  /** Com algum deles na URL (UC09), a primeira lista é outra: não antecipa. */
+  filterParams: readonly string[];
 }
 
 export function animePagePrefetchConfig(filters: CatalogFilters, url: string) {
@@ -34,11 +37,14 @@ export function animePagePrefetchConfig(filters: CatalogFilters, url: string) {
     // Sem os filtros vazios (undefined), como no corpo que o Apollo envia
     variables: JSON.parse(JSON.stringify(toAnimePageVariables(filters))),
     bands: PAGE_SIZE_BANDS,
+    filterParams: [SEARCH_PARAM, FORMAT_PARAM],
   } satisfies PrefetchConfig;
 }
 
 /** Serializada pelo `toString()`: precisa ser autocontida, sem imports nem constantes do módulo. */
 function startAnimePagePrefetch(config: PrefetchConfig) {
+  const params = new URLSearchParams(window.location.search);
+  if (config.filterParams.some((name) => params.has(name))) return;
   const band = config.bands.find((item) => window.innerWidth >= item.minWidth);
   const variables = JSON.stringify({ ...config.variables, perPage: band?.perPage });
   const body = new URLSearchParams({ operationName: "AnimePage", query: config.query, variables });

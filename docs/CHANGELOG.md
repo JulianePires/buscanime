@@ -6,6 +6,8 @@ Mudanças documentadas por commit, seguindo [Keep a Changelog](https://keepachan
 
 ### Funcionalidades
 
+- Filtros na URL (UC09, RF09): o texto buscado vai em `q` e cada formato em `format` (`/?q=one+piece&format=TV`). Abrir o link traz os filtros preenchidos e a lista filtrada numa requisição só (o pedido antecipado do `index.html` é pulado); cada combinação é uma entrada no histórico, e voltar/avançar restaura os filtros e o campo de busca a partir do cache. Valores inválidos no link são ignorados e corrigidos sem nova entrada.
+- Busca só pelo submit: o debounce de 400 ms da digitação foi removido, e a busca dispara apenas pelo botão "Buscar" ou pelo Enter.
 - Detalhe sob demanda (UC08, ADR-004): a listagem pede só os campos do card (resposta da primeira página de 14,9 KB para 3,7 KB) e o modal busca o detalhe por id (`AnimeDetail`) quando abre. O modal aparece na hora com os dados do card, mostra "Carregando detalhes" no corpo e, se a consulta falhar, oferece "Tentar novamente" sem afetar a listagem. Reabrir o mesmo anime vem do cache.
 
 ### Correções

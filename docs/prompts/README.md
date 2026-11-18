@@ -13,6 +13,7 @@ Um prompt por caso de uso, pronto para colar no Claude Code na raiz do repositó
 | UC06     | [Ver mais e tamanho da página](UC06-ver-mais-e-tamanho-da-pagina.md)   | `feat/uc06-ver-mais`            |
 | UC07     | [Layout estável](UC07-layout-estavel.md)                               | `fix/adjust-application-layout` |
 | UC08     | [Consulta própria do detalhe](UC08-consulta-do-detalhe.md)             | `feat/uc08-consulta-detalhe`    |
+| UC09     | [Filtros na URL](UC09-filtros-na-url.md)                               | `feat/uc09-query-params`        |
 
 ## Estrutura padrão
 

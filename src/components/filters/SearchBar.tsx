@@ -1,28 +1,28 @@
 import { type FormEvent, useEffect, useRef } from "react";
 
-export const SEARCH_DEBOUNCE_MS = 400;
-
 interface SearchBarProps {
-  /** O campo não é controlado: só vale na montagem. */
-  defaultValue?: string;
+  /** Termo aplicado. O campo não é controlado: só é reescrito quando o termo muda por fora. */
+  term?: string;
   onSearch: (term: string) => void;
 }
 
-/** Sem `<form action>`: o React 19 reseta os campos não controlados depois da action. */
-export function SearchBar({ defaultValue, onSearch }: SearchBarProps) {
-  const pending = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(pending.current), []);
+/**
+ * A busca dispara só no submit ("Buscar" ou Enter), sem debounce da digitação: uma requisição
+ * por intenção do visitante. Sem `<form action>`: o React 19 reseta os campos não controlados.
+ */
+export function SearchBar({ term, onSearch }: SearchBarProps) {
+  const input = useRef<HTMLInputElement>(null);
 
-  function scheduleSearch(term: string) {
-    clearTimeout(pending.current);
-    pending.current = setTimeout(() => onSearch(term), SEARCH_DEBOUNCE_MS);
-  }
+  // Voltar/avançar do navegador (UC09) troca o termo; a mesma busca, só normalizada, não
+  useEffect(() => {
+    const field = input.current;
+    if (field && field.value.trim() !== (term ?? "")) field.value = term ?? "";
+  }, [term]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    clearTimeout(pending.current);
-    const term = new FormData(event.currentTarget).get("search");
-    onSearch(typeof term === "string" ? term : "");
+    const value = new FormData(event.currentTarget).get("search");
+    onSearch(typeof value === "string" ? value : "");
   }
 
   return (
@@ -36,11 +36,11 @@ export function SearchBar({ defaultValue, onSearch }: SearchBarProps) {
         Buscar anime
       </label>
       <input
+        ref={input}
         id="anime-search"
         name="search"
         type="search"
-        defaultValue={defaultValue}
-        onChange={(event) => scheduleSearch(event.currentTarget.value)}
+        defaultValue={term}
         placeholder="Digite algo aqui..."
         autoComplete="off"
         className="h-9.5 min-w-0 flex-1 rounded-control border border-gray-light-1 bg-white pl-2.5 text-sm outline-none transition-colors placeholder:text-gray focus:border-primary"

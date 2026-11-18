@@ -13,6 +13,8 @@ if (typeof window !== "undefined") {
   installViewport();
   resetViewport();
   afterEach(resetViewport);
+  // Os filtros vivem na URL (UC09): um teste não herda os do anterior
+  afterEach(() => window.history.replaceState(null, "", "/"));
 }
 
 /**

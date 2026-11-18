@@ -52,4 +52,23 @@ describe("catalogFiltersReducer", () => {
       initialCatalogFilters,
     );
   });
+
+  it("restore troca formatos e termo pelos da URL e mantém o tamanho da página (UC09)", () => {
+    const state = { ...initialCatalogFilters, perPage: 6, formats: ["TV" as const], search: "x" };
+
+    expect(
+      catalogFiltersReducer(state, { type: "restore", filters: { formats: [], search: "bleach" } }),
+    ).toEqual({ formats: [], search: "bleach", perPage: 6 });
+  });
+
+  it("restore com os mesmos filtros devolve o mesmo estado", () => {
+    const state = { ...initialCatalogFilters, formats: ["TV" as const, "OVA" as const] };
+
+    expect(
+      catalogFiltersReducer(state, {
+        type: "restore",
+        filters: { formats: ["TV", "OVA"], search: undefined },
+      }),
+    ).toBe(state);
+  });
 });
